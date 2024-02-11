@@ -1,24 +1,33 @@
 #pragma once
 
 #include "ofMain.h"
+#include "renderer.h"
 
-class ofApp : public ofBaseApp{
+class Application : public ofBaseApp
+{
+public:
 
-	public:
-		void setup();
-		void update();
-		void draw();
+	Renderer renderer;
 
-		void keyPressed(int key);
-		void keyReleased(int key);
-		void mouseMoved(int x, int y );
-		void mouseDragged(int x, int y, int button);
-		void mousePressed(int x, int y, int button);
-		void mouseReleased(int x, int y, int button);
-		void mouseEntered(int x, int y);
-		void mouseExited(int x, int y);
-		void windowResized(int w, int h);
-		void dragEvent(ofDragInfo dragInfo);
-		void gotMessage(ofMessage msg);
-		
+	void setup();
+
+	void draw();
+
+	//void windowResized(int w, int h);
+
+	//void dragEvent(ofDragInfo dragInfo);
+
+	//void keyReleased(int key);
+
+	void keyPressed(int key);
+	void update();
+
+	void mouseDragged(int x, int y, int button);
+	void mousePressed(int x, int y, int button);
+	void mouseReleased(int x, int y, int button);
+	ofPolyline ligne;
+
+	bool color_swap = false;
+
+	void exit();
 };
