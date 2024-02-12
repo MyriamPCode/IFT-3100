@@ -1,7 +1,10 @@
-// IFT3100H23_ImageImport/renderer.cpp
+// IFT3100/renderer.cpp
 // Classe responsable du rendu de l'application.
 
+using namespace std;
+
 #include "renderer.h"
+
 
 void Renderer::setup()
 {
@@ -11,8 +14,8 @@ void Renderer::setup()
 void Renderer::draw()
 {
 	auto currImg = imgPosList.begin();
-	for (std::list<ofImage>::iterator iter = imageList.begin(); iter != imageList.end(); ++iter) {
-		std::vector temp = *currImg;
+	for (list<ofImage>::iterator iter = imageList.begin(); iter != imageList.end(); ++iter) {
+		vector temp = *currImg;
 		iter->draw(temp[0], temp[1]);
 		++currImg;
 	}
