@@ -5,7 +5,7 @@ using namespace std;
 #include "ofMain.h"
 #include "renderer.h"
 
-class ofApp : public ofBaseApp{
+class Application : public ofBaseApp{
 
 	public:
 		Renderer renderer;
