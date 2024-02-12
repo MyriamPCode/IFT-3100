@@ -1,10 +1,18 @@
+using namespace std;
+
 #pragma once
 
 #include "ofMain.h"
+#include "renderer.h"
 
-class ofApp : public ofBaseApp{
+class Application : public ofBaseApp{
 
 	public:
+		Renderer renderer;
+		bool isImportable = false; //Indique si le mode d'importation est actif ou non
+		int imgDistFromMax = 0; //Indicateur de la position de l'image par rapport à la taille maximale de la liste
+		bool isRepositioning = false; //Indique si un image est en cours de repositionnement
+
 		void setup();
 		void update();
 		void draw();
