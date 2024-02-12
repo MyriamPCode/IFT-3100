@@ -3,7 +3,7 @@
 
 using namespace std;
 
-#include "renderer.h"
+#include "Renderer.h"
 
 
 void Renderer::setup()

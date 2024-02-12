@@ -3,7 +3,7 @@ using namespace std;
 #pragma once
 
 #include "ofMain.h"
-#include "renderer.h"
+#include "Renderer.h"
 
 class Application : public ofBaseApp{
 
