@@ -1,5 +1,7 @@
-// IFT3100H23_ImageImport/renderer.h
+// IFT3100/renderer.h
 // Classe responsable du rendu de l'application.
+
+using namespace std;
 
 #pragma once
 
@@ -11,8 +13,8 @@ public:
 
   ofImage image;
 
-  std::list<ofImage> imageList; //Liste d'images importées
-  std::list<std::vector<int>> imgPosList; //Positions x et y des images importées
+  list<ofImage> imageList; //Liste d'images importées
+  list<vector<int>> imgPosList; //Positions x et y des images importées
 
   void setup();
   void draw();
