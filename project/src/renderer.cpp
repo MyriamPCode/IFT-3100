@@ -43,7 +43,7 @@ void Renderer::draw_cursor(float x, float y) const {
 		ofSetColor(254, 142, 118); // Couleur rouge
 	}
 
-	if (is_mouse_button_pressed) {
+	else if (is_mouse_button_pressed) {
 		ofSetColor(249, 220, 40); // Couleur jaune
 	}
 
