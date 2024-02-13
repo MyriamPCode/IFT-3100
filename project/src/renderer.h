@@ -27,6 +27,7 @@ public:
 
   bool is_mouse_button_pressed;
   bool is_mouse_button_dragged;
+  bool import_activate;
 
   void setup();
   void draw();

@@ -10,6 +10,7 @@ void Renderer::setup()
 {
 	is_mouse_button_pressed = false;
 	is_mouse_button_dragged = false;
+	import_activate = false;
 
 	mouse_current_x = mouse_current_y = mouse_press_x = mouse_press_y = mouse_drag_x = mouse_drag_y = 0;
 }
@@ -45,6 +46,9 @@ void Renderer::draw_cursor(float x, float y) const {
 
 	else if (is_mouse_button_pressed) {
 		ofSetColor(249, 220, 40); // Couleur jaune
+	}
+	else if (import_activate) {
+		ofSetColor(135, 210, 88); // Couleur verte
 	}
 
 	else

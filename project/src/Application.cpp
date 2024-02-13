@@ -17,6 +17,7 @@ void Application::update(){
 //--------------------------------------------------------------
 void Application::draw(){
 	if (isImportable) {
+		renderer.import_activate = true;
 		ofDrawBitmapString("Please drag an image to import it.", 30, 30);
 	}
 	renderer.draw();
@@ -31,6 +32,7 @@ void Application::keyPressed(int key){
 void Application::keyReleased(int key){
 	if (key == 105) { // 105 = key "i"
 		isImportable = !isImportable;
+		renderer.import_activate = !renderer.import_activate;
 	}
 }
 
