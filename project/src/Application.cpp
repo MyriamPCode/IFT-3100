@@ -15,6 +15,7 @@ void Application::update() {}
 
 void Application::draw(){
 	if (isImportable) {
+		renderer.import_activate = true;
 		ofDrawBitmapString("Please drag an image to import it.", 30, 30);
 	}
 	renderer.draw();
@@ -27,15 +28,26 @@ void Application::keyPressed(int key) {}
 void Application::keyReleased(int key){
 	if (key == 105) { // 105 = key "i"
 		isImportable = !isImportable;
+		renderer.import_activate = !renderer.import_activate;
 	}
 }
 
 
-void Application::mouseMoved(int x, int y ) {}
+void Application::mouseMoved(int x, int y ){
+	renderer.mouse_current_x = x;
+	renderer.mouse_current_y = y;
+}
 
+void Application::mouseDragged(int x, int y, int button){
+	renderer.mouse_current_x = x;
+	renderer.mouse_current_y = y;
 
-void Application::mouseDragged(int x, int y, int button) {}
+	renderer.mouse_drag_x = x;
+	renderer.mouse_drag_y = y;
 
+	renderer.is_mouse_button_dragged = true;
+	renderer.is_mouse_button_pressed = false;
+}
 
 void Application::mousePressed(int x, int y, int button){
 	if (isImportable && !isRepositioning) { //Si l'importation d'image est active
@@ -50,6 +62,15 @@ void Application::mousePressed(int x, int y, int button){
 			imgDistFromMax++;
 		}
 	}
+
+	renderer.is_mouse_button_pressed = true;
+	renderer.is_mouse_button_dragged = false;
+
+	renderer.mouse_current_x = x;
+	renderer.mouse_current_y = y;
+
+	renderer.mouse_press_x = x;
+	renderer.mouse_press_y = y;
 }
 
 
@@ -70,16 +91,26 @@ void Application::mouseReleased(int x, int y, int button){
 			isImportable = !isImportable;
 		}
 	}
+
+	renderer.is_mouse_button_pressed = false;
+	renderer.is_mouse_button_dragged = false;
+
+	renderer.mouse_current_x = x;
+	renderer.mouse_current_y = y;
 }
 
 
 void Application::mouseEntered(int x, int y){
 
+	renderer.mouse_current_x = x;
+	renderer.mouse_current_y = y;
 }
 
 
 void Application::mouseExited(int x, int y){
 
+	renderer.mouse_current_x = x;
+	renderer.mouse_current_y = y;
 }
 
 
