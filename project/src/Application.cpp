@@ -10,16 +10,40 @@ void Application::setup(){
 
 	gui.setup();
 	gui.add(uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
-	gui.add(uiAmount.set("amount", 3, 1, 64)); // La quantité de primitives. Nombre maximal est 64 et nombre minimum est 3
+	gui.add(uiAmount.set("amount", 1, 0, 64)); // La quantité de primitives. Nombre maximal est 64 et nombre minimum est 1
 	gui.add(uiStep.set("step", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
 	gui.add(uiRotate.set("rotate", ofVec3f(0), ofVec3f(-180), ofVec3f(180))); // La rotation des primitives
 	gui.add(uiShift.set("shift", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
 	gui.add(uiSize.set("size", ofVec2f(6), ofVec2f(0), ofVec2f(30)));
+
+	is_key_press_up = false;
+	is_key_press_down = false;
+	is_key_press_left = false;
+	is_key_press_right = false;
+
 }
 
 //--------------------------------------------------------------
 void Application::update(){
+	time_current = ofGetElapsedTimef();
+	time_elapsed = time_current - time_last;
+	time_last = time_current;
 
+	// Déplacement sur le plan XZ
+	if (is_key_press_up) {
+		renderer.offset_z += renderer.delta_z * time_elapsed;
+	}
+	if (is_key_press_down) {
+		renderer.offset_z -= renderer.delta_z * time_elapsed;
+	}
+	if (is_key_press_left) {
+		renderer.offset_x += renderer.delta_x * time_elapsed;
+	}
+	if (is_key_press_right) {
+		renderer.offset_x -= renderer.delta_x * time_elapsed;
+	}
+
+	renderer.update();
 }
 
 //--------------------------------------------------------------
@@ -55,7 +79,26 @@ void Application::draw(){
 
 //--------------------------------------------------------------
 void Application::keyPressed(int key){
+	switch (key) {
+	case OF_KEY_UP : // key haut
+		is_key_press_up = true;
+		break;
 
+	case OF_KEY_DOWN: // key bas
+		is_key_press_down = true;
+		break;
+
+	case OF_KEY_LEFT: // key gauche
+		is_key_press_left = true;
+		break;
+
+	case OF_KEY_RIGHT: // key droite
+		is_key_press_right = true;
+		break;
+
+	default:
+		break;
+	}
 }
 
 //--------------------------------------------------------------
@@ -63,6 +106,49 @@ void Application::keyReleased(int key){
 	if (key == 105) { // 105 = key "i"
 		isImportable = !isImportable;
 		renderer.import_activate = !renderer.import_activate;
+	}
+	ofLog() << key;
+
+	switch (key) {
+	case OF_KEY_UP: // key haut
+		is_key_press_up = false;
+		break;
+
+	case OF_KEY_DOWN: // key bas
+		is_key_press_down = false;
+		break;
+
+	case OF_KEY_LEFT: // key gauche
+		is_key_press_left = false;
+		break;
+
+	case OF_KEY_RIGHT: // key droite
+		is_key_press_right = false;
+		break;
+
+	case 101: // key e
+		renderer.is_active_rotation = !renderer.is_active_rotation;
+		ofLog() << "<rotation is active: " << renderer.is_active_rotation << ">";
+		break;
+
+	case 102: // key f
+		renderer.is_flip_axis_y = !renderer.is_flip_axis_y;
+		ofLog() << "<axis Y is flipped: " << renderer.is_flip_axis_y << ">";
+		break;
+
+	case 114: // key r
+		renderer.is_active_proportion = !renderer.is_active_proportion;
+		ofLog() << "<proportion is active: " << renderer.is_active_proportion << ">";
+		break;
+
+	case 119: // key w
+		renderer.is_active_translation = !renderer.is_active_translation;
+		ofLog() << "<translation is active: " << renderer.is_active_translation << ">";
+		break;
+
+	default:
+		renderer.reset();
+		break;
 	}
 }
 
@@ -126,6 +212,8 @@ void Application::mouseReleased(int x, int y, int button){
 
 	renderer.mouse_current_x = x;
 	renderer.mouse_current_y = y;
+
+	renderer.reset();
 }
 
 //--------------------------------------------------------------

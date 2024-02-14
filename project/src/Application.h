@@ -10,9 +10,19 @@ class Application : public ofBaseApp{
 
 	public:
 		Renderer renderer;
+
 		bool isImportable = false; //Indique si le mode d'importation est actif ou non
 		int imgDistFromMax = 0; //Indicateur de la position de l'image par rapport à la taille maximale de la liste
 		bool isRepositioning = false; //Indique si un image est en cours de repositionnement
+
+		float time_current;
+		float time_last;
+		float time_elapsed;
+
+		bool is_key_press_up;
+		bool is_key_press_down;
+		bool is_key_press_left;
+		bool is_key_press_right;
 
 		void setup();
 		void update();
