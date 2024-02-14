@@ -1,15 +1,17 @@
-// IFT3100/renderer.cpp
-// Classe responsable du rendu de l'application.
+#include "Renderer.h"
+#include "Interface.h"
+
+#include "Constants.h"
 
 using namespace std;
 
-#include "Renderer.h"
-#include "Constants.h"
-
-void Renderer::setup() {}
+void Renderer::setup() {
+	interface.setup();
+}
 
 void Renderer::draw() {
-	backgroundLine();
+	interface.draw();
+
 	auto currImg = imgPosList.begin();
 	for (list<ofImage>::iterator iter = imageList.begin(); iter != imageList.end(); ++iter) {
 		vector temp = *currImg;
@@ -23,16 +25,4 @@ void Renderer::newImage(string filePath, int posX, int posY) {
 	imageList.push_back(newImage);
 	imageList.back().load(filePath);
 	imgPosList.push_back({posX, posY});
-}
-
-void Renderer::backgroundLine() {
-	ofSetColor(backgroundLineColor);
-	for (int i = 0; i < WIDTH; i += WIDTH / 40) {
-		ofDrawLine(i, 0, i, HEIGHT);
-		ofDrawLine(0, i, WIDTH, i);
-	};
-
-	for (int i = 0; i < HEIGHT; i += WIDTH / 40) {
-		ofDrawLine(0, i, WIDTH, i);
-	};
 }
