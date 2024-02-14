@@ -5,7 +5,7 @@ using namespace std;
 
 void Application::setup(){
 	ofSetWindowTitle("Team 7");
-	ofBackground(179, 179, 179);
+	ofBackground(backgroundColor);
 	renderer.setup();
 }
 

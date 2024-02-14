@@ -10,6 +10,8 @@ class Application : public ofBaseApp{
 	public:
 		Renderer renderer;
 
+		ofColor backgroundColor = ofColor(178, 184, 194);
+
 		bool isImportable = false; //Indique si le mode d'importation est actif ou non
 		int imgDistFromMax = 0; //Indicateur de la position de l'image par rapport à la taille maximale de la liste
 		bool isRepositioning = false; //Indique si un image est en cours de repositionnement

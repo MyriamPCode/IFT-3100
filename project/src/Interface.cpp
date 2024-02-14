@@ -1,11 +1,27 @@
 #include "Interface.h"
 #include "Constants.h"
 
-void Interface::setup() {}
+using namespace std;
+
+void Interface::setup() {
+	buttonFont.load("roboto/Roboto-Regular.ttf", 24);
+}
 
 void Interface::draw() {
 	backgroundLine();
 	backgroundInteraction();
+	importButton();
+}
+
+void Interface::importButton() {
+	string buttonText = "Import";
+	ofRectangle textbox = buttonFont.getStringBoundingBox(buttonText, 0, 0);
+
+	ofSetColor(backgroundInteractionBorderColor);
+	ofDrawRectangle(0, 0, textbox.getWidth() + 9, 40);
+	ofSetColor(textColor);
+
+	buttonFont.drawString(buttonText, 3, 30);
 }
 
 void Interface::backgroundLine() {
@@ -23,20 +39,20 @@ void Interface::backgroundLine() {
 
 void Interface::backgroundInteraction() {
 	// Right rectangle
-	ofSetColor(backgroundInteractionBorderColor);
+	ofSetColor(backgroundInteractionColor);
 	ofFill();
 	ofDrawRectangle(WIDTH - 40, 0, 40, HEIGHT);
 
-	ofSetColor(backgroundInteractionColor);
+	ofSetColor(backgroundInteractionBorderColor);
 	ofNoFill();
 	ofDrawRectangle(WIDTH - 40, 0, 40, HEIGHT);
 
 	//Top rectangle
-	ofSetColor(backgroundInteractionBorderColor);
+	ofSetColor(backgroundInteractionColor);
 	ofFill();
 	ofDrawRectangle(0, 0, WIDTH, 40);
 
-	ofSetColor(backgroundInteractionColor);
+	ofSetColor(backgroundInteractionBorderColor);
 	ofNoFill();
 	ofDrawRectangle(0, 0, WIDTH, 40);
 }

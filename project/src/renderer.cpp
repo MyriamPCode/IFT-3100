@@ -6,6 +6,7 @@
 using namespace std;
 
 void Renderer::setup() {
+	ofSetFrameRate(60);
 	interface.setup();
 }
 
