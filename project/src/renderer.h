@@ -7,16 +7,19 @@ using namespace std;
 
 #include "ofMain.h"
 
-class Renderer
-{
-public:
+class Renderer {
+	public:
+	  ofImage image;
 
-  ofImage image;
+	  list<ofImage> imageList; //Liste d'images importées
+	  list<vector<int>> imgPosList; //Positions x et y des images importées
 
-  list<ofImage> imageList; //Liste d'images importées
-  list<vector<int>> imgPosList; //Positions x et y des images importées
+	  void setup();
+	  void draw();
+	  void newImage(std::string filePath, int posX, int posY);
 
-  void setup();
-  void draw();
-  void newImage(std::string filePath, int posX, int posY);
-};
+
+	private:
+		ofColor backgroundLineColor = ofColor(217, 217, 217);
+		void backgroundLine();
+	};
