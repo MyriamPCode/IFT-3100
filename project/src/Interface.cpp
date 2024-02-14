@@ -16,9 +16,12 @@ void Interface::draw() {
 void Interface::importButton() {
 	string buttonText = "Import";
 	ofRectangle textbox = buttonFont.getStringBoundingBox(buttonText, 0, 0);
+	if (IMPORT_BUTTON_WIDTH != textbox.getWidth() + 9) {
+		IMPORT_BUTTON_WIDTH = textbox.getWidth() + 9;
+	}
 
 	ofSetColor(backgroundInteractionBorderColor);
-	ofDrawRectangle(0, 0, textbox.getWidth() + 9, 40);
+	ofDrawRectangle(0, 0, IMPORT_BUTTON_WIDTH, 40);
 	ofSetColor(textColor);
 
 	buttonFont.drawString(buttonText, 3, 30);

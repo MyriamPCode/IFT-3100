@@ -63,6 +63,13 @@ void Application::mouseReleased(int x, int y, int button){
 		*imgPos = {ofGetMouseX(), ofGetMouseY()};
 		imgDistFromMax = 0;
 	}
+
+	if (button == 0 && y < 40) {
+		if (x < IMPORT_BUTTON_WIDTH) {
+			//call to import image method
+			isImportable = !isImportable;
+		}
+	}
 }
 
 
