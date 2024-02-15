@@ -28,6 +28,6 @@ class Renderer {
 
     void setup();
     void draw();
-    void newImage(std::string filePath, int posX, int posY);
+    void newImage(string filePath, int posX, int posY);
     void draw_cursor(float x, float y) const;
 };
