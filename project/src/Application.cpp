@@ -1,20 +1,18 @@
 using namespace std;
 
 #include "Application.h"
+#include "Constants.h"
 
-//--------------------------------------------------------------
 void Application::setup(){
 	ofSetWindowTitle("Team 7");
-
+	ofBackground(backgroundColor);
 	renderer.setup();
 }
 
-//--------------------------------------------------------------
-void Application::update(){
 
-}
+void Application::update() {}
 
-//--------------------------------------------------------------
+
 void Application::draw(){
 	if (isImportable) {
 		renderer.import_activate = true;
@@ -23,12 +21,10 @@ void Application::draw(){
 	renderer.draw();
 }
 
-//--------------------------------------------------------------
-void Application::keyPressed(int key){
 
-}
+void Application::keyPressed(int key) {}
 
-//--------------------------------------------------------------
+
 void Application::keyReleased(int key){
 	if (key == 105) { // 105 = key "i"
 		isImportable = !isImportable;
@@ -36,13 +32,12 @@ void Application::keyReleased(int key){
 	}
 }
 
-//--------------------------------------------------------------
+
 void Application::mouseMoved(int x, int y ){
 	renderer.mouse_current_x = x;
 	renderer.mouse_current_y = y;
 }
 
-//--------------------------------------------------------------
 void Application::mouseDragged(int x, int y, int button){
 	renderer.mouse_current_x = x;
 	renderer.mouse_current_y = y;
@@ -54,7 +49,6 @@ void Application::mouseDragged(int x, int y, int button){
 	renderer.is_mouse_button_pressed = false;
 }
 
-//--------------------------------------------------------------
 void Application::mousePressed(int x, int y, int button){
 	if (isImportable && !isRepositioning) { //Si l'importation d'image est active
 		list<vector<int>>::reverse_iterator imgPos = renderer.imgPosList.rbegin();
@@ -79,7 +73,7 @@ void Application::mousePressed(int x, int y, int button){
 	renderer.mouse_press_y = y;
 }
 
-//--------------------------------------------------------------
+
 void Application::mouseReleased(int x, int y, int button){
 	if (isRepositioning) { //Si une image est en repositionnement
 		isRepositioning = false;
@@ -91,6 +85,13 @@ void Application::mouseReleased(int x, int y, int button){
 		imgDistFromMax = 0;
 	}
 
+	if (button == 0 && y < 40) {
+		if (x < IMPORT_BUTTON_WIDTH) {
+			//call to import image method
+			isImportable = !isImportable;
+		}
+	}
+
 	renderer.is_mouse_button_pressed = false;
 	renderer.is_mouse_button_dragged = false;
 
@@ -98,31 +99,32 @@ void Application::mouseReleased(int x, int y, int button){
 	renderer.mouse_current_y = y;
 }
 
-//--------------------------------------------------------------
+
 void Application::mouseEntered(int x, int y){
 
 	renderer.mouse_current_x = x;
 	renderer.mouse_current_y = y;
 }
 
-//--------------------------------------------------------------
+
 void Application::mouseExited(int x, int y){
 
 	renderer.mouse_current_x = x;
 	renderer.mouse_current_y = y;
 }
 
-//--------------------------------------------------------------
-void Application::windowResized(int w, int h){
 
+void Application::windowResized(int w, int h){
+	WIDTH = w;
+	HEIGHT = h;
 }
 
-//--------------------------------------------------------------
+
 void Application::gotMessage(ofMessage msg){
 
 }
 
-//--------------------------------------------------------------
+
 void Application::dragEvent(ofDragInfo dragInfo) {
 	if (isImportable) {
 		vector<string> imgTypes = { ".png", ".jpg", ".gif" }; //Verifie si le fichier dragged dans la fenetre de l'application est une image

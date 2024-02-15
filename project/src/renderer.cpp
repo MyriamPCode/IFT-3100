@@ -1,13 +1,14 @@
-// IFT3100/renderer.cpp
-// Classe responsable du rendu de l'application.
+#include "Renderer.h"
+#include "Interface.h"
+
+#include "Constants.h"
 
 using namespace std;
 
-#include "renderer.h"
+void Renderer::setup() {
+	ofSetFrameRate(60);
+	interface.setup();
 
-
-void Renderer::setup()
-{
 	is_mouse_button_pressed = false;
 	is_mouse_button_dragged = false;
 	import_activate = false;
@@ -15,8 +16,9 @@ void Renderer::setup()
 	mouse_current_x = mouse_current_y = mouse_press_x = mouse_press_y = mouse_drag_x = mouse_drag_y = 0;
 }
 
-void Renderer::draw()
-{
+void Renderer::draw() {
+	interface.draw();
+
 	auto currImg = imgPosList.begin();
 	for (list<ofImage>::iterator iter = imageList.begin(); iter != imageList.end(); ++iter) {
 		vector temp = *currImg;
@@ -27,7 +29,7 @@ void Renderer::draw()
 	draw_cursor(mouse_current_x, mouse_current_y);
 }
 
-void Renderer::newImage(std::string filePath, int posX, int posY) {
+void Renderer::newImage(string filePath, int posX, int posY) {
 	ofImage newImage;
 	imageList.push_back(newImage);
 	imageList.back().load(filePath);
