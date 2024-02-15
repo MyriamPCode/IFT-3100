@@ -1,7 +1,7 @@
-using namespace std;
-
 #include "Application.h"
 #include "Constants.h"
+
+using namespace std;
 
 void Application::setup(){
 	ofSetWindowTitle("Team 7");
