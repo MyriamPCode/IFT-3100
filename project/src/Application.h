@@ -1,28 +1,20 @@
-using namespace std;
-
 #pragma once
 
 #include "ofMain.h"
-#include "ofxGui.h"
-#include "renderer.h"
+#include "Renderer.h"
+
+using namespace std;
 
 class Application : public ofBaseApp{
 
 	public:
 		Renderer renderer;
 
+		ofColor backgroundColor = ofColor(178, 184, 194);
+
 		bool isImportable = false; //Indique si le mode d'importation est actif ou non
 		int imgDistFromMax = 0; //Indicateur de la position de l'image par rapport à la taille maximale de la liste
 		bool isRepositioning = false; //Indique si un image est en cours de repositionnement
-
-		float time_current;
-		float time_last;
-		float time_elapsed;
-
-		bool is_key_press_up;
-		bool is_key_press_down;
-		bool is_key_press_left;
-		bool is_key_press_right;
 
 		void setup();
 		void update();
@@ -39,12 +31,4 @@ class Application : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-		
-		ofxPanel gui;
-		ofParameter <ofVec2f> uiPosition;
-		ofParameter <int> uiAmount;
-		ofParameter <ofVec2f> uiStep;
-		ofParameter <ofVec3f> uiRotate;
-		ofParameter <ofVec2f> uiShift;
-		ofParameter <ofVec2f> uiSize;
 };
