@@ -7,6 +7,14 @@ void Application::setup(){
 	ofSetWindowTitle("Team 7");
 	ofBackground(backgroundColor);
 	renderer.setup();
+
+	gui.setup();
+	gui.add(uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
+	gui.add(uiAmount.set("amount", 3, 1, 64)); // La quantité de primitives. Nombre maximal est 64 et nombre minimum est 3
+	gui.add(uiStep.set("step", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
+	gui.add(uiRotate.set("rotate", ofVec3f(0), ofVec3f(-180), ofVec3f(180))); // La rotation des primitives
+	gui.add(uiShift.set("shift", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
+	gui.add(uiSize.set("size", ofVec2f(6), ofVec2f(0), ofVec2f(30)));
 }
 
 
@@ -19,6 +27,28 @@ void Application::draw(){
 		ofDrawBitmapString("Please drag an image to import it.", 30, 30);
 	}
 	renderer.draw();
+
+	ofPushMatrix();
+	ofTranslate(uiPosition->x, uiPosition->y);
+	for (int i = 0; i < uiAmount; i++) {
+		ofPushMatrix();
+		ofTranslate(i * uiStep->x, i * uiStep->y);
+		ofRotateXDeg(i * uiRotate->x);
+		ofRotateYDeg(i * uiRotate->y);
+		ofRotateZDeg(i * uiRotate->z);
+		ofTranslate(i * uiShift->x, i * uiShift->y);
+		ofScale(uiSize->x, uiSize->y);
+		//ofDrawTriangle(0, 0, -16, 32, 16, 32);
+		ofBeginShape();
+		ofVertex(0, 0);
+		ofVertex(-16, 32);
+		ofVertex(16, 32); // Autre façon de dessiner un triangle
+		ofEndShape();
+		ofPopMatrix();
+
+	}
+	ofPopMatrix();
+	gui.draw();
 }
 
 

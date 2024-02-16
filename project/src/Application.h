@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxGui.h"
 #include "Renderer.h"
 
 using namespace std;
@@ -31,4 +32,12 @@ class Application : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+
+		ofxPanel gui;
+		ofParameter <ofVec2f> uiPosition;
+		ofParameter <int> uiAmount;
+		ofParameter <ofVec2f> uiStep;
+		ofParameter <ofVec3f> uiRotate;
+		ofParameter <ofVec2f> uiShift;
+		ofParameter <ofVec2f> uiSize;
 };
