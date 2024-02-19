@@ -24,22 +24,16 @@ void Application::setup(){
 	gui.add(&primitivesGroupe);
 
 	// Ajout des boutons pour les primitives
-	drawTriangle.setup("Draw Triangle");
-	drawCircle.setup("Draw Circle");
-	drawRectangle.setup("Draw Rectangle");
+	primitivesGroupe.add(drawTriangle.setup("Draw Triangle",false));
+	primitivesGroupe.add(drawCircle.setup("Draw Circle",false));
+	primitivesGroupe.add(drawRectangle.setup("Draw Rectangle",false));
 
+	/*
 	// Associer des fonctions de rappel aux boutons
 	drawTriangle.addListener(this, &Application::button_triangle);
 	drawCircle.addListener(this, &Application::button_circle);
 	drawRectangle.addListener(this, &Application::button_rectangle);
-	gui.add(&drawTriangle);
-	gui.add(&drawCircle);
-	gui.add(&drawRectangle);
-
-	/*
-	drawTriangle.setPosition(10, 10);
-	drawCircle.setPosition(10, 40);
-	drawRectangle.setPosition(10, 70);
+	gui.add(&primitivesGroupe);
 	*/
 }
 
