@@ -40,4 +40,17 @@ class Application : public ofBaseApp{
 		ofParameter <ofVec3f> uiRotate;
 		ofParameter <ofVec2f> uiShift;
 		ofParameter <ofVec2f> uiSize;
+
+		ofxGuiGroup primitivesGroupe; // Créer un groupe pour les boutons
+		ofxButton drawTriangle; // Bouton radio pour le triangle 
+		ofxButton drawCircle; // Bouton radio pour le cercle
+		ofxButton drawRectangle; // Bouton radio pour le rectangle
+
+		bool draw_triangle;
+		bool draw_circle;
+		bool draw_rectangle;
+
+		void button_triangle();
+		void button_circle();
+		void button_rectangle();
 };

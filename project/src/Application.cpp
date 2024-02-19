@@ -10,11 +10,37 @@ void Application::setup(){
 
 	gui.setup();
 	gui.add(uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
-	gui.add(uiAmount.set("amount", 3, 1, 64)); // La quantité de primitives. Nombre maximal est 64 et nombre minimum est 3
+	gui.add(uiAmount.set("amount", 1, 0, 64)); // La quantité de primitives. Nombre maximal est 64 et nombre minimum est 1
 	gui.add(uiStep.set("step", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
 	gui.add(uiRotate.set("rotate", ofVec3f(0), ofVec3f(-180), ofVec3f(180))); // La rotation des primitives
 	gui.add(uiShift.set("shift", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
 	gui.add(uiSize.set("size", ofVec2f(6), ofVec2f(0), ofVec2f(30)));
+
+	draw_triangle = false;
+	draw_circle = false;
+	draw_rectangle = false;
+
+	primitivesGroupe.setup("Primitives");
+	gui.add(&primitivesGroupe);
+
+	// Ajout des boutons pour les primitives
+	drawTriangle.setup("Draw Triangle");
+	drawCircle.setup("Draw Circle");
+	drawRectangle.setup("Draw Rectangle");
+
+	// Associer des fonctions de rappel aux boutons
+	drawTriangle.addListener(this, &Application::button_triangle);
+	drawCircle.addListener(this, &Application::button_circle);
+	drawRectangle.addListener(this, &Application::button_rectangle);
+	gui.add(&drawTriangle);
+	gui.add(&drawCircle);
+	gui.add(&drawRectangle);
+
+	/*
+	drawTriangle.setPosition(10, 10);
+	drawCircle.setPosition(10, 40);
+	drawRectangle.setPosition(10, 70);
+	*/
 }
 
 
@@ -163,5 +189,29 @@ void Application::dragEvent(ofDragInfo dragInfo) {
 				renderer.newImage(dragInfo.files.at(i), ofGetMouseX(), ofGetMouseY());
 			}
 		}
+	}
+}
+
+void Application::button_triangle() {
+	draw_triangle = !draw_triangle; 
+	if (draw_triangle) {
+		draw_circle = false;
+		draw_rectangle = false;
+	}
+}
+
+void Application::button_circle() {
+	draw_circle = !draw_circle;
+	if (draw_circle) {
+		draw_triangle = false;
+		draw_rectangle = false;
+	}
+}
+
+void Application::button_rectangle() {
+	draw_rectangle = !draw_rectangle;
+	if (draw_rectangle) {
+		draw_circle = false;
+		draw_triangle = false;
 	}
 }
