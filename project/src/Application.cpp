@@ -191,6 +191,8 @@ void Application::button_triangle(bool& value) {
 		draw_triangle = true;
 		draw_circle = false;
 		draw_rectangle = false;
+		drawCircle = false;
+		drawRectangle = false;
 	}
 }
 
@@ -199,6 +201,8 @@ void Application::button_circle(bool& value) {
 		draw_circle = true;
 		draw_triangle = false;
 		draw_rectangle = false;
+		drawTriangle = false;
+		drawRectangle = false;
 	}
 }
 
@@ -207,5 +211,7 @@ void Application::button_rectangle(bool& value) {
 		draw_rectangle = true;
 		draw_circle = false;
 		draw_triangle = false;
+		drawTriangle = false;
+		drawCircle = false;
 	}
 }
