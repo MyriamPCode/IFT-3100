@@ -50,7 +50,7 @@ class Application : public ofBaseApp{
 		bool draw_circle;
 		bool draw_rectangle;
 
-		void button_triangle();
-		void button_circle();
-		void button_rectangle();
+		void button_triangle(bool & value);
+		void button_circle(bool& value);
+		void button_rectangle(bool& value);
 };

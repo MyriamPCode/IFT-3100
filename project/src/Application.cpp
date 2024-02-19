@@ -21,20 +21,20 @@ void Application::setup(){
 	draw_rectangle = false;
 
 	primitivesGroupe.setup("Primitives");
-	gui.add(&primitivesGroupe);
 
 	// Ajout des boutons pour les primitives
 	primitivesGroupe.add(drawTriangle.setup("Draw Triangle",false));
 	primitivesGroupe.add(drawCircle.setup("Draw Circle",false));
 	primitivesGroupe.add(drawRectangle.setup("Draw Rectangle",false));
 
-	/*
+	
 	// Associer des fonctions de rappel aux boutons
 	drawTriangle.addListener(this, &Application::button_triangle);
 	drawCircle.addListener(this, &Application::button_circle);
 	drawRectangle.addListener(this, &Application::button_rectangle);
+
 	gui.add(&primitivesGroupe);
-	*/
+	
 }
 
 
@@ -186,25 +186,25 @@ void Application::dragEvent(ofDragInfo dragInfo) {
 	}
 }
 
-void Application::button_triangle() {
-	draw_triangle = !draw_triangle; 
-	if (draw_triangle) {
+void Application::button_triangle(bool& value) { 
+	if (value) {
+		draw_triangle = true;
 		draw_circle = false;
 		draw_rectangle = false;
 	}
 }
 
-void Application::button_circle() {
-	draw_circle = !draw_circle;
-	if (draw_circle) {
+void Application::button_circle(bool& value) {
+	if (value) {
+		draw_circle = true;
 		draw_triangle = false;
 		draw_rectangle = false;
 	}
 }
 
-void Application::button_rectangle() {
-	draw_rectangle = !draw_rectangle;
-	if (draw_rectangle) {
+void Application::button_rectangle(bool& value) {
+	if (value) {
+		draw_rectangle = true;
 		draw_circle = false;
 		draw_triangle = false;
 	}
