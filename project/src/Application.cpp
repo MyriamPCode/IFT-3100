@@ -58,11 +58,17 @@ void Application::draw(){
 		ofRotateZDeg(i * uiRotate->z);
 		ofTranslate(i * uiShift->x, i * uiShift->y);
 		ofScale(uiSize->x, uiSize->y);
-		//ofDrawTriangle(0, 0, -16, 32, 16, 32);
 		ofBeginShape();
-		ofVertex(0, 0);
-		ofVertex(-16, 32);
-		ofVertex(16, 32); // Autre façon de dessiner un triangle
+		if (draw_triangle) {
+			ofDrawTriangle(0, 0, -16, 32, 16, 32);
+		} 
+		if (draw_circle) {
+			ofDrawCircle(100, 100, 50);
+			ofSetCircleResolution(55);
+		}
+		if (draw_rectangle) {
+			ofDrawRectangle(50, 50, 100, 200);
+		}
 		ofEndShape();
 		ofPopMatrix();
 
