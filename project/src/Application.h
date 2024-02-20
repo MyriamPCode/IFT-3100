@@ -32,6 +32,7 @@ class Application : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+		void reset(bool& value);
 
 		ofxPanel gui;
 		ofParameter <ofVec2f> uiPosition;
@@ -45,6 +46,9 @@ class Application : public ofBaseApp{
 		ofxToggle drawTriangle; // Bouton pour le triangle 
 		ofxToggle drawCircle; // Bouton pour le cercle
 		ofxToggle drawRectangle; // Bouton pour le rectangle
+
+		ofxGuiGroup reinitialisationGroupe;
+		ofxToggle resetButton; // Bouton de réinitialisation
 
 		bool draw_triangle;
 		bool draw_circle;

@@ -34,6 +34,11 @@ void Application::setup(){
 	drawRectangle.addListener(this, &Application::button_rectangle);
 
 	gui.add(&primitivesGroupe);
+
+	reinitialisationGroupe.setup("Reinitialisation");
+	reinitialisationGroupe.add(resetButton.setup("Reset", false));
+	resetButton.addListener(this, &Application::reset);
+	gui.add(&reinitialisationGroupe);
 	
 }
 
@@ -219,5 +224,24 @@ void Application::button_rectangle(bool& value) {
 		draw_triangle = false;
 		drawTriangle = false;
 		drawCircle = false;
+	}
+}
+
+void Application::reset(bool & value) {
+	if (value) {
+		uiPosition.set(ofVec2f(0));
+		uiAmount.set(1);
+		uiStep.set(ofVec2f(0));
+		uiRotate.set(ofVec3f(0));
+		uiShift.set(ofVec2f(0));
+		uiSize.set(ofVec2f(6));
+
+		draw_triangle = false;
+		drawTriangle = false;
+		draw_circle = false;
+		drawCircle = false;
+		draw_rectangle = false;
+		drawRectangle = false;
+		resetButton = false;
 	}
 }
