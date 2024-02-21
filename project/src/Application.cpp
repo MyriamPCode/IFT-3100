@@ -20,6 +20,7 @@ void Application::setup(){
 	draw_circle = false;
 	draw_rectangle = false;
 	rotation_activate = false;
+	mesh_activate = false;
 
 	primitivesGroupe.setup("Primitives");
 
@@ -44,7 +45,27 @@ void Application::setup(){
 	animationGroupe.add(rotationButton.setup("Rotation", false));
 	rotationButton.addListener(this, &Application::button_rotation);
 	gui.add(&animationGroupe);
+
+	meshGroupe.setup("Maille géométrique");
+	meshGroupe.add(meshButton.setup("Maille", false));
+	meshButton.addListener(this, &Application::button_mesh);
+	gui.add(&meshGroupe);
 	
+	mesh.setMode(OF_PRIMITIVE_TRIANGLES);
+	for (int y = 0; y < mesh_height; y++) {
+		for (int x = 0; x < mesh_width; x++) {
+			mesh.addVertex(ofPoint(x - mesh_width / 2, y - mesh_height / 2, 0));
+			mesh.addColor(ofColor(255, 255, 255));
+			if (x < mesh_width - 1 && y < mesh_height - 1) {
+				int i1 = x + mesh_width * y;
+				int i2 = x+1 + mesh_width * y;
+				int i3 = x + mesh_width * (y+1);
+				int i4 = x+1 + mesh_width * (y+1);
+				mesh.addTriangle(i1, i2, i3);
+				mesh.addTriangle(i2, i4, i3);
+			}
+		}
+	}
 }
 
 
@@ -95,6 +116,9 @@ void Application::draw(){
 				ofRotateZDeg(rotate);
 			}
 			ofDrawRectangle(50, 50, 100, 200);
+		}
+		if (mesh_activate == true) {
+			mesh.drawWireframe();
 		}
 		ofEndShape();
 		ofPopMatrix();
@@ -266,6 +290,9 @@ void Application::reset(bool & value) {
 		drawRectangle = false;
 		resetButton = false;
 		rotationButton = false;
+		rotation_activate = false;
+		mesh_activate = false;
+		meshButton = false;
 	}
 }
 
@@ -273,5 +300,12 @@ void Application::button_rotation(bool& value) {
 	rotation_activate = value;
 	if (value) {
 		rotation_activate = true;
+	}
+}
+
+void Application::button_mesh(bool& value) {
+	mesh_activate = value;
+	if (value) {
+		mesh_activate = true;
 	}
 }

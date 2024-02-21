@@ -12,6 +12,7 @@ class Application : public ofBaseApp{
 		Renderer renderer;
 
 		ofColor backgroundColor = ofColor(178, 184, 194);
+		ofMesh mesh; 
 
 		bool isImportable = false; //Indique si le mode d'importation est actif ou non
 		int imgDistFromMax = 0; //Indicateur de la position de l'image par rapport à la taille maximale de la liste
@@ -53,15 +54,22 @@ class Application : public ofBaseApp{
 		ofxGuiGroup animationGroupe;
 		ofxToggle rotationButton; // Bouton pour l'animation de rotation
 
+		ofxGuiGroup meshGroupe;
+		ofxToggle meshButton;
+
 		bool draw_triangle;
 		bool draw_circle;
 		bool draw_rectangle;
 		bool rotation_activate;
+		bool mesh_activate;
 
 		void button_triangle(bool & value);
 		void button_circle(bool& value);
 		void button_rectangle(bool& value);
 		void button_rotation(bool& value);
+		void button_mesh(bool& value);
 
 		float rotate;
+		int mesh_width = 100;
+		int mesh_height = 100;
 };
