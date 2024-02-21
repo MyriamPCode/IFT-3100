@@ -7,6 +7,39 @@ void Application::setup(){
 	ofSetWindowTitle("Team 7");
 	ofBackground(backgroundColor);
 	renderer.setup();
+
+	gui.setup();
+	gui.add(uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
+	gui.add(uiAmount.set("amount", 1, 0, 64)); // La quantité de primitives. Nombre maximal est 64 et nombre minimum est 1
+	gui.add(uiStep.set("step", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
+	gui.add(uiRotate.set("rotate", ofVec3f(0), ofVec3f(-180), ofVec3f(180))); // La rotation des primitives
+	gui.add(uiShift.set("shift", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
+	gui.add(uiSize.set("size", ofVec2f(6), ofVec2f(0), ofVec2f(30)));
+
+	draw_triangle = false;
+	draw_circle = false;
+	draw_rectangle = false;
+
+	primitivesGroupe.setup("Primitives");
+
+	// Ajout des boutons pour les primitives
+	primitivesGroupe.add(drawTriangle.setup("Draw Triangle",false));
+	primitivesGroupe.add(drawCircle.setup("Draw Circle",false));
+	primitivesGroupe.add(drawRectangle.setup("Draw Rectangle",false));
+
+	
+	// Associer des fonctions de rappel aux boutons
+	drawTriangle.addListener(this, &Application::button_triangle);
+	drawCircle.addListener(this, &Application::button_circle);
+	drawRectangle.addListener(this, &Application::button_rectangle);
+
+	gui.add(&primitivesGroupe);
+
+	reinitialisationGroupe.setup("Reinitialisation");
+	reinitialisationGroupe.add(resetButton.setup("Reset", false));
+	resetButton.addListener(this, &Application::reset);
+	gui.add(&reinitialisationGroupe);
+	
 }
 
 
@@ -19,6 +52,34 @@ void Application::draw(){
 		ofDrawBitmapString("Please drag an image to import it.", 30, 30);
 	}
 	renderer.draw();
+
+	ofPushMatrix();
+	ofTranslate(uiPosition->x, uiPosition->y);
+	for (int i = 0; i < uiAmount; i++) {
+		ofPushMatrix();
+		ofTranslate(i * uiStep->x, i * uiStep->y);
+		ofRotateXDeg(i * uiRotate->x);
+		ofRotateYDeg(i * uiRotate->y);
+		ofRotateZDeg(i * uiRotate->z);
+		ofTranslate(i * uiShift->x, i * uiShift->y);
+		ofScale(uiSize->x, uiSize->y);
+		ofBeginShape();
+		if (draw_triangle) {
+			ofDrawTriangle(0, 0, -16, 32, 16, 32);
+		} 
+		if (draw_circle) {
+			ofDrawCircle(100, 100, 50);
+			ofSetCircleResolution(55);
+		}
+		if (draw_rectangle) {
+			ofDrawRectangle(50, 50, 100, 200);
+		}
+		ofEndShape();
+		ofPopMatrix();
+
+	}
+	ofPopMatrix();
+	gui.draw();
 }
 
 
@@ -133,5 +194,54 @@ void Application::dragEvent(ofDragInfo dragInfo) {
 				renderer.newImage(dragInfo.files.at(i), ofGetMouseX(), ofGetMouseY());
 			}
 		}
+	}
+}
+
+void Application::button_triangle(bool& value) { 
+	if (value) {
+		draw_triangle = true;
+		draw_circle = false;
+		draw_rectangle = false;
+		drawCircle = false;
+		drawRectangle = false;
+	}
+}
+
+void Application::button_circle(bool& value) {
+	if (value) {
+		draw_circle = true;
+		draw_triangle = false;
+		draw_rectangle = false;
+		drawTriangle = false;
+		drawRectangle = false;
+	}
+}
+
+void Application::button_rectangle(bool& value) {
+	if (value) {
+		draw_rectangle = true;
+		draw_circle = false;
+		draw_triangle = false;
+		drawTriangle = false;
+		drawCircle = false;
+	}
+}
+
+void Application::reset(bool & value) {
+	if (value) {
+		uiPosition.set(ofVec2f(0));
+		uiAmount.set(1);
+		uiStep.set(ofVec2f(0));
+		uiRotate.set(ofVec3f(0));
+		uiShift.set(ofVec2f(0));
+		uiSize.set(ofVec2f(6));
+
+		draw_triangle = false;
+		drawTriangle = false;
+		draw_circle = false;
+		drawCircle = false;
+		draw_rectangle = false;
+		drawRectangle = false;
+		resetButton = false;
 	}
 }
