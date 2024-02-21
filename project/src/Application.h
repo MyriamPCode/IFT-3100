@@ -50,6 +50,9 @@ class Application : public ofBaseApp{
 		ofxGuiGroup reinitialisationGroupe;
 		ofxToggle resetButton; // Bouton de réinitialisation
 
+		ofxGuiGroup animationGroupe;
+		ofxToggle rotationButton; // Bouton pour l'animation de rotation
+
 		bool draw_triangle;
 		bool draw_circle;
 		bool draw_rectangle;
@@ -57,4 +60,7 @@ class Application : public ofBaseApp{
 		void button_triangle(bool & value);
 		void button_circle(bool& value);
 		void button_rectangle(bool& value);
+		void button_rotation(bool& value);
+
+		float rotate;
 };

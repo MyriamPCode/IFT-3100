@@ -32,13 +32,17 @@ void Application::setup(){
 	drawTriangle.addListener(this, &Application::button_triangle);
 	drawCircle.addListener(this, &Application::button_circle);
 	drawRectangle.addListener(this, &Application::button_rectangle);
-
 	gui.add(&primitivesGroupe);
 
 	reinitialisationGroupe.setup("Reinitialisation");
 	reinitialisationGroupe.add(resetButton.setup("Reset", false));
 	resetButton.addListener(this, &Application::reset);
 	gui.add(&reinitialisationGroupe);
+
+	animationGroupe.setup("Animations");
+	animationGroupe.add(rotationButton.setup("Rotation", false));
+	rotationButton.addListener(this, &Application::button_rotation);
+	gui.add(&animationGroupe);
 	
 }
 
@@ -243,5 +247,12 @@ void Application::reset(bool & value) {
 		draw_rectangle = false;
 		drawRectangle = false;
 		resetButton = false;
+		rotationButton = false;
+	}
+}
+
+void Application::button_rotation(bool& value) {
+	if (value) {
+		ofRotateXDeg(rotate);
 	}
 }
