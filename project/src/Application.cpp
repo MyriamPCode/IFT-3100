@@ -9,16 +9,17 @@ void Application::setup(){
 	renderer.setup();
 
 	gui.setup();
-	gui.add(uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
-	gui.add(uiAmount.set("amount", 1, 0, 64)); // La quantité de primitives. Nombre maximal est 64 et nombre minimum est 1
-	gui.add(uiStep.set("step", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
-	gui.add(uiRotate.set("rotate", ofVec3f(0), ofVec3f(-180), ofVec3f(180))); // La rotation des primitives
-	gui.add(uiShift.set("shift", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
-	gui.add(uiSize.set("size", ofVec2f(6), ofVec2f(0), ofVec2f(30)));
+	gui.add(uiPosition.set("Position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
+	gui.add(uiAmount.set("Amount", 1, 0, 64)); // La quantité de primitives. Nombre maximal est 64 et nombre minimum est 1
+	gui.add(uiStep.set("Step", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
+	gui.add(uiRotate.set("Rotate", ofVec3f(0), ofVec3f(-180), ofVec3f(180))); // La rotation des primitives
+	gui.add(uiShift.set("Shift", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
+	gui.add(uiSize.set("Size", ofVec2f(6), ofVec2f(0), ofVec2f(30)));
 
 	draw_triangle = false;
 	draw_circle = false;
 	draw_rectangle = false;
+	rotation_activate = false;
 
 	primitivesGroupe.setup("Primitives");
 
@@ -47,7 +48,9 @@ void Application::setup(){
 }
 
 
-void Application::update() {}
+void Application::update() {
+	rotate++;
+}
 
 
 void Application::draw(){
@@ -69,13 +72,28 @@ void Application::draw(){
 		ofScale(uiSize->x, uiSize->y);
 		ofBeginShape();
 		if (draw_triangle) {
+			if (rotation_activate == true) {
+				ofRotateXDeg(rotate);
+				ofRotateYDeg(rotate);
+				ofRotateZDeg(rotate);
+			}
 			ofDrawTriangle(0, 0, -16, 32, 16, 32);
 		} 
 		if (draw_circle) {
+			if (rotation_activate == true) {
+				ofRotateXDeg(rotate);
+				ofRotateYDeg(rotate);
+				ofRotateZDeg(rotate);
+			}
 			ofDrawCircle(100, 100, 50);
 			ofSetCircleResolution(55);
 		}
 		if (draw_rectangle) {
+			if (rotation_activate == true) {
+				ofRotateXDeg(rotate);
+				ofRotateYDeg(rotate);
+				ofRotateZDeg(rotate);
+			}
 			ofDrawRectangle(50, 50, 100, 200);
 		}
 		ofEndShape();
@@ -252,7 +270,8 @@ void Application::reset(bool & value) {
 }
 
 void Application::button_rotation(bool& value) {
+	rotation_activate = value;
 	if (value) {
-		ofRotateXDeg(rotate);
+		rotation_activate = true;
 	}
 }

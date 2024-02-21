@@ -56,6 +56,7 @@ class Application : public ofBaseApp{
 		bool draw_triangle;
 		bool draw_circle;
 		bool draw_rectangle;
+		bool rotation_activate;
 
 		void button_triangle(bool & value);
 		void button_circle(bool& value);
