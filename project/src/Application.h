@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxGui.h"
 #include "Renderer.h"
 
 using namespace std;
@@ -31,4 +32,29 @@ class Application : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+		void reset(bool& value);
+
+		ofxPanel gui;
+		ofParameter <ofVec2f> uiPosition;
+		ofParameter <int> uiAmount;
+		ofParameter <ofVec2f> uiStep;
+		ofParameter <ofVec3f> uiRotate;
+		ofParameter <ofVec2f> uiShift;
+		ofParameter <ofVec2f> uiSize;
+
+		ofxGuiGroup primitivesGroupe; // Créer un groupe pour les boutons
+		ofxToggle drawTriangle; // Bouton pour le triangle 
+		ofxToggle drawCircle; // Bouton pour le cercle
+		ofxToggle drawRectangle; // Bouton pour le rectangle
+
+		ofxGuiGroup reinitialisationGroupe;
+		ofxToggle resetButton; // Bouton de réinitialisation
+
+		bool draw_triangle;
+		bool draw_circle;
+		bool draw_rectangle;
+
+		void button_triangle(bool & value);
+		void button_circle(bool& value);
+		void button_rectangle(bool& value);
 };
