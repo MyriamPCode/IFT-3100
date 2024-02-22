@@ -1,6 +1,10 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxGui.h"
+#include "ofxButton.h"
+
+using namespace std;
 
 class Interface {
 	public:
@@ -8,6 +12,7 @@ class Interface {
 		void draw();
 
 	private:
+		bool outilsPressed = false;
 		ofTrueTypeFont buttonFont;
 
 		ofColor backgroundLineColor = ofColor(217, 217, 217);
@@ -16,8 +21,18 @@ class Interface {
 
 		ofColor textColor = backgroundLineColor;
 
+		list<ofxToggle> buttonList;
+
+		ofxPanel outilsGui;
+
+		ofParameter<ofColor> color_picker_background;
+		ofParameter<ofColor> color_picker_stroke;
+		ofParameter<ofColor> colorPickerFill;
+		ofParameter<float> slider_stroke_weight;
+
 		void backgroundLine();
 		void backgroundInteraction();
 		void importButton();
+		void showOutils(bool& value);
 };
 
