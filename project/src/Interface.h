@@ -11,6 +11,11 @@ class Interface {
 		void setup();
 		void draw();
 
+		ofParameter<ofColor> color_picker_background;
+		ofParameter<ofColor> color_picker_stroke;
+		ofParameter<ofColor> colorPickerFill;
+		ofParameter<float> slider_stroke_weight;
+
 	private:
 		bool outilsPressed = false;
 		ofTrueTypeFont buttonFont;
@@ -24,11 +29,6 @@ class Interface {
 		list<ofxToggle> buttonList;
 
 		ofxPanel outilsGui;
-
-		ofParameter<ofColor> color_picker_background;
-		ofParameter<ofColor> color_picker_stroke;
-		ofParameter<ofColor> colorPickerFill;
-		ofParameter<float> slider_stroke_weight;
 
 		void backgroundLine();
 		void backgroundInteraction();

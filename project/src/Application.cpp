@@ -42,8 +42,16 @@ void Application::setup(){
 	
 }
 
+void Application::update()
+{
+	// assigner les états courants de l'interface
+	backgroundColor = renderer.interface.color_picker_background;
+	stroke_color = renderer.interface.color_picker_stroke;
+	fillColor = renderer.interface.colorPickerFill;
+	stroke_weight = renderer.interface.slider_stroke_weight;
 
-void Application::update() {}
+	//renderer.update();
+}
 
 
 void Application::draw(){
@@ -64,14 +72,28 @@ void Application::draw(){
 		ofTranslate(i * uiShift->x, i * uiShift->y);
 		ofScale(uiSize->x, uiSize->y);
 		ofBeginShape();
+		ofSetColor(fillColor);
+		ofSetBackgroundColor(backgroundColor);
+		ofSetLineWidth(stroke_weight);
+		ofFill();
 		if (draw_triangle) {
 			ofDrawTriangle(0, 0, -16, 32, 16, 32);
+			ofSetColor(stroke_color);
+			ofNoFill();
+			ofDrawTriangle(0, 0, -16, 32, 16, 32);
+
 		} 
 		if (draw_circle) {
 			ofDrawCircle(100, 100, 50);
 			ofSetCircleResolution(55);
+			ofSetColor(stroke_color);
+			ofNoFill();
+			ofDrawCircle(100, 100, 50);
 		}
 		if (draw_rectangle) {
+			ofDrawRectangle(50, 50, 100, 200);
+			ofSetColor(stroke_color);
+			ofNoFill();
 			ofDrawRectangle(50, 50, 100, 200);
 		}
 		ofEndShape();
