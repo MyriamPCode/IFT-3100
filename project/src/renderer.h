@@ -33,5 +33,5 @@ class Renderer {
     void draw_cursor(float x, float y) const;
 
     Forme forme; 
-    bool drawTriangle, drawCercle, drawRectangle;
+
 };

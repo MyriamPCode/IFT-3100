@@ -23,8 +23,6 @@ void Forme::setup() {
     width = 100;
     height = 200;
     rayon = 50;
-
-
 };
 
 
@@ -46,6 +44,12 @@ Forme::Forme(TypeForme type, float x, float y, float rayon)
 
 Forme::Forme(TypeForme type, float x, float y, float width, float height)
     : type(type), xR(x), yR(y), width(width), height(height) {}
+
+Forme::Forme(TypeForme type, float x1, float y1, float xB1, float yB1, float xB2, float yB2, float x2, float y2)
+    : type(type), x1(x1), y1(y1), xB1(xB1), yB1(yB1), xB2(xB2), yB2(yB2), x2(x2), y2(y2) {}
+
+//Forme::Forme(TypeForme type, float x, float y, float width, float height)
+//    : type(type), x1(x), y1(y), width(width), height(height){}
 
 void Forme::draw() {
     // Dessiner la forme en fonction de son type
@@ -95,30 +99,30 @@ bool Forme::containsPoint(float x, float y) {
     }
 }
 
-float Forme::getX1() const { return x1; }
-float Forme::getY1() const { return y1; }
-float Forme::getX2() const { return x2; }
-float Forme::getY2() const { return y2; }
-float Forme::getX3() const { return x3; }
-float Forme::getY3() const { return y3; }
-float Forme::getXC() const { return xC; }
-float Forme::getYC() const { return yC; }
-float Forme::getXR() const { return xR; }
-float Forme::getYR() const { return yR; }
-float Forme::getWidth() const { return width; }
-float Forme::getHeight() const { return height; }
-float Forme::getRayon() const { return rayon; }
-
-void Forme::setX1(float x) { this->x1 = x; }
-void Forme::setY1(float y) { this->y1 = y; }
-void Forme::setX2(float x) { this->x2 = x; }
-void Forme::setY2(float y) { this->y2 = y; }
-void Forme::setX3(float x) { this->x3 = x; }
-void Forme::setY3(float y) { this->y3 = y; }
-void Forme::setXC(float x) { this->xC = x; }
-void Forme::setYC(float y) { this->yC = y; }
-void Forme::setXR(float x) { this->xR = x; }
-void Forme::setYR(float y) { this->yR = y; }
-void Forme::setWidth(float w) { this->width = w; }
-void Forme::setHeight(float h) { this->height = h; }
-void Forme::setRayon(float r) { this->rayon = r; }
+//float Forme::getX1() const { return x1; }
+//float Forme::getY1() const { return y1; }
+//float Forme::getX2() const { return x2; }
+//float Forme::getY2() const { return y2; }
+//float Forme::getX3() const { return x3; }
+//float Forme::getY3() const { return y3; }
+//float Forme::getXC() const { return xC; }
+//float Forme::getYC() const { return yC; }
+//float Forme::getXR() const { return xR; }
+//float Forme::getYR() const { return yR; }
+//float Forme::getWidth() const { return width; }
+//float Forme::getHeight() const { return height; }
+//float Forme::getRayon() const { return rayon; }
+//
+//void Forme::setX1(float x) { this->x1 = x; }
+//void Forme::setY1(float y) { this->y1 = y; }
+//void Forme::setX2(float x) { this->x2 = x; }
+//void Forme::setY2(float y) { this->y2 = y; }
+//void Forme::setX3(float x) { this->x3 = x; }
+//void Forme::setY3(float y) { this->y3 = y; }
+//void Forme::setXC(float x) { this->xC = x; }
+//void Forme::setYC(float y) { this->yC = y; }
+//void Forme::setXR(float x) { this->xR = x; }
+//void Forme::setYR(float y) { this->yR = y; }
+//void Forme::setWidth(float w) { this->width = w; }
+//void Forme::setHeight(float h) { this->height = h; }
+//void Forme::setRayon(float r) { this->rayon = r; }

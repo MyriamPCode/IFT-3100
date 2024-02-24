@@ -16,10 +16,7 @@ void Renderer::setup() {
 
 	mouse_current_x = mouse_current_y = mouse_press_x = mouse_press_y = mouse_drag_x = mouse_drag_y = 0;
 
-	
-	drawTriangle = false;
-	drawCercle = false;
-	drawRectangle = false;
+
 }
 
 void Renderer::draw() {
@@ -33,12 +30,6 @@ void Renderer::draw() {
 
 	}
 
-	//ofDrawTriangle(forme.getX1(), forme.getY1(), forme.getX2(), forme.getY2(), forme.getX3(), forme.getY3());
-	//if (drawTriangle)
-	//{
-	//	ofSetColor(0);
-	//	ofDrawTriangle(forme.getX1(), forme.getY1(), forme.getX2(), forme.getY2(), forme.getX3(), forme.getY3());
-	//}
 
 
 	draw_cursor(mouse_current_x, mouse_current_y);

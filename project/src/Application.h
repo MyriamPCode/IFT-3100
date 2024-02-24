@@ -47,6 +47,9 @@ class Application : public ofBaseApp{
 		ofxToggle drawTriangle; // Bouton pour le triangle 
 		ofxToggle drawCircle; // Bouton pour le cercle
 		ofxToggle drawRectangle; // Bouton pour le rectangle
+		ofxToggle drawLine; // Bouton pour le triangle 
+		ofxToggle drawEllipse; // Bouton pour le cercle
+		ofxToggle drawBezier; // Bouton pour le rectangle
 
 		ofxGuiGroup reinitialisationGroupe;
 		ofxToggle resetButton; // Bouton de réinitialisation
@@ -54,10 +57,14 @@ class Application : public ofBaseApp{
 		bool draw_triangle;
 		bool draw_circle;
 		bool draw_rectangle;
+		bool draw_line, draw_ellipse, draw_bezier; 
 
 		void button_triangle(bool & value);
 		void button_circle(bool& value);
 		void button_rectangle(bool& value);
+		void button_line(bool& value);
+		void button_ellipse(bool& value);
+		void button_bezier(bool& value);
 
 		float diffX, diffY, newX2, newY2, newX3, newY3;
 };
