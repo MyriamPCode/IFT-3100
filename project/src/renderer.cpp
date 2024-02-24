@@ -1,7 +1,8 @@
 #include "Renderer.h"
 #include "Interface.h"
-
+#include "Forme.h"
 #include "Constants.h"
+#include "Application.h"
 
 using namespace std;
 
@@ -14,6 +15,11 @@ void Renderer::setup() {
 	import_activate = false;
 
 	mouse_current_x = mouse_current_y = mouse_press_x = mouse_press_y = mouse_drag_x = mouse_drag_y = 0;
+
+	
+	drawTriangle = false;
+	drawCercle = false;
+	drawRectangle = false;
 }
 
 void Renderer::draw() {
@@ -24,9 +30,32 @@ void Renderer::draw() {
 		vector temp = *currImg;
 		iter->draw(temp[0], temp[1]);
 		++currImg;
+
 	}
 
+	//ofDrawTriangle(forme.getX1(), forme.getY1(), forme.getX2(), forme.getY2(), forme.getX3(), forme.getY3());
+	//if (drawTriangle)
+	//{
+	//	ofSetColor(0);
+	//	ofDrawTriangle(forme.getX1(), forme.getY1(), forme.getX2(), forme.getY2(), forme.getX3(), forme.getY3());
+	//}
+
+
 	draw_cursor(mouse_current_x, mouse_current_y);
+
+	int gridSize = 50; // Espacement de la grille
+	// Obtenir les coordonnées de la souris
+	int mouseX = ofGetMouseX();
+	int mouseY = ofGetMouseY();
+
+	// Convertir les coordonnées de la souris dans l'espace de la grille
+	int gridX = mouseX / gridSize;
+	int gridY = mouseY / gridSize;
+
+	// Dessiner les coordonnées de la souris sur la grille
+	ofSetColor(255); // Couleur blanc
+	ofDrawBitmapString("Mouse X: " + ofToString(mouseX) + ", Mouse Y: " + ofToString(mouseY), 1730, 65);
+	ofDrawBitmapString("Grid X: " + ofToString(gridX) + ", Grid Y: " + ofToString(gridY), 1730, 85);
 }
 
 void Renderer::newImage(string filePath, int posX, int posY) {

@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "Interface.h"
+#include "Forme.h"
 
 using namespace std;
 
@@ -30,4 +31,7 @@ class Renderer {
     void draw();
     void newImage(string filePath, int posX, int posY);
     void draw_cursor(float x, float y) const;
+
+    Forme forme; 
+    bool drawTriangle, drawCercle, drawRectangle;
 };

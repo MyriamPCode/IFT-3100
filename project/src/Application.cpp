@@ -3,11 +3,12 @@ using namespace std;
 #include "Application.h"
 #include "Constants.h"
 
+
 void Application::setup(){
 	ofSetWindowTitle("Team 7");
 	ofBackground(backgroundColor);
 	renderer.setup();
-
+	
 	gui.setup();
 	gui.add(uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
 	gui.add(uiAmount.set("amount", 1, 0, 64)); // La quantité de primitives. Nombre maximal est 64 et nombre minimum est 1
@@ -40,6 +41,14 @@ void Application::setup(){
 	resetButton.addListener(this, &Application::reset);
 	gui.add(&reinitialisationGroupe);
 	
+	forme.setup();
+
+	diffX = (abs(forme.getX2() - forme.getX3())) / 2;
+	diffY = abs(forme.getY1() - forme.getY2());
+	newX2 = 0;
+	newY2 = 0;
+	newX3 = 0;
+	newY3 = 0;
 }
 
 
@@ -51,7 +60,7 @@ void Application::draw(){
 		renderer.import_activate = true;
 		ofDrawBitmapString("Please drag an image to import it.", 30, 30);
 	}
-	renderer.draw();
+	
 
 	ofPushMatrix();
 	ofTranslate(uiPosition->x, uiPosition->y);
@@ -65,19 +74,60 @@ void Application::draw(){
 		ofScale(uiSize->x, uiSize->y);
 		ofBeginShape();
 		if (draw_triangle) {
-			ofDrawTriangle(0, 0, -16, 32, 16, 32);
+			//ofDrawTriangle(0, 0, -16, 32, 16, 32);
 		} 
 		if (draw_circle) {
-			ofDrawCircle(100, 100, 50);
-			ofSetCircleResolution(55);
+			//ofDrawCircle(100, 100, 50);
+			//ofSetCircleResolution(55);
 		}
 		if (draw_rectangle) {
-			ofDrawRectangle(50, 50, 100, 200);
+			/*ofDrawRectangle(50, 50, 100, 200);*/
 		}
 		ofEndShape();
 		ofPopMatrix();
 
 	}
+
+	if(draw_triangle)
+	{ 
+		for (int i = 0; i < forme.v_formes.size(); i++)
+		{
+			Forme* formeCourante = forme.v_formes[i];
+			if(formeCourante->getType() == Forme::TRIANGLE)
+			{
+				ofDrawTriangle(formeCourante->getX1(), formeCourante->getY1(),
+					formeCourante->getX2(), formeCourante->getY2(),
+					formeCourante->getX3(), formeCourante->getY3());
+			}
+		}
+	}
+
+	if(draw_circle)
+	{ 
+		for (int i = 0; i < forme.v_formes.size(); i++)
+		{
+			Forme* formeCourante = forme.v_formes[i];
+			if (formeCourante->getType() == Forme::CERCLE)
+			{
+				ofDrawCircle(formeCourante->getXC(), formeCourante->getYC(), formeCourante->getRayon());
+			}
+		}
+	}
+
+	if(draw_rectangle)
+	{ 
+		for (int i = 0; i < forme.v_formes.size(); i++)
+		{
+			Forme* formeCourante = forme.v_formes[i];
+			if (formeCourante->getType() == Forme::RECTANGLE)
+			{
+				ofDrawRectangle(formeCourante->getXR(), formeCourante->getYR(),
+					formeCourante->getWidth(), formeCourante->getHeight());
+			}
+		}
+	}
+
+	renderer.draw();
 	ofPopMatrix();
 	gui.draw();
 }
@@ -132,6 +182,53 @@ void Application::mousePressed(int x, int y, int button){
 
 	renderer.mouse_press_x = x;
 	renderer.mouse_press_y = y;
+
+	if (draw_triangle && draw_circle == false && draw_rectangle == false)
+	{
+		// A partir du mouse click, calcul des 2 autres sommets 
+		newX2 = renderer.mouse_press_x - diffX;
+		newY2 = renderer.mouse_press_y + diffY;
+		newX3 = renderer.mouse_press_x + diffX;
+		newY3 = renderer.mouse_press_y + diffY;
+		forme.setX1(x);
+		forme.setY1(y);
+		forme.setX2(newX2);
+		forme.setY2(newY2);
+		forme.setX3(newX3);
+		forme.setY3(newY3);
+
+		// Ajout de l'objet au vecteur
+		Forme* newTriangle = new Forme(Forme::TRIANGLE, forme.getX1(), forme.getY1(),
+			forme.getX2(), forme.getY2(), forme.getX3(), forme.getY3());
+		forme.v_formes.push_back(newTriangle);
+
+		// Affichage au terminal des objets triangles et leurs sommets
+		// Decommenter pour tester
+		/*for (int i = 0; i < forme.v_formes.size(); i++)
+		{
+			Forme* formeCourante = forme.v_formes[i];
+			cout << "Adresse mémoire de l'objet " << i << " : " << formeCourante << endl;
+			cout << "Coordonnées du premier sommet : (" << formeCourante->getX1() << ", " << formeCourante->getY1() << ")" << endl;
+			cout << "Coordonnées du deuxième sommet : (" << formeCourante->getX2() << ", " << formeCourante->getY2() << ")" << endl;
+			cout << "Coordonnées du troisième sommet : (" << formeCourante->getX3() << ", " << formeCourante->getY3() << ")" << endl;
+		}
+		cout << endl;*/
+	}
+	if(draw_circle && draw_triangle == false && draw_rectangle == false)
+	{ 
+		forme.setXC(renderer.mouse_press_x); 
+		forme.setYC(renderer.mouse_press_y); 
+		Forme* newCercle = new Forme(Forme::CERCLE, forme.getXC(), forme.getYC(), forme.getRayon());
+		forme.v_formes.push_back(newCercle);
+		//ofSetCircleResolution(55);
+	}
+	if(draw_rectangle && draw_circle == false && draw_triangle == false)
+	{ 
+		forme.setXR(renderer.mouse_current_x);
+		forme.setYR(renderer.mouse_current_y); 
+		Forme* newRectangle = new Forme(Forme::RECTANGLE, forme.getXR(), forme.getYR(), forme.getWidth(), forme.getHeight());
+		forme.v_formes.push_back(newRectangle);
+	}
 }
 
 

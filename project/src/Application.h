@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "Renderer.h"
+#include "Forme.h"
 
 using namespace std;
 
@@ -10,7 +11,7 @@ class Application : public ofBaseApp{
 
 	public:
 		Renderer renderer;
-
+		Forme forme;
 		ofColor backgroundColor = ofColor(178, 184, 194);
 
 		bool isImportable = false; //Indique si le mode d'importation est actif ou non
@@ -57,4 +58,6 @@ class Application : public ofBaseApp{
 		void button_triangle(bool & value);
 		void button_circle(bool& value);
 		void button_rectangle(bool& value);
+
+		float diffX, diffY, newX2, newY2, newX3, newY3;
 };
