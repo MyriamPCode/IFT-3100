@@ -66,5 +66,7 @@ class Application : public ofBaseApp{
 		void button_ellipse(bool& value);
 		void button_bezier(bool& value);
 
+		void dessinerTriangle();
+
 		float diffX, diffY, newX2, newY2, newX3, newY3;
 };

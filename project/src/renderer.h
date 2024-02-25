@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "Interface.h"
 #include "Forme.h"
+#include <memory>
 
 using namespace std;
 
@@ -28,10 +29,29 @@ class Renderer {
     bool import_activate;
 
     void setup();
+    void setup(vector<Forme*>& v_formes);
     void draw();
     void newImage(string filePath, int posX, int posY);
     void draw_cursor(float x, float y) const;
 
     Forme forme; 
+    //vector<Forme*>* v_formes_ptr; 
+    vector<unique_ptr<Forme>>* v_formes_ptr;
+    vector<unique_ptr<Forme>> v_formes;
+    void setup(vector<unique_ptr<Forme>>& v_formes);
+    bool okDessiner; 
+    void dessinerTriangle();
+    void dessinerCercle(); 
+    void dessinerRectangle(); 
+    void dessinerLigne(); 
+    void dessinerEllipse(); 
+    void dessinerBezier(); 
 
+    // Lignes avec ptr 
+    //vector<unique_ptr<ofPolyline>>* vecteur_lignes_ptr;
+    //vector<unique_ptr<ofPolyline>> vecteur_lignes;
+    //void setup(vector<unique_ptr<ofPolyline>>& vecteur_lignes);
+    // Ligne sans ptr 
+    ofPolyline ligne;
+    vector<ofPolyline> vecteur_lignes;
 };

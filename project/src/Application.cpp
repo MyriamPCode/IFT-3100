@@ -48,7 +48,8 @@ void Application::setup(){
 	gui.add(&reinitialisationGroupe);
 	
 
-
+	//renderer.setup(forme.v_formes);
+	renderer.setup(renderer.v_formes);
 	forme.setup();
 	diffX = (abs(forme.getX2() - forme.getX3())) / 2;
 	diffY = abs(forme.getY1() - forme.getY2());
@@ -74,102 +75,38 @@ void Application::draw(){
 	}
 	
 
-	ofPushMatrix();
-	ofTranslate(uiPosition->x, uiPosition->y);
-	for (int i = 0; i < uiAmount; i++) {
-		ofPushMatrix();
-		ofTranslate(i * uiStep->x, i * uiStep->y);
-		ofRotateXDeg(i * uiRotate->x);
-		ofRotateYDeg(i * uiRotate->y);
-		ofRotateZDeg(i * uiRotate->z);
-		ofTranslate(i * uiShift->x, i * uiShift->y);
-		ofScale(uiSize->x, uiSize->y);
-		ofBeginShape();
-		if (draw_triangle) {
-			//ofDrawTriangle(0, 0, -16, 32, 16, 32);
-		} 
-		if (draw_circle) {
-			//ofDrawCircle(100, 100, 50);
-			//ofSetCircleResolution(55);
-		}
-		if (draw_rectangle) {
-			/*ofDrawRectangle(50, 50, 100, 200);*/
-		}
-		ofEndShape();
-		ofPopMatrix();
+	//ofPushMatrix();
+	//ofTranslate(uiPosition->x, uiPosition->y);
+	//for (int i = 0; i < uiAmount; i++) {
+	//	ofPushMatrix();
+	//	ofTranslate(i * uiStep->x, i * uiStep->y);
+	//	ofRotateXDeg(i * uiRotate->x);
+	//	ofRotateYDeg(i * uiRotate->y);
+	//	ofRotateZDeg(i * uiRotate->z);
+	//	ofTranslate(i * uiShift->x, i * uiShift->y);
+	//	ofScale(uiSize->x, uiSize->y);
+	//	ofBeginShape();
+	//	if (draw_triangle) {
+	//		//ofDrawTriangle(0, 0, -16, 32, 16, 32);
+	//	} 
+	//	if (draw_circle) {
+	//		//ofDrawCircle(100, 100, 50);
+	//		//ofSetCircleResolution(55);
+	//	}
+	//	if (draw_rectangle) {
+	//		/*ofDrawRectangle(50, 50, 100, 200);*/
+	//	}
+	//	ofEndShape();
+	//	ofPopMatrix();
 
-	}
+	//}
 
-	if(draw_triangle)
-	{ 
-		for (int i = 0; i < forme.v_formes.size(); i++)
-		{
-			Forme* formeCourante = forme.v_formes[i];
-			if(formeCourante->getType() == Forme::TRIANGLE)
-			{
-				ofDrawTriangle(formeCourante->getX1(), formeCourante->getY1(),
-					formeCourante->getX2(), formeCourante->getY2(),
-					formeCourante->getX3(), formeCourante->getY3());
-			}
-		}
-	}
-
-	if(draw_circle)
-	{ 
-		for (int i = 0; i < forme.v_formes.size(); i++)
-		{
-			Forme* formeCourante = forme.v_formes[i];
-			if (formeCourante->getType() == Forme::CERCLE)
-			{
-				ofDrawCircle(formeCourante->getXC(), formeCourante->getYC(), formeCourante->getRayon());
-			}
-		}
-	}
-
-	if(draw_rectangle)
-	{ 
-		for (int i = 0; i < forme.v_formes.size(); i++)
-		{
-			Forme* formeCourante = forme.v_formes[i];
-			if (formeCourante->getType() == Forme::RECTANGLE)
-			{
-				ofDrawRectangle(formeCourante->getXR(), formeCourante->getYR(),
-					formeCourante->getWidth(), formeCourante->getHeight());
-			}
-		}
-	}
-
-	//if (draw_triangle && draw_circle)
-	if (draw_bezier)
-	{
-		for (int i = 0; i < forme.v_formes.size(); i++)
-		{
-			Forme* formeCourante = forme.v_formes[i];
-			if (formeCourante->getType() == Forme::BEZIER)
-			{
-				ofDrawBezier(formeCourante->getX1(), formeCourante->getX2(), formeCourante->getXB1(), formeCourante->getYB1(),
-					formeCourante->getXB2(), formeCourante->getYB2(), formeCourante->getX2(), formeCourante->getY2());
-			}
-		}
-	}
-
-	if (draw_ellipse)
-	{
-		for (int i = 0; i < forme.v_formes.size(); i++)
-		{
-			Forme* formeCourante = forme.v_formes[i];
-			if (formeCourante->getType() == Forme::ELLIPSE)
-			{
-				ofDrawEllipse(formeCourante->getXR(), formeCourante->getYR(),
-					formeCourante->getHeight(), formeCourante->getWidth());
-			}
-		}
-	}
 
 	renderer.draw();
 	ofPopMatrix();
 	gui.draw();
 }
+
 
 
 void Application::keyPressed(int key) {}
@@ -197,6 +134,12 @@ void Application::mouseDragged(int x, int y, int button){
 
 	renderer.is_mouse_button_dragged = true;
 	renderer.is_mouse_button_pressed = false;
+
+	// Si on veut des lignes droites, on commente cette boucle if ci-dessous
+	if (draw_line && drawLine)
+	{
+		renderer.ligne.addVertex(renderer.mouse_drag_x, renderer.mouse_drag_y);
+	}
 }
 
 void Application::mousePressed(int x, int y, int button){
@@ -221,10 +164,8 @@ void Application::mousePressed(int x, int y, int button){
 
 	renderer.mouse_press_x = x;
 	renderer.mouse_press_y = y;
-	
-	//if (draw_triangle && drawCircle == false && drawRectangle == false)
-		//if (draw_triangle && !draw_circle && !draw_rectangle)
-	if(draw_triangle)
+
+	if(draw_triangle && drawTriangle)
 	{
 		// A partir du mouse click, calcul des 2 autres sommets 
 		newX2 = renderer.mouse_press_x - diffX;
@@ -239,44 +180,68 @@ void Application::mousePressed(int x, int y, int button){
 		forme.setY3(newY3);
 
 		// Ajout de l'objet au vecteur
-		Forme* newTriangle = new Forme(Forme::TRIANGLE, forme.getX1(), forme.getY1(),
-			forme.getX2(), forme.getY2(), forme.getX3(), forme.getY3());
-		forme.v_formes.push_back(newTriangle);
+		//Forme* newTriangle = new Forme(Forme::TRIANGLE, forme.getX1(), forme.getY1(),
+		//	forme.getX2(), forme.getY2(), forme.getX3(), forme.getY3());
+		//forme.v_formes.push_back(newTriangle);
+
+		renderer.v_formes.push_back(make_unique<Forme>(Forme::TRIANGLE, forme.getX1(), forme.getY1(),
+			forme.getX2(), forme.getY2(),
+			forme.getX3(), forme.getY3()));
 
 		// Affichage au terminal des objets triangles et leurs sommets
 		// Decommenter pour tester
-		/*for (int i = 0; i < forme.v_formes.size(); i++)
+	/*	for (int i = 0; i < forme.v_formes.size(); i++)
 		{
 			Forme* formeCourante = forme.v_formes[i];
 			cout << "Adresse mémoire de l'objet " << i << " : " << formeCourante << endl;
 			cout << "Coordonnées du premier sommet : (" << formeCourante->getX1() << ", " << formeCourante->getY1() << ")" << endl;
 			cout << "Coordonnées du deuxième sommet : (" << formeCourante->getX2() << ", " << formeCourante->getY2() << ")" << endl;
 			cout << "Coordonnées du troisième sommet : (" << formeCourante->getX3() << ", " << formeCourante->getY3() << ")" << endl;
-		}
-		cout << endl;*/
+		}*/
+
+		renderer.okDessiner = true;
 	}
-	//if(draw_circle && drawTriangle == false && drawRectangle == false)
-		//if (draw_circle && !draw_triangle && !draw_rectangle)
-	if(draw_circle)
+
+	if(draw_circle && drawCircle)
 	{ 
 		forme.setXC(renderer.mouse_press_x); 
 		forme.setYC(renderer.mouse_press_y); 
-		Forme* newCercle = new Forme(Forme::CERCLE, forme.getXC(), forme.getYC(), forme.getRayon());
-		forme.v_formes.push_back(newCercle);
+		renderer.v_formes.push_back(make_unique<Forme>(Forme::CERCLE, forme.getXC(), forme.getYC(), forme.getRayon()));
 		//ofSetCircleResolution(55);
+		renderer.okDessiner = true; 
 	}
-	//if(draw_rectangle && drawCircle == false && drawTriangle == false)
-		//if (draw_rectangle && !draw_circle && !draw_triangle)
-	if(draw_rectangle)
+
+	if(draw_rectangle && drawRectangle)
 	{ 
 		forme.setXR(renderer.mouse_current_x);
 		forme.setYR(renderer.mouse_current_y); 
-		Forme* newRectangle = new Forme(Forme::RECTANGLE, forme.getXR(), forme.getYR(), forme.getWidth(), forme.getHeight());
-		forme.v_formes.push_back(newRectangle);
+		renderer.v_formes.push_back(make_unique<Forme>(Forme::RECTANGLE, forme.getXR(), forme.getYR(), forme.getWidth(), forme.getHeight()));
+		renderer.okDessiner = true;
 	}
-	// BEZIER
-	//if (!draw_triangle && !draw_circle && !draw_rectangle)
-	if(draw_bezier)
+
+	
+	// DRAW LINE
+	///////////////////////////////
+	if (draw_line && drawLine)
+	{
+		//renderer.vecteur_lignes_ptr->emplace_back(make_unique<ofPolyline>());
+		//auto& polyline = renderer.vecteur_lignes_ptr->back();
+		//polyline->addVertex(renderer.mouse_press_x, renderer.mouse_press_y);
+
+		renderer.ligne.addVertex(renderer.mouse_press_x, renderer.mouse_press_y);
+		renderer.okDessiner = true;
+	}
+	///////////////////////////////
+
+	if (draw_ellipse && drawEllipse)
+	{
+		forme.setXR(renderer.mouse_press_x);
+		forme.setYR(renderer.mouse_press_y);
+		renderer.v_formes.push_back(make_unique<Forme>(Forme::ELLIPSE, forme.getXR(), forme.getYR(), forme.getWidth(), forme.getHeight()));
+		renderer.okDessiner = true;
+	}
+
+	if(draw_bezier && drawBezier)
 	{
 		float x1 = renderer.mouse_press_x; 
 		float y1 = renderer.mouse_press_y; 
@@ -296,16 +261,9 @@ void Application::mousePressed(int x, int y, int button){
 		forme.setXB2(x3);
 		forme.setYB2(y3);
 
-		Forme* newBezier = new Forme(Forme::BEZIER, forme.getX1(), forme.getY1(), forme.getXB1(), forme.getYB1(),
-			forme.getXB2(), forme.getYB2(), forme.getX2(), forme.getY2());
-		forme.v_formes.push_back(newBezier); 
-	}
-	if (draw_ellipse)
-	{
-		forme.setXR(renderer.mouse_press_x);
-		forme.setYR(renderer.mouse_press_y);
-		Forme* newEllipse = new Forme(Forme::ELLIPSE, forme.getXR(), forme.getYR(), forme.getHeight(), forme.getWidth());
-	    forme.v_formes.push_back(newEllipse);
+		renderer.v_formes.push_back(make_unique<Forme>(Forme::BEZIER, forme.getX1(), forme.getY1(), forme.getXB1(), forme.getYB1(),
+			forme.getXB2(), forme.getYB2(), forme.getX2(), forme.getY2()));
+		renderer.okDessiner = true;
 	}
 }
 
@@ -328,11 +286,22 @@ void Application::mouseReleased(int x, int y, int button){
 		}
 	}
 
-	renderer.is_mouse_button_pressed = false;
-	renderer.is_mouse_button_dragged = false;
+
 
 	renderer.mouse_current_x = x;
 	renderer.mouse_current_y = y;
+
+	if (draw_line && drawLine)
+	{
+		renderer.is_mouse_button_dragged = true; 
+		renderer.ligne.addVertex(x, y);
+		renderer.vecteur_lignes.push_back(renderer.ligne);
+		renderer.okDessiner = true;
+		renderer.ligne.clear();
+	}
+
+	renderer.is_mouse_button_pressed = false;
+	renderer.is_mouse_button_dragged = false;
 }
 
 
@@ -374,53 +343,49 @@ void Application::dragEvent(ofDragInfo dragInfo) {
 
 void Application::button_triangle(bool& value) { 
 	if (value) {
-		//draw_triangle = !draw_triangle;
-		draw_triangle = true;
-		draw_circle = draw_rectangle = draw_line = draw_ellipse = draw_bezier = drawCircle = false;
-		drawRectangle = drawLine = drawEllipse = drawBezier = false;
+		draw_triangle = !draw_triangle;
+		draw_circle = draw_rectangle = draw_line = draw_ellipse = draw_bezier = false;
+		drawCircle = drawRectangle = drawLine = drawEllipse = drawBezier = false;
 	}
 }
 
 void Application::button_circle(bool& value) {
 	if (value) {
-		//draw_circle = !draw_circle;
-		draw_circle = true;
-		draw_triangle = draw_rectangle = draw_line = draw_ellipse = draw_bezier = drawCircle = false;
+		draw_circle = !draw_circle;
+		draw_triangle = draw_rectangle = draw_line = draw_ellipse = draw_bezier = false;
 		drawTriangle = drawRectangle = drawLine = drawEllipse = drawBezier = false;
 	}
 }
 
 void Application::button_rectangle(bool& value) {
 	if (value) {
-		//draw_rectangle = !draw_rectangle;
-		draw_rectangle = true;
-		draw_circle = draw_triangle = draw_line = draw_ellipse = draw_bezier = drawCircle = false;
+		draw_rectangle = !draw_rectangle;
+		draw_triangle = draw_circle = draw_line = draw_ellipse = draw_bezier = false;
 		drawTriangle = drawCircle = drawLine = drawEllipse = drawBezier = false;
 	}
 }
 
 void Application::button_line(bool& value) {
 	if (value) {
-		draw_line = true;
-		draw_triangle = false;
-		draw_circle = draw_rectangle = draw_triangle = draw_ellipse = draw_bezier = drawCircle = false;
-		drawTriangle = drawCircle = drawRectangle = drawEllipse = drawBezier = false;
+		draw_line = !draw_line;
+		draw_triangle = draw_rectangle = draw_circle = draw_ellipse = draw_bezier = false;
+		drawTriangle = drawRectangle = drawCircle = drawEllipse = drawBezier = false;
 	}
 }
 
 void Application::button_ellipse(bool& value) {
 	if (value) {
-		draw_ellipse = true;
-		draw_circle = draw_rectangle = draw_line = draw_triangle = draw_bezier = drawCircle = false;
-		drawTriangle = drawCircle = drawRectangle = drawLine = drawBezier = false;
+		draw_ellipse = !draw_ellipse;
+		draw_triangle = draw_rectangle = draw_circle = draw_line = draw_bezier = false;
+		drawTriangle = drawRectangle = drawCircle = drawLine = drawBezier = false;
 	}
 }
 
 void Application::button_bezier(bool& value) {
 	if (value) {
-		draw_bezier = true;
-		draw_circle = draw_rectangle = draw_line = draw_ellipse = draw_triangle = drawCircle = false;
-		drawTriangle = drawCircle = drawRectangle = drawLine = drawEllipse = false;
+		draw_bezier = !draw_bezier;
+		draw_triangle = draw_rectangle = draw_circle = draw_line = draw_ellipse = false;
+		drawTriangle = drawRectangle = drawCircle = drawLine = drawEllipse = false;
 	}
 }
 

@@ -59,3 +59,8 @@ void Interface::backgroundInteraction() {
 	ofNoFill();
 	ofDrawRectangle(0, 0, WIDTH, 40);
 }
+
+void Interface::panelScene()
+{
+	////
+}

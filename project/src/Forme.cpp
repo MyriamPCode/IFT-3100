@@ -9,13 +9,13 @@ void Forme::setup() {
     containsPointTriangle = false;
     containsPointCercle = false;
     containsPointRectangle = false;
-    v_formes.clear();
+    //v_formes.clear();
     x1 = 0; 
     y1 = 0;
-    x2 = -16;
-    y2 = 32;
-    x3 = 16;
-    y3 = 32;
+    x2 = -32;
+    y2 = 64;
+    x3 = 32;
+    y3 = 64;
     xC = 100;
     yC = 100;
     xR = 50;
@@ -23,6 +23,8 @@ void Forme::setup() {
     width = 100;
     height = 200;
     rayon = 50;
+    //wE = 500; 
+    //hE = 300; 
 };
 
 
@@ -98,31 +100,3 @@ bool Forme::containsPoint(float x, float y) {
         break;
     }
 }
-
-//float Forme::getX1() const { return x1; }
-//float Forme::getY1() const { return y1; }
-//float Forme::getX2() const { return x2; }
-//float Forme::getY2() const { return y2; }
-//float Forme::getX3() const { return x3; }
-//float Forme::getY3() const { return y3; }
-//float Forme::getXC() const { return xC; }
-//float Forme::getYC() const { return yC; }
-//float Forme::getXR() const { return xR; }
-//float Forme::getYR() const { return yR; }
-//float Forme::getWidth() const { return width; }
-//float Forme::getHeight() const { return height; }
-//float Forme::getRayon() const { return rayon; }
-//
-//void Forme::setX1(float x) { this->x1 = x; }
-//void Forme::setY1(float y) { this->y1 = y; }
-//void Forme::setX2(float x) { this->x2 = x; }
-//void Forme::setY2(float y) { this->y2 = y; }
-//void Forme::setX3(float x) { this->x3 = x; }
-//void Forme::setY3(float y) { this->y3 = y; }
-//void Forme::setXC(float x) { this->xC = x; }
-//void Forme::setYC(float y) { this->yC = y; }
-//void Forme::setXR(float x) { this->xR = x; }
-//void Forme::setYR(float y) { this->yR = y; }
-//void Forme::setWidth(float w) { this->width = w; }
-//void Forme::setHeight(float h) { this->height = h; }
-//void Forme::setRayon(float r) { this->rayon = r; }

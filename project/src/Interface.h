@@ -19,5 +19,7 @@ class Interface {
 		void backgroundLine();
 		void backgroundInteraction();
 		void importButton();
+
+		void panelScene(); 
 };
 

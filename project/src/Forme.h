@@ -45,6 +45,10 @@ public:
     float getYB1() const { return yB1; }
     float getXB2() const { return xB2; }
     float getYB2() const { return yB2; }
+    //float getXE() const { return xE; }
+    //float getYE() const { return yE; }
+    //float getWidthEllipse() const { return wE; }
+    //float getHeightEllipse() const { return hE; }
 
     void setX1(float x) { this->x1 = x; }
     void setY1(float y) { this->y1 = y; }
@@ -63,16 +67,23 @@ public:
     void setYB1(float y) { this->yB1 = y; }
     void setXB2(float x) { this->xB2 = x; }
     void setYB2(float y) { this->yB2 = y; }
+    //void setXE(float x)  { this->xE = x; }
+    //void setYE(float y)  { this->yE = y; }
+    //void setWidthEllipse(float w)  { this->wE = w; }
+    //void setHeightEllipse(float h) { this->hE = h; }
 
     TypeForme getType() const { return type; }
 
-    vector<Forme*> v_formes; // Vecteur de pointeurs vers des formes
+    //vector<Forme*> v_formes; // Vecteur de pointeurs vers des formes
+
+    ofPolyline ligne; // ligne
 
 private:
     TypeForme type;
     float x1, y1, x2, y2, x3, y3; // Pour le triangle
     float xC, yC, xR, yR, width, height, rayon; // Pour le cercle et le rectangle
-    float xL, yL; //Pour les lignes
+    float xL, yL; // Pour les lignes
+    float xE, yE, wE, hE; // Pour les ellipses
     float xB1, xB2, yB1, yB2; // Pour les beziers 
     //std::string forme; // Attribut spécifique à chaque forme
     bool containsPointTriangle, containsPointCercle, containsPointRectangle;
