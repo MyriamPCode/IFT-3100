@@ -13,6 +13,11 @@ void Renderer::setup() {
 	is_mouse_button_dragged = false;
 	import_activate = false;
 
+	// chargement du modèle 3D en mémoire
+	teapot.loadModel("teapot.obj");
+	bunny.loadModel("bun_zipper.ply");
+	//something.loadModel("something.fbx");
+
 	mouse_current_x = mouse_current_y = mouse_press_x = mouse_press_y = mouse_drag_x = mouse_drag_y = 0;
 }
 
@@ -25,6 +30,15 @@ void Renderer::draw() {
 		iter->draw(temp[0], temp[1]);
 		++currImg;
 	}
+
+	teapot.setPosition(1350,1000,0);
+	teapot.draw(OF_MESH_WIREFRAME);
+
+	bunny.setPosition(400, 1300, 0);
+	bunny.draw(OF_MESH_WIREFRAME);
+
+	//something.setPosition(xxx,yyy,0);
+	//something.draw(OF_MESH_WIREFRAME);
 
 	draw_cursor(mouse_current_x, mouse_current_y);
 }

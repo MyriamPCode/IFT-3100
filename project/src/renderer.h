@@ -2,8 +2,11 @@
 
 #include "ofMain.h"
 #include "Interface.h"
+#include "ofxAssimpModelLoader.h"
 
 using namespace std;
+
+enum class MeshRenderMode { fill, wireframe, vertex };
 
 class Renderer {
 	public:
@@ -12,6 +15,10 @@ class Renderer {
 
 		list<ofImage> imageList; //Liste d'images import�es
 		list<vector<int>> imgPosList; //Positions x et y des images import�es
+
+        ofxAssimpModelLoader teapot;
+        ofxAssimpModelLoader bunny;
+
 
     int mouse_press_x;
     int mouse_press_y;
