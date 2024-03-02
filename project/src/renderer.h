@@ -18,6 +18,7 @@ class Renderer {
 
         ofxAssimpModelLoader teapot;
         ofxAssimpModelLoader bunny;
+        MeshRenderMode typeRender;
 
 
     int mouse_press_x;

@@ -16,7 +16,8 @@ void Renderer::setup() {
 	// chargement du modèle 3D en mémoire
 	teapot.loadModel("teapot.obj");
 	bunny.loadModel("bun_zipper.ply");
-	//something.loadModel("something.fbx");
+
+	typeRender = MeshRenderMode::wireframe;
 
 	mouse_current_x = mouse_current_y = mouse_press_x = mouse_press_y = mouse_drag_x = mouse_drag_y = 0;
 }
@@ -32,13 +33,20 @@ void Renderer::draw() {
 	}
 
 	teapot.setPosition(1350,1000,0);
-	teapot.draw(OF_MESH_WIREFRAME);
-
 	bunny.setPosition(400, 1300, 0);
-	bunny.draw(OF_MESH_WIREFRAME);
 
-	//something.setPosition(xxx,yyy,0);
-	//something.draw(OF_MESH_WIREFRAME);
+	if (typeRender == MeshRenderMode::wireframe) {
+		teapot.draw(OF_MESH_WIREFRAME);
+		bunny.draw(OF_MESH_WIREFRAME);
+	}
+	else if (typeRender == MeshRenderMode::fill) {
+		teapot.draw(OF_MESH_FILL);
+		bunny.draw(OF_MESH_FILL);
+	}
+	else if (typeRender == MeshRenderMode::vertex) {
+		teapot.draw(OF_MESH_POINTS);
+		bunny.draw(OF_MESH_POINTS);
+	}
 
 	draw_cursor(mouse_current_x, mouse_current_y);
 }
@@ -59,14 +67,12 @@ void Renderer::draw_cursor(float x, float y) const {
 	if (is_mouse_button_dragged) {
 		ofSetColor(254, 142, 118); // Couleur rouge
 	}
-
 	else if (is_mouse_button_pressed) {
 		ofSetColor(249, 220, 40); // Couleur jaune
 	}
 	else if (import_activate) {
 		ofSetColor(135, 210, 88); // Couleur verte
 	}
-
 	else
 		ofSetColor(255); // Couleur blanche
 

@@ -91,6 +91,17 @@ void Application::keyReleased(int key){
 		isImportable = !isImportable;
 		renderer.import_activate = !renderer.import_activate;
 	}
+	if (key == 'o') { //Change le type de dessin des modèles 3D
+		if (renderer.typeRender == MeshRenderMode::wireframe) {
+			renderer.typeRender = MeshRenderMode::fill;
+		}
+		else if (renderer.typeRender == MeshRenderMode::fill) {
+			renderer.typeRender = MeshRenderMode::vertex;
+		}
+		else if (renderer.typeRender == MeshRenderMode::vertex) {
+			renderer.typeRender = MeshRenderMode::wireframe;
+		}
+	}
 }
 
 
