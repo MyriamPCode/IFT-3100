@@ -53,6 +53,8 @@ void Renderer::draw_cursor(float x, float y) const {
 	}
 	else if (import_activate) {
 		ofSetColor(135, 210, 88); // Couleur verte
+		float tailleTriangle = 20;
+		ofDrawTriangle(x, y - tailleTriangle, x - tailleTriangle, y + tailleTriangle, x + tailleTriangle, y + tailleTriangle);
 	}
 
 	else
