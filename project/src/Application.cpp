@@ -8,6 +8,8 @@ void Application::setup(){
 	ofBackground(backgroundColor);
 	renderer.setup();
 
+	cam.setDistance(100);
+
 	gui.setup();
 	gui.add(uiPosition.set("Position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
 	gui.add(uiAmount.set("Amount", 1, 0, 64)); // La quantité de primitives. Nombre maximal est 64 et nombre minimum est 1
@@ -55,7 +57,7 @@ void Application::setup(){
 	for (int y = 0; y < mesh_height; y++) {
 		for (int x = 0; x < mesh_width; x++) {
 			mesh.addVertex(ofPoint(x - mesh_width / 2, y - mesh_height / 2, 0));
-			mesh.addColor(ofColor(255, 255, 255));
+			mesh.addColor(ofColor(127, 127, 127));
 			if (x < mesh_width - 1 && y < mesh_height - 1) {
 				int i1 = x + mesh_width * y;
 				int i2 = x+1 + mesh_width * y;
@@ -82,6 +84,7 @@ void Application::draw(){
 	renderer.draw();
 
 	ofPushMatrix();
+	cam.begin();
 	ofTranslate(uiPosition->x, uiPosition->y);
 	for (int i = 0; i < uiAmount; i++) {
 		ofPushMatrix();
@@ -117,13 +120,14 @@ void Application::draw(){
 			}
 			ofDrawRectangle(50, 50, 100, 200);
 		}
-		if (mesh_activate == true) {
+		if (mesh_activate) {
 			mesh.drawWireframe();
 		}
 		ofEndShape();
 		ofPopMatrix();
 
 	}
+	cam.end();
 	ofPopMatrix();
 	gui.draw();
 }
@@ -228,7 +232,7 @@ void Application::windowResized(int w, int h){
 
 
 void Application::gotMessage(ofMessage msg){
-
+	ofEasyCam cam;
 }
 
 
