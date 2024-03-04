@@ -13,6 +13,8 @@ class Application : public ofBaseApp{
 
 		ofColor backgroundColor = ofColor(178, 184, 194);
 		ofMesh mesh; 
+		int size = 96; // Taille de la maille
+
 		ofEasyCam cam;
 
 		bool isImportable = false; //Indique si le mode d'importation est actif ou non
@@ -57,20 +59,21 @@ class Application : public ofBaseApp{
 
 		ofxGuiGroup meshGroupe;
 		ofxToggle meshButton;
+		ofxToggle bruitButton; // Bouton pour l'animation sur la maille géométrique 
 
 		bool draw_triangle;
 		bool draw_circle;
 		bool draw_rectangle;
 		bool rotation_activate;
 		bool mesh_activate;
+		bool noise_activate; 
 
 		void button_triangle(bool & value);
 		void button_circle(bool& value);
 		void button_rectangle(bool& value);
 		void button_rotation(bool& value);
 		void button_mesh(bool& value);
+		void button_noise(bool& value);
 
 		float rotate;
-		int mesh_width = 100;
-		int mesh_height = 100;
 };

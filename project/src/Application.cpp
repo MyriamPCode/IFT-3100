@@ -23,6 +23,7 @@ void Application::setup(){
 	draw_rectangle = false;
 	rotation_activate = false;
 	mesh_activate = false;
+	noise_activate = false;
 
 	primitivesGroupe.setup("Primitives");
 
@@ -51,21 +52,25 @@ void Application::setup(){
 	meshGroupe.setup("Maille géométrique");
 	meshGroupe.add(meshButton.setup("Maille", false));
 	meshButton.addListener(this, &Application::button_mesh);
+	meshGroupe.add(bruitButton.setup("Bruit", false));
+	bruitButton.addListener(this, &Application::button_noise);
 	gui.add(&meshGroupe);
 	
-	mesh.setMode(OF_PRIMITIVE_TRIANGLES);
-	for (int y = 0; y < mesh_height; y++) {
-		for (int x = 0; x < mesh_width; x++) {
-			mesh.addVertex(ofPoint(x - mesh_width / 2, y - mesh_height / 2, 0));
-			mesh.addColor(ofColor(127, 127, 127));
-			if (x < mesh_width - 1 && y < mesh_height - 1) {
-				int i1 = x + mesh_width * y;
-				int i2 = x+1 + mesh_width * y;
-				int i3 = x + mesh_width * (y+1);
-				int i4 = x+1 + mesh_width * (y+1);
-				mesh.addTriangle(i1, i2, i3);
-				mesh.addTriangle(i2, i4, i3);
+	
+	for (int x = 0; x < size; x++) {
+		for (int y = 0; y < size; y++) {
+			mesh.addVertex(ofPoint(x - size / 2, y - size / 2));
 			}
+		}
+
+	for (int y = 0; y < size - 1; y++) {
+		for (int x = 0; x < size - 1; x++) {
+			mesh.addIndex(x + y * size);
+			mesh.addIndex((x+1) + y * size);
+			mesh.addIndex(x + (y+1) * size);
+			mesh.addIndex((x + 1) + y * size);
+			mesh.addIndex((x + 1) + (y + 1) * size);
+			mesh.addIndex(x + (y + 1) * size);
 		}
 	}
 }
@@ -73,6 +78,17 @@ void Application::setup(){
 
 void Application::update() {
 	rotate++;
+	if (noise_activate) {
+		int count = 0;
+		for (int x = 0; x < size; x++) {
+			for (int y = 0; y < size; y++) {
+				ofVec3f vertex = mesh.getVertex(count);
+				vertex.z = ofMap(ofNoise(count, ofGetElapsedTimef()), 0, 1, 0, uiAmount);
+				mesh.setVertex(count, vertex);
+				count++;
+			}
+		}
+	}
 }
 
 
@@ -122,6 +138,10 @@ void Application::draw(){
 		}
 		if (mesh_activate) {
 			mesh.drawWireframe();
+			if (noise_activate) {
+				button_noise(noise_activate);
+			}
+
 		}
 		ofEndShape();
 		ofPopMatrix();
@@ -297,6 +317,8 @@ void Application::reset(bool & value) {
 		rotation_activate = false;
 		mesh_activate = false;
 		meshButton = false;
+		noise_activate = false;
+		bruitButton = false;
 	}
 }
 
@@ -311,5 +333,12 @@ void Application::button_mesh(bool& value) {
 	mesh_activate = value;
 	if (value) {
 		mesh_activate = true;
+	}
+}
+
+void Application::button_noise(bool& value) {
+	noise_activate = value;
+	if (value) {
+		noise_activate = true;
 	}
 }
