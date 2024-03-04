@@ -58,9 +58,6 @@ void Application::setup(){
 	newX3 = 0;
 	newY3 = 0;
 
-	//draw_line = draw_triangle && draw_circle;
-	//draw_ellipse = draw_triangle && draw_rectangle;
-	//draw_bezier = draw_rectangle && draw_circle;
 	draw_line = draw_ellipse = draw_bezier = false; 
 }
 
@@ -74,7 +71,8 @@ void Application::draw(){
 		ofDrawBitmapString("Please drag an image to import it.", 30, 30);
 	}
 	
-
+	// Partie Myriam 
+	//************** 
 	//ofPushMatrix();
 	//ofTranslate(uiPosition->x, uiPosition->y);
 	//for (int i = 0; i < uiAmount; i++) {
@@ -135,7 +133,6 @@ void Application::mouseDragged(int x, int y, int button){
 	renderer.is_mouse_button_dragged = true;
 	renderer.is_mouse_button_pressed = false;
 
-	// Si on veut des lignes droites, on commente cette boucle if ci-dessous
 	if (draw_line && drawLine)
 	{
 		renderer.ligne.addVertex(renderer.mouse_drag_x, renderer.mouse_drag_y);
@@ -179,25 +176,10 @@ void Application::mousePressed(int x, int y, int button){
 		forme.setX3(newX3);
 		forme.setY3(newY3);
 
-		// Ajout de l'objet au vecteur
-		//Forme* newTriangle = new Forme(Forme::TRIANGLE, forme.getX1(), forme.getY1(),
-		//	forme.getX2(), forme.getY2(), forme.getX3(), forme.getY3());
-		//forme.v_formes.push_back(newTriangle);
-
 		renderer.v_formes.push_back(make_unique<Forme>(Forme::TRIANGLE, forme.getX1(), forme.getY1(),
 			forme.getX2(), forme.getY2(),
 			forme.getX3(), forme.getY3()));
 
-		// Affichage au terminal des objets triangles et leurs sommets
-		// Decommenter pour tester
-	/*	for (int i = 0; i < forme.v_formes.size(); i++)
-		{
-			Forme* formeCourante = forme.v_formes[i];
-			cout << "Adresse mémoire de l'objet " << i << " : " << formeCourante << endl;
-			cout << "Coordonnées du premier sommet : (" << formeCourante->getX1() << ", " << formeCourante->getY1() << ")" << endl;
-			cout << "Coordonnées du deuxième sommet : (" << formeCourante->getX2() << ", " << formeCourante->getY2() << ")" << endl;
-			cout << "Coordonnées du troisième sommet : (" << formeCourante->getX3() << ", " << formeCourante->getY3() << ")" << endl;
-		}*/
 
 		renderer.okDessiner = true;
 	}

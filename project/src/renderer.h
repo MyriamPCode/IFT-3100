@@ -45,7 +45,10 @@ class Renderer {
     void dessinerRectangle(); 
     void dessinerLigne(); 
     void dessinerEllipse(); 
-    void dessinerBezier(); 
+    void dessinerBezier();
+    vector<unique_ptr<Forme>>* getVecteurFormesPtr() {
+        return &v_formes;
+    }
 
     // Lignes avec ptr 
     //vector<unique_ptr<ofPolyline>>* vecteur_lignes_ptr;
