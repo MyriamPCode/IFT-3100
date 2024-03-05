@@ -1,12 +1,17 @@
 #pragma once
 
 #include "ofMain.h"
+//#include "Renderer.h"
+#include <memory>
+// Déclaration anticipée de la classe Renderer
 
 class Interface {
 	public:
 		void setup();
 		void draw();
-
+		// Constructeur prenant un objet Renderer en paramètre
+		//Interface(Renderer& r) : renderer(r) {}
+		//Renderer renderer;
 	private:
 		ofTrueTypeFont buttonFont;
 
@@ -19,5 +24,11 @@ class Interface {
 		void backgroundLine();
 		void backgroundInteraction();
 		void importButton();
+
+		void panelScene(); 
+		ofColor backgroundPanelSceneColor = ofColor(125);
+		//Renderer& renderer;
 };
+
+//class Renderer;
 
