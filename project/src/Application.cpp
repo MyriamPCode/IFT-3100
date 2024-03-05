@@ -10,6 +10,7 @@ void Application::setup(){
 	renderer.setup();
 	
 	gui.setup();
+	gui.setPosition(300, 40);
 	gui.add(uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
 	gui.add(uiAmount.set("amount", 1, 0, 64)); // La quantité de primitives. Nombre maximal est 64 et nombre minimum est 1
 	gui.add(uiStep.set("step", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
@@ -59,6 +60,13 @@ void Application::setup(){
 	newY3 = 0;
 
 	draw_line = draw_ellipse = draw_bezier = false; 
+	//selectObject.addListener(this, &Application::panelScene);
+
+	v_buttons_ptr = &v_buttons;
+	guiScene.setup();
+	guiScene.setPosition(0, 40);
+
+
 }
 
 
@@ -99,10 +107,11 @@ void Application::draw(){
 
 	//}
 
-
+	
 	renderer.draw();
 	ofPopMatrix();
 	gui.draw();
+	guiScene.draw();
 }
 
 
@@ -180,8 +189,13 @@ void Application::mousePressed(int x, int y, int button){
 			forme.getX2(), forme.getY2(),
 			forme.getX3(), forme.getY3()));
 
-
 		renderer.okDessiner = true;
+
+		//ofxToggle button;
+		auto button = make_unique<ofxToggle>();
+		guiScene.add(button->setup("TRIANGLE", false)); // Nom du bouton
+		v_buttons.push_back(move(button)); // Ajoutez le bouton à la liste des boutons
+		
 	}
 
 	if(draw_circle && drawCircle)
@@ -191,6 +205,11 @@ void Application::mousePressed(int x, int y, int button){
 		renderer.v_formes.push_back(make_unique<Forme>(Forme::CERCLE, forme.getXC(), forme.getYC(), forme.getRayon()));
 		//ofSetCircleResolution(55);
 		renderer.okDessiner = true; 
+
+		//ofxToggle button;
+		auto button = make_unique<ofxToggle>();
+		guiScene.add(button->setup("CERCLE", false)); // Nom du bouton
+		v_buttons.push_back(move(button)); // Ajoutez le bouton à la liste des boutons
 	}
 
 	if(draw_rectangle && drawRectangle)
@@ -199,6 +218,11 @@ void Application::mousePressed(int x, int y, int button){
 		forme.setYR(renderer.mouse_current_y); 
 		renderer.v_formes.push_back(make_unique<Forme>(Forme::RECTANGLE, forme.getXR(), forme.getYR(), forme.getWidth(), forme.getHeight()));
 		renderer.okDessiner = true;
+
+		//ofxToggle button;
+		auto button = make_unique<ofxToggle>();
+		guiScene.add(button->setup("RECTANGLE", false)); // Nom du bouton
+		v_buttons.push_back(move(button)); // Ajoutez le bouton à la liste des boutons
 	}
 
 	
@@ -212,6 +236,11 @@ void Application::mousePressed(int x, int y, int button){
 
 		renderer.ligne.addVertex(renderer.mouse_press_x, renderer.mouse_press_y);
 		renderer.okDessiner = true;
+
+		//ofxToggle button;
+		auto button = make_unique<ofxToggle>();
+		guiScene.add(button->setup("LIGNE", false)); // Nom du bouton
+		v_buttons.push_back(move(button)); // Ajoutez le bouton à la liste des boutons
 	}
 	///////////////////////////////
 
@@ -221,6 +250,11 @@ void Application::mousePressed(int x, int y, int button){
 		forme.setYR(renderer.mouse_press_y);
 		renderer.v_formes.push_back(make_unique<Forme>(Forme::ELLIPSE, forme.getXR(), forme.getYR(), forme.getWidth(), forme.getHeight()));
 		renderer.okDessiner = true;
+
+		//ofxToggle button;
+		auto button = make_unique<ofxToggle>();
+		guiScene.add(button->setup("ELLIPSE", false)); // Nom du bouton
+		v_buttons.push_back(move(button)); // Ajoutez le bouton à la liste des boutons
 	}
 
 	if(draw_bezier && drawBezier)
@@ -246,7 +280,13 @@ void Application::mousePressed(int x, int y, int button){
 		renderer.v_formes.push_back(make_unique<Forme>(Forme::BEZIER, forme.getX1(), forme.getY1(), forme.getXB1(), forme.getYB1(),
 			forme.getXB2(), forme.getYB2(), forme.getX2(), forme.getY2()));
 		renderer.okDessiner = true;
+
+		//ofxToggle button;
+		auto button = make_unique<ofxToggle>();
+		guiScene.add(button->setup("BEZIER", false)); // Nom du bouton
+		v_buttons.push_back(move(button)); // Ajoutez le bouton à la liste des boutons
 	}
+
 }
 
 
@@ -312,6 +352,7 @@ void Application::gotMessage(ofMessage msg){
 }
 
 
+
 void Application::dragEvent(ofDragInfo dragInfo) {
 	if (isImportable) {
 		vector<string> imgTypes = { ".png", ".jpg", ".gif" }; //Verifie si le fichier dragged dans la fenetre de l'application est une image
@@ -371,7 +412,7 @@ void Application::button_bezier(bool& value) {
 	}
 }
 
-void Application::reset(bool & value) {
+void Application::reset(bool& value) {
 	if (value) {
 		uiPosition.set(ofVec2f(0));
 		uiAmount.set(1);
@@ -388,4 +429,41 @@ void Application::reset(bool & value) {
 		drawRectangle = false;
 		resetButton = false;
 	}
+}
+
+void Application::buttons_list(bool& value)
+{
+
+}
+
+void Application::panelScene()
+{
+
+	if (!v_buttons.empty())
+	{
+		for (auto& button : v_buttons)
+		{
+			guiScene.add(button.get());
+		}
+		//guiScene.draw();
+	}
+	//ofSetColor(backgroundPanelSceneColor);
+	//ofFill();
+	//ofDrawRectangle(0, 41, 255, HEIGHT - 40);
+
+	//ofSetColor(215, 215, 224);
+	//ofNoFill();
+
+
+	int y = 60; // Position verticale de départ
+
+	//if(!v_buttons.empty())
+	//{ 
+	//	for (auto& button : v_buttons)
+	//	{
+	//		button.setPosition(10, y); // Position du bouton
+	//		button.draw(); // Dessiner le bouton
+	//		y += 30; // Augmenter la position verticale pour le prochain bouton
+	//	}
+	//}
 }

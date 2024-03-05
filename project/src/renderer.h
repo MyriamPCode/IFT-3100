@@ -57,4 +57,6 @@ class Renderer {
     // Ligne sans ptr 
     ofPolyline ligne;
     vector<ofPolyline> vecteur_lignes;
+
+
 };

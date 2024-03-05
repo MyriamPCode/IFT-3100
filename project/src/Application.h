@@ -68,4 +68,12 @@ class Application : public ofBaseApp{
 
 
 		float diffX, diffY, newX2, newY2, newX3, newY3;
+
+		void panelScene();
+		void buttons_list(bool& value);
+		ofxToggle selectObject; 
+		ofColor backgroundPanelSceneColor = ofColor(125);
+		ofxPanel guiScene; 
+		vector<unique_ptr<ofxToggle>> v_buttons;
+		vector<unique_ptr<ofxToggle>>* v_buttons_ptr;
 };

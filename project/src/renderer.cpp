@@ -3,6 +3,7 @@
 #include "Forme.h"
 #include "Constants.h"
 #include "Application.h"
+#include <string>
 
 using namespace std;
 
@@ -31,6 +32,7 @@ void Renderer::setup(vector<unique_ptr<Forme>>& v_formes)
 
 void Renderer::draw() {
 	interface.draw();
+	
 
 	auto currImg = imgPosList.begin();
 	for (list<ofImage>::iterator iter = imageList.begin(); iter != imageList.end(); ++iter) {
@@ -206,3 +208,4 @@ void Renderer::draw_cursor(float x, float y) const {
 	ofDrawLine(x, y - offset, x, y - offset - length);
 
 }
+

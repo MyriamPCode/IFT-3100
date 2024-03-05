@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include <vector>
+#include <string>
 
 // Déclaration de la classe Forme
 class Forme {
@@ -72,6 +73,7 @@ public:
     //void setWidthEllipse(float w)  { this->wE = w; }
     //void setHeightEllipse(float h) { this->hE = h; }
 
+    //using TypeForme = string;
     TypeForme getType() const { return type; }
 
     //vector<Forme*> v_formes; // Vecteur de pointeurs vers des formes
@@ -80,6 +82,7 @@ public:
 
 private:
     TypeForme type;
+    
     float x1, y1, x2, y2, x3, y3; // Pour le triangle
     float xC, yC, xR, yR, width, height, rayon; // Pour le cercle et le rectangle
     float xL, yL; // Pour les lignes
