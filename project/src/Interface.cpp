@@ -1,30 +1,33 @@
 #include "Interface.h"
 #include "Constants.h"
+#include <vector>
 
 using namespace std;
 
 void Interface::setup() {
 	buttonFont.load("roboto/Roboto-Regular.ttf", 24);
+
+	//we only need to add the images of the buttons here to add it to the top bar
+	imgImport.load("img/import.png");
+	iconTopBar.push_back(imgImport);
+	imgExport.load("img/export.png");
+	iconTopBar.push_back(imgExport);
 }
 
 void Interface::draw() {
 	backgroundLine();
 	backgroundInteraction();
-	importButton();
+	topButtons();
 }
 
-void Interface::importButton() {
-	string buttonText = "Import";
-	ofRectangle textbox = buttonFont.getStringBoundingBox(buttonText, 0, 0);
-	if (IMPORT_BUTTON_WIDTH != textbox.getWidth() + 9) {
-		IMPORT_BUTTON_WIDTH = textbox.getWidth() + 9;
+void Interface::topButtons() {
+	for (int i = 0; i < iconTopBar.size(); i++) {
+		if (i == 0) {
+			iconTopBar[i].draw(0, 0, iconWidth, iconWidth);
+		} else {
+			iconTopBar[i].draw(10 + iconWidth * i, 0, iconWidth, iconWidth);
+		}
 	}
-
-	ofSetColor(backgroundInteractionBorderColor);
-	ofDrawRectangle(0, 0, IMPORT_BUTTON_WIDTH, 40);
-	ofSetColor(textColor);
-
-	buttonFont.drawString(buttonText, 3, 30);
 }
 
 void Interface::backgroundLine() {

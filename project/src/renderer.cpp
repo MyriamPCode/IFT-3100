@@ -60,5 +60,4 @@ void Renderer::draw_cursor(float x, float y) const {
 	ofDrawLine(x - offset, y, x - offset - length, y);
 	ofDrawLine(x, y + offset, x, y + offset + length);
 	ofDrawLine(x, y - offset, x, y - offset - length);
-
 }

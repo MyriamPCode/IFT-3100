@@ -10,7 +10,6 @@ class Application : public ofBaseApp{
 
 	public:
 		Renderer renderer;
-
 		ofColor backgroundColor = ofColor(178, 184, 194);
 
 		bool isImportable = false; //Indique si le mode d'importation est actif ou non

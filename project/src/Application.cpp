@@ -2,6 +2,7 @@ using namespace std;
 
 #include "Application.h"
 #include "Constants.h"
+#include <cmath>
 
 void Application::setup(){
 	ofSetWindowTitle("Team 7");
@@ -39,7 +40,6 @@ void Application::setup(){
 	reinitialisationGroupe.add(resetButton.setup("Reset", false));
 	resetButton.addListener(this, &Application::reset);
 	gui.add(&reinitialisationGroupe);
-	
 }
 
 
@@ -146,10 +146,17 @@ void Application::mouseReleased(int x, int y, int button){
 		imgDistFromMax = 0;
 	}
 
-	if (button == 0 && y < 40) {
-		if (x < IMPORT_BUTTON_WIDTH) {
-			//call to import image method
-			isImportable = !isImportable;
+	if (button == 0 && y < INTERACTION_BAR_HEIGHT) {
+		switch (static_cast<int>(floor(x / iconWidth))) {
+			case 0:
+				//call to import image method
+				cout << "import \n";
+				isImportable = !isImportable;
+				break;
+			case 1:
+				//call to export method
+				cout << "export \n";
+				break;
 		}
 	}
 
@@ -162,7 +169,6 @@ void Application::mouseReleased(int x, int y, int button){
 
 
 void Application::mouseEntered(int x, int y){
-
 	renderer.mouse_current_x = x;
 	renderer.mouse_current_y = y;
 }
