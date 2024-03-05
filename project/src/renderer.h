@@ -35,7 +35,6 @@ class Renderer {
     void draw_cursor(float x, float y) const;
 
     Forme forme; 
-    //vector<Forme*>* v_formes_ptr; 
     vector<unique_ptr<Forme>>* v_formes_ptr;
     vector<unique_ptr<Forme>> v_formes;
     void setup(vector<unique_ptr<Forme>>& v_formes);
@@ -50,13 +49,14 @@ class Renderer {
         return &v_formes;
     }
 
-    // Lignes avec ptr 
-    //vector<unique_ptr<ofPolyline>>* vecteur_lignes_ptr;
-    //vector<unique_ptr<ofPolyline>> vecteur_lignes;
-    //void setup(vector<unique_ptr<ofPolyline>>& vecteur_lignes);
-    // Ligne sans ptr 
+
     ofPolyline ligne;
     vector<ofPolyline> vecteur_lignes;
 
-
+    //Capture images
+    void update();
+    void image_export(const string name, const string extension) const;
+    void captureImage();
+    int frameCounter, captureInterval, compteur;
+    bool isRecording;
 };

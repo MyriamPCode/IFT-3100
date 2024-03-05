@@ -18,6 +18,11 @@ void Renderer::setup() {
 	mouse_current_x = mouse_current_y = mouse_press_x = mouse_press_y = mouse_drag_x = mouse_drag_y = 0;
 
 	okDessiner = false; 
+
+	//Pour la capture dìmages
+	frameCounter = 0;
+	captureInterval = 60; // changer l'intervalle pour le nombre d'image exportee
+	isRecording = false;
 }
 
 
@@ -25,10 +30,7 @@ void Renderer::setup(vector<unique_ptr<Forme>>& v_formes)
 {
 	v_formes_ptr = &v_formes;
 }
-//void Renderer::setup(vector<unique_ptr<ofPolyline>>& vecteur_lignes)
-//{
-//	vecteur_lignes_ptr = &vecteur_lignes;
-//}
+
 
 void Renderer::draw() {
 	interface.draw();
@@ -69,6 +71,10 @@ void Renderer::draw() {
 	ofSetColor(255); // Couleur blanc
 	ofDrawBitmapString("Mouse X: " + ofToString(mouseX) + ", Mouse Y: " + ofToString(mouseY), 1730, 65);
 	ofDrawBitmapString("Grid X: " + ofToString(gridX) + ", Grid Y: " + ofToString(gridY), 1730, 85);
+
+	// Afficher un message si l'enregistrement est activé
+	if (isRecording)
+		ofDrawBitmapString("Enregistrement enmouse cours...", 20, 20);
 }
 
 
@@ -209,3 +215,42 @@ void Renderer::draw_cursor(float x, float y) const {
 
 }
 
+void Renderer::update()
+{
+
+	if (isRecording)
+	{
+		frameCounter++;
+		//captureInterval++; 
+		//compteur++;
+		if (frameCounter == captureInterval)
+		{
+			ofSaveScreen(ofToString(frameCounter / captureInterval) + ".png");
+			//ofSaveScreen(ofToString(frameCounter) + ".png");
+			frameCounter = 0;
+			//captureInterval -= compteur;
+		}
+	}
+}
+void Renderer::image_export(const string name, const string extension)const
+{
+	ofImage image;
+
+	// extraire des données temporelles formatées
+	string time_stamp = ofGetTimestampString("-%y%m%d-%H%M%S-%i");
+
+	// générer un nom de fichier unique et ordonné
+	string file_name = name + time_stamp + "." + extension;
+
+	// capturer le contenu du framebuffer actif
+	image.grabScreen(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
+
+	// sauvegarder le fichier image
+	image.save(file_name);
+
+	ofLog() << "<export image: " << file_name << ">";
+}
+void Renderer::captureImage() {
+	// Exporter l'image
+	ofSaveScreen(ofToString(frameCounter) + ".png");
+}

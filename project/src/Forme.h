@@ -76,7 +76,6 @@ public:
     //using TypeForme = string;
     TypeForme getType() const { return type; }
 
-    //vector<Forme*> v_formes; // Vecteur de pointeurs vers des formes
 
     ofPolyline ligne; // ligne
 
@@ -88,7 +87,6 @@ private:
     float xL, yL; // Pour les lignes
     float xE, yE, wE, hE; // Pour les ellipses
     float xB1, xB2, yB1, yB2; // Pour les beziers 
-    //std::string forme; // Attribut spécifique à chaque forme
     bool containsPointTriangle, containsPointCercle, containsPointRectangle;
     
 };
