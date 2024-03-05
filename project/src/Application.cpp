@@ -160,6 +160,31 @@ void Application::mouseReleased(int x, int y, int button){
 		}
 	}
 
+	if (button == 0 && x > WIDTH - INTERACTION_BAR_HEIGHT) {
+		switch (static_cast<int>(floor((y / iconWidth)) - 1)) {
+		case 0:
+			//call to color wheel
+			cout << "color wheel \n";
+			break;
+		case 1:
+			//call to pen method
+			cout << "pen \n";
+			break;
+		case 2:
+			//call to ellipse method
+			cout << "ellipse \n";
+			break;
+		case 3:
+			//call to rectangle method
+			cout << "rectangle \n";
+			break;
+		case 4:
+			//call to triangle method
+			cout << "triangle \n";
+			break;
+		}
+	}
+
 	renderer.is_mouse_button_pressed = false;
 	renderer.is_mouse_button_dragged = false;
 

@@ -12,12 +12,25 @@ void Interface::setup() {
 	iconTopBar.push_back(imgImport);
 	imgExport.load("img/export.png");
 	iconTopBar.push_back(imgExport);
+
+	//same here but for the side bar
+	imgColorWheel.load("img/color-wheel.png");
+	iconSideBar.push_back(imgColorWheel);
+	imgPen.load("img/pen.png");
+	iconSideBar.push_back(imgPen);
+	imgCircle.load("img/circle.png");
+	iconSideBar.push_back(imgCircle);
+	imgRectangle.load("img/rectangle.png");
+	iconSideBar.push_back(imgRectangle);
+	imgTriangle.load("img/triangle.png");
+	iconSideBar.push_back(imgTriangle);
 }
 
 void Interface::draw() {
 	backgroundLine();
 	backgroundInteraction();
 	topButtons();
+	sideButtons();
 }
 
 void Interface::topButtons() {
@@ -26,6 +39,17 @@ void Interface::topButtons() {
 			iconTopBar[i].draw(0, 0, iconWidth, iconWidth);
 		} else {
 			iconTopBar[i].draw(10 + iconWidth * i, 0, iconWidth, iconWidth);
+		}
+	}
+}
+
+void Interface::sideButtons() {
+	for (int i = 0; i < iconSideBar.size(); i++) {
+		if (i == 0) {
+			iconSideBar[i].draw(WIDTH - iconWidth, INTERACTION_BAR_HEIGHT, iconWidth, iconWidth);
+		}
+		else {
+			iconSideBar[i].draw(WIDTH - iconWidth, INTERACTION_BAR_HEIGHT + iconWidth * i, iconWidth, iconWidth);
 		}
 	}
 }
