@@ -26,8 +26,11 @@ void Interface::setup() {
 
 	outilsGui.add(color_picker_background);
 	outilsGui.add(color_picker_stroke);
+	outilsGui.add(fillButton.setup("Remplissage de forme", false));
 	outilsGui.add(colorPickerFill);
 	outilsGui.add(slider_stroke_weight);
+
+	fillButton.addListener(this, &Interface::enableFill);
 
 	outilsGui.setFillColor(backgroundInteractionColor);
 	outilsGui.setTextColor(backgroundInteractionColor);
@@ -51,6 +54,9 @@ void Interface::showOutils(bool& value) {
 	outilsPressed = !outilsPressed;
 }
 
+void Interface::enableFill(bool& value) {
+	fillEnabled = !fillEnabled;
+}
 //Interface::Interface(Renderer renderer) : renderer(renderer) {}
 
 

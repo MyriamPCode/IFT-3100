@@ -18,10 +18,6 @@ class Application : public ofBaseApp{
 		int imgDistFromMax = 0; //Indicateur de la position de l'image par rapport à la taille maximale de la liste
 		bool isRepositioning = false; //Indique si un image est en cours de repositionnement
 
-		ofColor stroke_color = renderer.interface.color_picker_stroke;
-		ofColor fillColor = renderer.interface.colorPickerFill;
-		float stroke_weight = renderer.interface.slider_stroke_weight;
-
 		void setup();
 		void update();
 		void draw();

@@ -16,8 +16,10 @@ class Interface {
 
 		ofParameter<ofColor> color_picker_background;
 		ofParameter<ofColor> color_picker_stroke;
+		ofxToggle fillButton;
 		ofParameter<ofColor> colorPickerFill;
 		ofParameter<float> slider_stroke_weight;
+		bool fillEnabled = false;
 
 	private:
 		bool outilsPressed = false;
@@ -41,6 +43,7 @@ class Interface {
 		ofColor backgroundPanelSceneColor = ofColor(125);
 		//Renderer& renderer;
 		void showOutils(bool& value);
+		void enableFill(bool& value);
 };
 
 //class Renderer;
