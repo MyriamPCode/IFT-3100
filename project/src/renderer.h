@@ -68,7 +68,6 @@ class Renderer {
             return &v_formes;
         }
 
-
         ofPolyline ligne;
         vector<ofPolyline> vecteur_lignes;
 
@@ -84,7 +83,7 @@ class Renderer {
     private:
         ofxPanel gui;
         ofParameter<string> nameField;
-        ofParameter<bool> visibleButton = true;
+        ofParameter<bool> visible = false;
         ofParameter<bool> exportButton = false;
 
         void image_export(const string name, const string extension) const;

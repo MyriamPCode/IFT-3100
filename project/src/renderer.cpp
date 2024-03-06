@@ -16,8 +16,6 @@ void Renderer::setup() {
 	gui.add(nameField);
 	exportButton.setName("Export");
 	gui.add(exportButton);
-	visibleButton.setName("Close");
-	gui.add(visibleButton);
 	gui.setPosition(200, 40);
 
 	is_mouse_button_pressed = false;
@@ -47,14 +45,13 @@ void Renderer::draw() {
 	interface.draw();
 	ofSetBackgroundColor(interface.color_picker_background);
 
-	if (!visibleButton) {
+	if (visible) {
 		gui.draw();
 
 		if (exportButton) {
 			image_export(nameField, "png");
 			exportButton = false;
-			//close the gui, but we do not want to see the close checkbox checked
-			visibleButton = true;
+			visible = false;
 		}
 	}
 
@@ -304,7 +301,7 @@ void Renderer::toggleColorWheelGUI() {
 }
 
 void Renderer::toggleExportGUI() {
-	visibleButton = !visibleButton;
+	visible = !visible;
 }
 
 void Renderer::image_export(const string name, const string extension) const {
