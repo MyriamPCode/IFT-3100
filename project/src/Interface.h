@@ -3,6 +3,9 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "ofxButton.h"
+//#include "Renderer.h"
+#include <memory>
+// Déclaration anticipée de la classe Renderer
 
 using namespace std;
 
@@ -33,6 +36,12 @@ class Interface {
 		void backgroundLine();
 		void backgroundInteraction();
 		void importButton();
+
+		void panelScene(); 
+		ofColor backgroundPanelSceneColor = ofColor(125);
+		//Renderer& renderer;
 		void showOutils(bool& value);
 };
+
+//class Renderer;
 
