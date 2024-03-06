@@ -24,9 +24,9 @@ class Interface {
 		ofParameter<ofColor> colorPickerFill;
 		ofParameter<float> slider_stroke_weight;
 		bool fillEnabled = false;
+		bool outilsPressed = false;
 
 	private:
-		bool outilsPressed = false;
 		ofTrueTypeFont buttonFont;
 
 		ofImage imgImport;

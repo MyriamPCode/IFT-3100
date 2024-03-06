@@ -411,6 +411,7 @@ void Application::mouseReleased(int x, int y, int button){
 		case 0:
 			//call to color wheel
 			cout << "color wheel \n";
+			renderer.interface.outilsPressed = !renderer.interface.outilsPressed;
 			break;
 		case 1:
 			//call to pen method

@@ -27,17 +27,9 @@ void Interface::setup() {
 	imgTriangle.load("img/triangle.png");
 	iconSideBar.push_back(imgTriangle);
 
-	ofxToggle button;
-	button.setup("Outils de Dessin", false, 175, 39);
-	button.loadFont("roboto/Roboto-Regular.ttf", 16);
-	button.setBackgroundColor(backgroundInteractionColor);
-	button.setPosition(103, 0);
-	button.addListener(this, &Interface::showOutils);
-	buttonList.push_back(button);
-
 	outilsGui.setup();
 	outilsGui.loadFont("roboto/Roboto-Regular.ttf", 10);
-	outilsGui.setPosition(103, 40);
+	outilsGui.setPosition(WIDTH - 240, 40);
 	outilsGui.setSize(200, 1080);
 
 	color_picker_background.set("Couleur du canevas", ofColor(31), ofColor(0, 0), ofColor(255, 255));
@@ -65,9 +57,6 @@ void Interface::draw() {
 	topButtons();
 	sideButtons();
 
-	for (list<ofxToggle>::iterator iter = buttonList.begin(); iter != buttonList.end(); ++iter) {
-		iter->draw();
-	}
 	if (outilsPressed) {
 		outilsGui.draw();
 	}
