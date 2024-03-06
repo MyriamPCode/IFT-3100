@@ -2,6 +2,13 @@
 
 #include "ofMain.h"
 #include <vector>
+#include "ofxGui.h"
+#include "ofxButton.h"
+//#include "Renderer.h"
+#include <memory>
+// D�claration anticip�e de la classe Renderer
+
+using namespace std;
 
 class Interface {
 	public:
@@ -11,7 +18,15 @@ class Interface {
 		void setup();
 		void draw();
 
+		ofParameter<ofColor> color_picker_background;
+		ofParameter<ofColor> color_picker_stroke;
+		ofxToggle fillButton;
+		ofParameter<ofColor> colorPickerFill;
+		ofParameter<float> slider_stroke_weight;
+		bool fillEnabled = false;
+
 	private:
+		bool outilsPressed = false;
 		ofTrueTypeFont buttonFont;
 
 		ofImage imgImport;
@@ -29,9 +44,21 @@ class Interface {
 
 		ofColor textColor = backgroundLineColor;
 
+		list<ofxToggle> buttonList;
+
+		ofxPanel outilsGui;
+
 		void backgroundLine();
 		void backgroundInteraction();
 		void topButtons();
 		void sideButtons();
+
+		void panelScene(); 
+		ofColor backgroundPanelSceneColor = ofColor(125);
+		//Renderer& renderer;
+		void showOutils(bool& value);
+		void enableFill(bool& value);
 };
+
+//class Renderer;
 
