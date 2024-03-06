@@ -79,6 +79,7 @@ class Renderer {
         bool isRecording;
 
         void toggleExportGUI();
+        void toggleColorWheelGUI();
 
     private:
         ofxPanel gui;

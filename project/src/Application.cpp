@@ -404,7 +404,7 @@ void Application::mouseReleased(int x, int y, int button){
 		switch (static_cast<int>(floor((y / iconWidth)) - 1)) {
 		case 0:
 			//call to color wheel
-			cout << "color wheel \n";
+			renderer.toggleColorWheelGUI();
 			break;
 		case 1:
 			//call to pen method

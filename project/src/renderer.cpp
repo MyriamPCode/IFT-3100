@@ -299,6 +299,10 @@ void Renderer::update()
 	}
 }
 
+void Renderer::toggleColorWheelGUI() {
+	interface.toggleColorWheel();
+}
+
 void Renderer::toggleExportGUI() {
 	visibleButton = !visibleButton;
 }

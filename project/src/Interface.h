@@ -14,16 +14,17 @@ class Interface {
 	public:
 		vector<ofImage> iconTopBar;
 		vector<ofImage> iconSideBar;
-
-		void setup();
-		void draw();
-
+		
 		ofParameter<ofColor> color_picker_background;
 		ofParameter<ofColor> color_picker_stroke;
 		ofxToggle fillButton;
 		ofParameter<ofColor> colorPickerFill;
 		ofParameter<float> slider_stroke_weight;
 		bool fillEnabled = false;
+
+		void setup();
+		void draw();
+		void toggleColorWheel();
 
 	private:
 		bool outilsPressed = false;
@@ -44,8 +45,6 @@ class Interface {
 
 		ofColor textColor = backgroundLineColor;
 
-		list<ofxToggle> buttonList;
-
 		ofxPanel outilsGui;
 
 		void backgroundLine();
@@ -60,5 +59,4 @@ class Interface {
 		void enableFill(bool& value);
 };
 
-//class Renderer;
 
