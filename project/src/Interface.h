@@ -1,16 +1,20 @@
 #pragma once
 
 #include "ofMain.h"
+#include <vector>
 #include "ofxGui.h"
 #include "ofxButton.h"
 //#include "Renderer.h"
 #include <memory>
-// Déclaration anticipée de la classe Renderer
+// Dï¿½claration anticipï¿½e de la classe Renderer
 
 using namespace std;
 
 class Interface {
 	public:
+		vector<ofImage> iconTopBar;
+		vector<ofImage> iconSideBar;
+
 		void setup();
 		void draw();
 
@@ -25,6 +29,15 @@ class Interface {
 		bool outilsPressed = false;
 		ofTrueTypeFont buttonFont;
 
+		ofImage imgImport;
+		ofImage imgExport;
+		ofImage imgColorWheel;
+		ofImage imgPen;
+		ofImage imgCircle;
+		ofImage imgRectangle;
+		ofImage imgTriangle;
+		ofImage imgAnimation;
+
 		ofColor backgroundLineColor = ofColor(217, 217, 217);
 		ofColor backgroundInteractionColor = ofColor(4, 3, 77);
 		ofColor backgroundInteractionBorderColor = ofColor(215, 215, 224);
@@ -37,7 +50,8 @@ class Interface {
 
 		void backgroundLine();
 		void backgroundInteraction();
-		void importButton();
+		void topButtons();
+		void sideButtons();
 
 		void panelScene(); 
 		ofColor backgroundPanelSceneColor = ofColor(125);

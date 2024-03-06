@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "Constants.h"
+#include <cmath>
 
 using namespace std;
 
@@ -11,7 +12,7 @@ void Application::setup(){
 	gui.setup();
 	gui.setPosition(300, 40);
 	gui.add(uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
-	gui.add(uiAmount.set("amount", 1, 0, 64)); // La quantité de primitives. Nombre maximal est 64 et nombre minimum est 1
+	gui.add(uiAmount.set("amount", 1, 0, 64)); // La quantitï¿½ de primitives. Nombre maximal est 64 et nombre minimum est 1
 	gui.add(uiStep.set("step", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
 	gui.add(uiRotate.set("rotate", ofVec3f(0), ofVec3f(-180), ofVec3f(180))); // La rotation des primitives
 	gui.add(uiShift.set("shift", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
@@ -30,7 +31,6 @@ void Application::setup(){
 	primitivesGroupe.add(drawLine.setup("Draw Line", false));
 	primitivesGroupe.add(drawEllipse.setup("Draw Ellipse", false));
 	primitivesGroupe.add(drawBezier.setup("Draw Bezier", false));
-
 	
 	// Associer des fonctions de rappel aux boutons
 	drawTriangle.addListener(this, &Application::button_triangle);
@@ -46,7 +46,6 @@ void Application::setup(){
 	reinitialisationGroupe.add(resetButton.setup("Reset", false));
 	resetButton.addListener(this, &Application::reset);
 	gui.add(&reinitialisationGroupe);
-	
 
 	//renderer.setup(forme.v_formes);
 	renderer.setup(renderer.v_formes);
@@ -69,7 +68,7 @@ void Application::setup(){
 void Application::update()
 {
 	if (renderer.isRecording) {
-		// Mettez à jour et capturez l'image à intervalles réguliers
+		// Mettez ï¿½ jour et capturez l'image ï¿½ intervalles rï¿½guliers
 		renderer.update();
 		renderer.captureImage();
 	}
@@ -120,20 +119,20 @@ void Application::draw(){
 
 void Application::deleteShapeSelected()
 {
-	// Vecteur temporaire pour stocker les indices des boutons à supprimer
+	// Vecteur temporaire pour stocker les indices des boutons ï¿½ supprimer
 	vector<int> buttonsToDelete;
-	// Vecteur pour stocker l'état de chaque bouton
+	// Vecteur pour stocker l'ï¿½tat de chaque bouton
 	vector<bool> buttonStates;
 
 	for (const auto& b : *v_buttons_ptr)
 	{
 		for (int i = 0; i < v_buttons.size(); ++i)
 		{
-			// Vérifier si le bouton est en état TRUE
-			if (i == shapeBool) // v_buttons[i] Accéder à l'état booléen du bouton
+			// Vï¿½rifier si le bouton est en ï¿½tat TRUE
+			if (i == shapeBool) // v_buttons[i] Accï¿½der ï¿½ l'ï¿½tat boolï¿½en du bouton
 			{
 				cout << "Il est cense avoir " << i << " forme a effacer" << endl;
-				// Ajouter l'index du bouton à supprimer dans le vecteur temporaire
+				// Ajouter l'index du bouton ï¿½ supprimer dans le vecteur temporaire
 				buttonsToDelete.push_back(i);
 			}
 		}
@@ -141,11 +140,11 @@ void Application::deleteShapeSelected()
 	}
 	//for (int i = 0; i < v_buttons.size(); ++i)
 	//{
-	//	// Vérifier si le bouton est en état TRUE
-	//	if (i == shapeBool) // v_buttons[i] Accéder à l'état booléen du bouton
+	//	// Vï¿½rifier si le bouton est en ï¿½tat TRUE
+	//	if (i == shapeBool) // v_buttons[i] Accï¿½der ï¿½ l'ï¿½tat boolï¿½en du bouton
 	//	{
 	//		cout << "Il est cense avoir " << i << " forme a effacer" << endl;
-	//		// Ajouter l'index du bouton à supprimer dans le vecteur temporaire
+	//		// Ajouter l'index du bouton ï¿½ supprimer dans le vecteur temporaire
 	//		buttonsToDelete.push_back(i);
 	//	}
 	//}
@@ -160,10 +159,10 @@ void Application::deleteShapeSelected()
 	// Parcourir tous les boutons dans la liste
 	//for (int i = 0; i < buttonStates.size(); ++i)
 	//{
-	//	// Vérifier si le bouton est en état TRUE
+	//	// Vï¿½rifier si le bouton est en ï¿½tat TRUE
 	//	if (buttonStates[i] == TRUE)
 	//	{
-	//		// Ajouter l'index du bouton à supprimer dans le vecteur temporaire
+	//		// Ajouter l'index du bouton ï¿½ supprimer dans le vecteur temporaire
 	//		buttonsToDelete.push_back(i);
 	//	}
 	//}
@@ -173,7 +172,7 @@ void Application::deleteShapeSelected()
 	//for (int i = buttonsToDelete.size() - 1; i >= 0; --i)
 	//{
 	//	v_buttons.erase(v_buttons.begin() + buttonsToDelete[i]);
-	//	buttonStates.erase(buttonStates.begin() + buttonsToDelete[i]); // Supprimer également l'état correspondant
+	//	buttonStates.erase(buttonStates.begin() + buttonsToDelete[i]); // Supprimer ï¿½galement l'ï¿½tat correspondant
 	//}
 }
 
@@ -183,17 +182,17 @@ void Application::keyPressed(int key)
 		deleteShapeSelected();
 	}
 
-	// Démarrer/arrêter l'enregistrement lors de l'appui sur la touche 'r'
+	// Dï¿½marrer/arrï¿½ter l'enregistrement lors de l'appui sur la touche 'r'
 	if (key == 'r') {
 		renderer.isRecording = !renderer.isRecording;
 		if (renderer.isRecording) {
-			renderer.frameCounter = 0; // Réinitialiser le compteur de frames lors du démarrage de l'enregistrement
-			cout << "Enregistrement démarré." << endl;
+			renderer.frameCounter = 0; // Rï¿½initialiser le compteur de frames lors du dï¿½marrage de l'enregistrement
+			cout << "Enregistrement dï¿½marrï¿½." << endl;
 			//renderer.update();
 			//renderer.captureImage();
 		}
 		else {
-			cout << "Enregistrement arrêté." << endl;
+			cout << "Enregistrement arrï¿½tï¿½." << endl;
 		}
 	}
 }
@@ -277,7 +276,7 @@ void Application::mousePressed(int x, int y, int button){
 		auto button = make_unique<ofxToggle>();
 		button->addListener(this, &Application::buttons_list);
 		guiScene.add(button->setup("TRIANGLE", shapeBool)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton à la liste des boutons
+		v_buttons.push_back(move(button)); // Ajoutez le bouton ï¿½ la liste des boutons
 	}
 
 	if(draw_circle && drawCircle)
@@ -293,7 +292,7 @@ void Application::mousePressed(int x, int y, int button){
 		//ofxToggle button;
 		auto button = make_unique<ofxToggle>();
 		guiScene.add(button->setup("CERCLE", false)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton à la liste des boutons
+		v_buttons.push_back(move(button)); // Ajoutez le bouton ï¿½ la liste des boutons
 	}
 
 	if(draw_rectangle && drawRectangle)
@@ -308,7 +307,7 @@ void Application::mousePressed(int x, int y, int button){
 		//ofxToggle button;
 		auto button = make_unique<ofxToggle>();
 		guiScene.add(button->setup("RECTANGLE", false)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton à la liste des boutons
+		v_buttons.push_back(move(button)); // Ajoutez le bouton ï¿½ la liste des boutons
 	}
 
 	
@@ -326,7 +325,7 @@ void Application::mousePressed(int x, int y, int button){
 		renderer.ligneStroke = renderer.interface.slider_stroke_weight;
 		auto button = make_unique<ofxToggle>();
 		guiScene.add(button->setup("LIGNE", false)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton à la liste des boutons
+		v_buttons.push_back(move(button)); // Ajoutez le bouton ï¿½ la liste des boutons
 	}
 	///////////////////////////////
 
@@ -341,7 +340,7 @@ void Application::mousePressed(int x, int y, int button){
 		renderer.ellipseStroke = renderer.interface.slider_stroke_weight;
 		auto button = make_unique<ofxToggle>();
 		guiScene.add(button->setup("ELLIPSE", false)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton à la liste des boutons
+		v_buttons.push_back(move(button)); // Ajoutez le bouton ï¿½ la liste des boutons
 	}
 
 	if(draw_bezier && drawBezier)
@@ -372,7 +371,7 @@ void Application::mousePressed(int x, int y, int button){
 		renderer.bezierStroke = renderer.interface.slider_stroke_weight;
 		auto button = make_unique<ofxToggle>();
 		guiScene.add(button->setup("BEZIER", false)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton à la liste des boutons
+		v_buttons.push_back(move(button)); // Ajoutez le bouton ï¿½ la liste des boutons
 	}
 
 }
@@ -389,10 +388,46 @@ void Application::mouseReleased(int x, int y, int button){
 		imgDistFromMax = 0;
 	}
 
-	if (button == 0 && y < 40) {
-		if (x < IMPORT_BUTTON_WIDTH) {
-			//call to import image method
-			isImportable = !isImportable;
+	if (button == 0 && y < INTERACTION_BAR_HEIGHT) {
+		switch (static_cast<int>(floor(x / iconWidth))) {
+			case 0:
+				//call to import image method
+				cout << "import \n";
+				isImportable = !isImportable;
+				break;
+			case 1:
+				//call to export method
+				cout << "export \n";
+				break;
+			case 2:
+				//call to animation method
+				cout << "animation \n";
+				break;
+		}
+	}
+
+	if (button == 0 && x > WIDTH - INTERACTION_BAR_HEIGHT) {
+		switch (static_cast<int>(floor((y / iconWidth)) - 1)) {
+		case 0:
+			//call to color wheel
+			cout << "color wheel \n";
+			break;
+		case 1:
+			//call to pen method
+			cout << "pen \n";
+			break;
+		case 2:
+			//call to ellipse method
+			cout << "ellipse \n";
+			break;
+		case 3:
+			//call to rectangle method
+			cout << "rectangle \n";
+			break;
+		case 4:
+			//call to triangle method
+			cout << "triangle \n";
+			break;
 		}
 	}
 
@@ -416,7 +451,6 @@ void Application::mouseReleased(int x, int y, int button){
 
 
 void Application::mouseEntered(int x, int y){
-
 	renderer.mouse_current_x = x;
 	renderer.mouse_current_y = y;
 }
@@ -565,9 +599,9 @@ void Application::reset(bool& value) {
 void Application::buttons_list(bool& value)
 {
 	if (value) {
-		// Vecteur temporaire pour stocker les indices des boutons à supprimer
+		// Vecteur temporaire pour stocker les indices des boutons ï¿½ supprimer
 		//vector<int> buttonsToDelete;
-		//// Vecteur pour stocker l'état de chaque bouton
+		//// Vecteur pour stocker l'ï¿½tat de chaque bouton
 		//vector<bool> buttonStates;
 
 		cout << "Je t'ecoute!!" << endl;
@@ -587,10 +621,10 @@ void Application::buttons_list(bool& value)
 				// Parcourir tous les boutons dans la liste
 				//for (int i = 0; i < buttonStates.size(); ++i)
 				//{
-				//	// Vérifier si le bouton est en état TRUE
+				//	// Vï¿½rifier si le bouton est en ï¿½tat TRUE
 				//	if (buttonStates[i] == TRUE)
 				//	{
-				//		// Ajouter l'index du bouton à supprimer dans le vecteur temporaire
+				//		// Ajouter l'index du bouton ï¿½ supprimer dans le vecteur temporaire
 				//		buttonsToDelete.push_back(i);
 				//	}
 				//}
@@ -600,7 +634,7 @@ void Application::buttons_list(bool& value)
 				//for (int i = buttonsToDelete.size() - 1; i >= 0; --i)
 				//{
 				//	v_buttons.erase(v_buttons.begin() + buttonsToDelete[i]);
-				//	buttonStates.erase(buttonStates.begin() + buttonsToDelete[i]); // Supprimer également l'état correspondant
+				//	buttonStates.erase(buttonStates.begin() + buttonsToDelete[i]); // Supprimer ï¿½galement l'ï¿½tat correspondant
 				//}
 			//}
 		//}

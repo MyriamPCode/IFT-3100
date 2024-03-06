@@ -1,10 +1,31 @@
 #include "Interface.h"
 #include "Constants.h"
+#include <vector>
 
 using namespace std;
 
 void Interface::setup() {
 	buttonFont.load("roboto/Roboto-Regular.ttf", 24);
+
+	//we only need to add the images of the buttons here to add it to the top bar
+	imgImport.load("img/import.png");
+	iconTopBar.push_back(imgImport);
+	imgExport.load("img/export.png");
+	iconTopBar.push_back(imgExport);
+	imgAnimation.load("img/animation.png");
+	iconTopBar.push_back(imgAnimation);
+
+	//same here but for the side bar
+	imgColorWheel.load("img/color-wheel.png");
+	iconSideBar.push_back(imgColorWheel);
+	imgPen.load("img/pen.png");
+	iconSideBar.push_back(imgPen);
+	imgCircle.load("img/circle.png");
+	iconSideBar.push_back(imgCircle);
+	imgRectangle.load("img/rectangle.png");
+	iconSideBar.push_back(imgRectangle);
+	imgTriangle.load("img/triangle.png");
+	iconSideBar.push_back(imgTriangle);
 
 	ofxToggle button;
 	button.setup("Outils de Dessin", false, 175, 39);
@@ -41,7 +62,9 @@ void Interface::setup() {
 void Interface::draw() {
 	backgroundLine();
 	backgroundInteraction();
-	importButton();
+	topButtons();
+	sideButtons();
+
 	for (list<ofxToggle>::iterator iter = buttonList.begin(); iter != buttonList.end(); ++iter) {
 		iter->draw();
 	}
@@ -50,28 +73,35 @@ void Interface::draw() {
 	}
 }
 
+void Interface::topButtons() {
+	for (int i = 0; i < iconTopBar.size(); i++) {
+		if (i == 0) {
+			iconTopBar[i].draw(0, 0, iconWidth, iconWidth);
+		}
+		else {
+			iconTopBar[i].draw(10 + iconWidth * i, 0, iconWidth, iconWidth);
+		}
+	}
+}
+
+void Interface::sideButtons() {
+	for (int i = 0; i < iconSideBar.size(); i++) {
+		if (i == 0) {
+			iconSideBar[i].draw(WIDTH - iconWidth, INTERACTION_BAR_HEIGHT, iconWidth, iconWidth);
+		}
+		else {
+			iconSideBar[i].draw(WIDTH - iconWidth, INTERACTION_BAR_HEIGHT + iconWidth * i, iconWidth, iconWidth);
+		}
+	}
+}
+
+
 void Interface::showOutils(bool& value) {
 	outilsPressed = !outilsPressed;
 }
 
 void Interface::enableFill(bool& value) {
 	fillEnabled = !fillEnabled;
-}
-//Interface::Interface(Renderer renderer) : renderer(renderer) {}
-
-
-void Interface::importButton() {
-	string buttonText = "Import";
-	ofRectangle textbox = buttonFont.getStringBoundingBox(buttonText, 0, 0);
-	if (IMPORT_BUTTON_WIDTH != textbox.getWidth() + 9) {
-		IMPORT_BUTTON_WIDTH = textbox.getWidth() + 9;
-	}
-
-	ofSetColor(backgroundInteractionBorderColor);
-	ofDrawRectangle(0, 0, IMPORT_BUTTON_WIDTH, 40);
-	ofSetColor(textColor);
-
-	buttonFont.drawString(buttonText, 3, 30);
 }
 
 void Interface::backgroundLine() {
@@ -128,7 +158,7 @@ void Interface::panelScene()
 	ofNoFill();
 
 	// Dessiner les lignes de segmentation dans le panneau
-	//int numSegments = 8; // Nombre de segments à dessiner
+	//int numSegments = 8; // Nombre de segments ï¿½ dessiner
 	//float segmentHeight = (HEIGHT - 40) / numSegments; // Hauteur de chaque segment
 
 	//for (int i = 1; i < numSegments; ++i) {

@@ -15,7 +15,7 @@ class Application : public ofBaseApp{
 		ofColor backgroundColor = ofColor(178, 184, 194);
 
 		bool isImportable = false; //Indique si le mode d'importation est actif ou non
-		int imgDistFromMax = 0; //Indicateur de la position de l'image par rapport à la taille maximale de la liste
+		int imgDistFromMax = 0; //Indicateur de la position de l'image par rapport ï¿½ la taille maximale de la liste
 		bool isRepositioning = false; //Indique si un image est en cours de repositionnement
 
 		void setup();
@@ -43,7 +43,7 @@ class Application : public ofBaseApp{
 		ofParameter <ofVec2f> uiShift;
 		ofParameter <ofVec2f> uiSize;
 
-		ofxGuiGroup primitivesGroupe; // Créer un groupe pour les boutons
+		ofxGuiGroup primitivesGroupe; // Crï¿½er un groupe pour les boutons
 		ofxToggle drawTriangle; // Bouton pour le triangle 
 		ofxToggle drawCircle; // Bouton pour le cercle
 		ofxToggle drawRectangle; // Bouton pour le rectangle
@@ -52,7 +52,7 @@ class Application : public ofBaseApp{
 		ofxToggle drawBezier; // Bouton pour le rectangle
 
 		ofxGuiGroup reinitialisationGroupe;
-		ofxToggle resetButton; // Bouton de réinitialisation
+		ofxToggle resetButton; // Bouton de rï¿½initialisation
 
 		bool draw_triangle;
 		bool draw_circle;
