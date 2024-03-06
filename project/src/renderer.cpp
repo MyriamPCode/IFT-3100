@@ -19,6 +19,8 @@ void Renderer::setup() {
 
 	okDessiner = false; 
 
+	//triangleColors= { interface.color_picker_stroke, interface.colorPickerFill };
+
 	//Pour la capture dìmages
 	frameCounter = 0;
 	captureInterval = 60; // changer l'intervalle pour le nombre d'image exportee
@@ -34,7 +36,7 @@ void Renderer::setup(vector<unique_ptr<Forme>>& v_formes)
 
 void Renderer::draw() {
 	interface.draw();
-	
+	ofSetBackgroundColor(interface.color_picker_background);
 
 	auto currImg = imgPosList.begin();
 	for (list<ofImage>::iterator iter = imageList.begin(); iter != imageList.end(); ++iter) {
@@ -69,8 +71,8 @@ void Renderer::draw() {
 
 	// Dessiner les coordonnées de la souris sur la grille
 	ofSetColor(255); // Couleur blanc
-	ofDrawBitmapString("Mouse X: " + ofToString(mouseX) + ", Mouse Y: " + ofToString(mouseY), 1730, 65);
-	ofDrawBitmapString("Grid X: " + ofToString(gridX) + ", Grid Y: " + ofToString(gridY), 1730, 85);
+	ofDrawBitmapString("Mouse X: " + ofToString(mouseX) + ", Mouse Y: " + ofToString(mouseY), 1630, 65);
+	ofDrawBitmapString("Grid X: " + ofToString(gridX) + ", Grid Y: " + ofToString(gridY), 1630, 85);
 
 	// Afficher un message si l'enregistrement est activé
 	if (isRecording)
@@ -81,14 +83,22 @@ void Renderer::draw() {
 
 void Renderer::dessinerTriangle() 
 {
-	ofSetColor(0);
 	if (v_formes_ptr) 
 	{ 
 		for (const auto& formeCourante : *v_formes_ptr) 
 		{ 
 			if (formeCourante->getType() == Forme::TRIANGLE) 
 			{
-
+				if (triangleFill) { // Remplissage
+					ofFill();
+					ofSetColor(triangleColors[1]);
+					ofDrawTriangle(formeCourante->getX1(), formeCourante->getY1(),
+						formeCourante->getX2(), formeCourante->getY2(),
+						formeCourante->getX3(), formeCourante->getY3());
+				}
+				ofNoFill(); // Outline
+				ofSetLineWidth(triangleStroke);
+				ofSetColor(triangleColors[0]);
 				ofDrawTriangle(formeCourante->getX1(), formeCourante->getY1(),
 					formeCourante->getX2(), formeCourante->getY2(),
 					formeCourante->getX3(), formeCourante->getY3());
@@ -109,6 +119,14 @@ void Renderer::dessinerCercle()
 		{
 			if (formeCourante->getType() == Forme::CERCLE)
 			{
+				if (cercleFill) { // Remplissage
+					ofFill();
+					ofSetColor(cercleColors[1]);
+					ofDrawCircle(formeCourante->getXC(), formeCourante->getYC(), formeCourante->getRayon());
+				}
+				ofNoFill(); // Outline
+				ofSetLineWidth(cercleStroke);
+				ofSetColor(cercleColors[0]);
 				ofDrawCircle(formeCourante->getXC(), formeCourante->getYC(), formeCourante->getRayon());
 			}
 		}
@@ -124,6 +142,15 @@ void Renderer::dessinerRectangle()
 		{
 			if (formeCourante->getType() == Forme::RECTANGLE)
 			{
+				if (rectangleFill) { // Remplissage
+					ofFill();
+					ofSetColor(rectangleColors[1]);
+					ofDrawRectangle(formeCourante->getXR(), formeCourante->getYR(),
+						formeCourante->getWidth(), formeCourante->getHeight());
+				}
+				ofNoFill(); // Outline
+				ofSetLineWidth(rectangleStroke);
+				ofSetColor(rectangleColors[0]);
 				ofDrawRectangle(formeCourante->getXR(), formeCourante->getYR(),
 						formeCourante->getWidth(), formeCourante->getHeight());
 			}
@@ -141,6 +168,9 @@ void Renderer::dessinerLigne()
 		// Dessiner sans ptr 
 		for (auto& polyline : vecteur_lignes) 
 		{
+			ofNoFill(); // Outline
+			ofSetLineWidth(ligneStroke);
+			ofSetColor(ligneColor);
 			polyline.draw();
 		
 		}
@@ -156,6 +186,15 @@ void Renderer::dessinerEllipse()
 		{
 			if (formeCourante->getType() == Forme::ELLIPSE)
 			{
+				if (ellipseFill) { // Remplissage
+					ofFill();
+					ofSetColor(ellipseColors[1]);
+					ofDrawEllipse(formeCourante->getXR(), formeCourante->getYR(),
+						formeCourante->getWidth(), formeCourante->getHeight());
+				}
+				ofNoFill(); // Outline
+				ofSetLineWidth(ellipseStroke);
+				ofSetColor(ellipseColors[0]);
 				ofDrawEllipse(formeCourante->getXR(), formeCourante->getYR(),
 				 formeCourante->getWidth(), formeCourante->getHeight());
 			}
@@ -173,6 +212,15 @@ void Renderer::dessinerBezier()
 		{
 			if (formeCourante->getType() == Forme::BEZIER)
 			{
+				if (bezierFill) { // Remplissage
+					ofFill();
+					ofSetColor(bezierColors[1]);
+					ofDrawBezier(formeCourante->getX1(), formeCourante->getX2(), formeCourante->getXB1(), formeCourante->getYB1(),
+						formeCourante->getXB2(), formeCourante->getYB2(), formeCourante->getX2(), formeCourante->getY2());
+				}
+				ofNoFill(); // Outline
+				ofSetLineWidth(bezierStroke);
+				ofSetColor(bezierColors[0]);
 				ofDrawBezier(formeCourante->getX1(), formeCourante->getX2(), formeCourante->getXB1(), formeCourante->getYB1(),
 				formeCourante->getXB2(), formeCourante->getYB2(), formeCourante->getX2(), formeCourante->getY2());
 			}

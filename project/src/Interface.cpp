@@ -5,15 +5,58 @@ using namespace std;
 
 void Interface::setup() {
 	buttonFont.load("roboto/Roboto-Regular.ttf", 24);
+
+	ofxToggle button;
+	button.setup("Outils de Dessin", false, 175, 39);
+	button.loadFont("roboto/Roboto-Regular.ttf", 16);
+	button.setBackgroundColor(backgroundInteractionColor);
+	button.setPosition(103, 0);
+	button.addListener(this, &Interface::showOutils);
+	buttonList.push_back(button);
+
+	outilsGui.setup();
+	outilsGui.loadFont("roboto/Roboto-Regular.ttf", 10);
+	outilsGui.setPosition(103, 40);
+	outilsGui.setSize(200, 1080);
+
+	color_picker_background.set("Couleur du canevas", ofColor(31), ofColor(0, 0), ofColor(255, 255));
+	color_picker_stroke.set("Couleur de la ligne de contour", ofColor(255), ofColor(0, 0), ofColor(255, 255));
+	colorPickerFill.set("Couleur de remplissage", ofColor(255), ofColor(0, 0), ofColor(255, 255));
+	slider_stroke_weight.set("Epaisseur de la ligne de contour", 4.0f, 0.0f, 10.0f);
+
+	outilsGui.add(color_picker_background);
+	outilsGui.add(color_picker_stroke);
+	outilsGui.add(fillButton.setup("Remplissage de forme", false));
+	outilsGui.add(colorPickerFill);
+	outilsGui.add(slider_stroke_weight);
+
+	fillButton.addListener(this, &Interface::enableFill);
+
+	outilsGui.setFillColor(backgroundInteractionColor);
+	outilsGui.setTextColor(backgroundInteractionColor);
+	outilsGui.maximizeAll();
+	outilsGui.disableHeader();
 }
 
 void Interface::draw() {
 	backgroundLine();
 	backgroundInteraction();
 	importButton();
-	//panelScene();
+	for (list<ofxToggle>::iterator iter = buttonList.begin(); iter != buttonList.end(); ++iter) {
+		iter->draw();
+	}
+	if (outilsPressed) {
+		outilsGui.draw();
+	}
 }
 
+void Interface::showOutils(bool& value) {
+	outilsPressed = !outilsPressed;
+}
+
+void Interface::enableFill(bool& value) {
+	fillEnabled = !fillEnabled;
+}
 //Interface::Interface(Renderer renderer) : renderer(renderer) {}
 
 

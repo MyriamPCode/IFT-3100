@@ -40,11 +40,29 @@ class Renderer {
     void setup(vector<unique_ptr<Forme>>& v_formes);
     bool okDessiner; 
     void dessinerTriangle();
+    vector<ofColor> triangleColors = {}; // Contient les couleurs du dessin
+    bool triangleFill = false; // Indique si l'interieur de la forme doit etre colore
+    float triangleStroke; // Taille du outline
     void dessinerCercle(); 
+    vector<ofColor> cercleColors = {}; // Contient les couleurs du dessin
+    bool cercleFill = false; // Indique si l'interieur de la forme doit etre colore
+    float cercleStroke; // Taille du outline
     void dessinerRectangle(); 
+    vector<ofColor> rectangleColors = {}; // Contient les couleurs du dessin
+    bool rectangleFill = false; // Indique si l'interieur de la forme doit etre colore
+    float rectangleStroke; // Taille du outline
     void dessinerLigne(); 
-    void dessinerEllipse(); 
+    ofColor ligneColor; // Contient la couleur du dessin
+    float ligneStroke; // Taille du outline
+    void dessinerEllipse();
+    vector<ofColor> ellipseColors = {}; // Contient les couleurs du dessin
+    bool ellipseFill = false; // Indique si l'interieur de la forme doit etre colore
+    float ellipseStroke; // Taille du outline
     void dessinerBezier();
+    vector<ofColor> bezierColors = {}; // Contient les couleurs du dessin
+    bool bezierFill = false; // Indique si l'interieur de la forme doit etre colore
+    float bezierStroke; // Taille du outline
+
     vector<unique_ptr<Forme>>* getVecteurFormesPtr() {
         return &v_formes;
     }

@@ -1,18 +1,28 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxGui.h"
+#include "ofxButton.h"
 //#include "Renderer.h"
 #include <memory>
 // Déclaration anticipée de la classe Renderer
+
+using namespace std;
 
 class Interface {
 	public:
 		void setup();
 		void draw();
-		// Constructeur prenant un objet Renderer en paramètre
-		//Interface(Renderer& r) : renderer(r) {}
-		//Renderer renderer;
+
+		ofParameter<ofColor> color_picker_background;
+		ofParameter<ofColor> color_picker_stroke;
+		ofxToggle fillButton;
+		ofParameter<ofColor> colorPickerFill;
+		ofParameter<float> slider_stroke_weight;
+		bool fillEnabled = false;
+
 	private:
+		bool outilsPressed = false;
 		ofTrueTypeFont buttonFont;
 
 		ofColor backgroundLineColor = ofColor(217, 217, 217);
@@ -21,6 +31,10 @@ class Interface {
 
 		ofColor textColor = backgroundLineColor;
 
+		list<ofxToggle> buttonList;
+
+		ofxPanel outilsGui;
+
 		void backgroundLine();
 		void backgroundInteraction();
 		void importButton();
@@ -28,6 +42,8 @@ class Interface {
 		void panelScene(); 
 		ofColor backgroundPanelSceneColor = ofColor(125);
 		//Renderer& renderer;
+		void showOutils(bool& value);
+		void enableFill(bool& value);
 };
 
 //class Renderer;
