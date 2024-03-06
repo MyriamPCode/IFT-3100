@@ -12,6 +12,8 @@ void Interface::setup() {
 	iconTopBar.push_back(imgImport);
 	imgExport.load("img/export.png");
 	iconTopBar.push_back(imgExport);
+	imgAnimation.load("img/animation.png");
+	iconTopBar.push_back(imgAnimation);
 
 	//same here but for the side bar
 	imgColorWheel.load("img/color-wheel.png");

@@ -157,6 +157,10 @@ void Application::mouseReleased(int x, int y, int button){
 				//call to export method
 				cout << "export \n";
 				break;
+			case 2:
+				//call to animation method
+				cout << "animation \n";
+				break;
 		}
 	}
 
