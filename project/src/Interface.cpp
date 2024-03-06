@@ -65,6 +65,9 @@ void Interface::draw() {
 	topButtons();
 	sideButtons();
 
+	for (list<ofxToggle>::iterator iter = buttonList.begin(); iter != buttonList.end(); ++iter) {
+		iter->draw();
+	}
 	if (outilsPressed) {
 		outilsGui.draw();
 	}
