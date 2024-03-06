@@ -270,7 +270,7 @@ void Application::mousePressed(int x, int y, int button){
 			forme.getX3(), forme.getY3()));
 
 		renderer.okDessiner = true;
-		renderer.triangleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill };
+		renderer.triangleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
 		renderer.triangleFill = renderer.interface.fillEnabled;
 		renderer.triangleStroke = renderer.interface.slider_stroke_weight;
 		//ofxToggle button;
@@ -287,7 +287,7 @@ void Application::mousePressed(int x, int y, int button){
 		renderer.v_formes.push_back(make_unique<Forme>(Forme::CERCLE, forme.getXC(), forme.getYC(), forme.getRayon()));
 		//ofSetCircleResolution(55);
 		renderer.okDessiner = true; 
-		renderer.cercleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill };
+		renderer.cercleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
 		renderer.cercleFill = renderer.interface.fillEnabled;
 		renderer.cercleStroke = renderer.interface.slider_stroke_weight;
 		//ofxToggle button;
@@ -302,7 +302,7 @@ void Application::mousePressed(int x, int y, int button){
 		forme.setYR(renderer.mouse_current_y); 
 		renderer.v_formes.push_back(make_unique<Forme>(Forme::RECTANGLE, forme.getXR(), forme.getYR(), forme.getWidth(), forme.getHeight()));
 		renderer.okDessiner = true;
-		renderer.rectangleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill };
+		renderer.rectangleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
 		renderer.rectangleFill = renderer.interface.fillEnabled;
 		renderer.rectangleStroke = renderer.interface.slider_stroke_weight;
 		//ofxToggle button;
@@ -322,7 +322,7 @@ void Application::mousePressed(int x, int y, int button){
 
 		renderer.ligne.addVertex(renderer.mouse_press_x, renderer.mouse_press_y);
 		renderer.okDessiner = true;
-		renderer.ligneColor = renderer.interface.color_picker_stroke;
+		renderer.ligneColor = renderer.interface.color_picker_stroke; // Ajuste les parametres
 		renderer.ligneStroke = renderer.interface.slider_stroke_weight;
 		auto button = make_unique<ofxToggle>();
 		guiScene.add(button->setup("LIGNE", false)); // Nom du bouton
@@ -336,7 +336,7 @@ void Application::mousePressed(int x, int y, int button){
 		forme.setYR(renderer.mouse_press_y);
 		renderer.v_formes.push_back(make_unique<Forme>(Forme::ELLIPSE, forme.getXR(), forme.getYR(), forme.getWidth(), forme.getHeight()));
 		renderer.okDessiner = true;
-		renderer.ellipseColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill };
+		renderer.ellipseColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
 		renderer.ellipseFill = renderer.interface.fillEnabled;
 		renderer.ellipseStroke = renderer.interface.slider_stroke_weight;
 		auto button = make_unique<ofxToggle>();
@@ -367,7 +367,7 @@ void Application::mousePressed(int x, int y, int button){
 		renderer.v_formes.push_back(make_unique<Forme>(Forme::BEZIER, forme.getX1(), forme.getY1(), forme.getXB1(), forme.getYB1(),
 			forme.getXB2(), forme.getYB2(), forme.getX2(), forme.getY2()));
 		renderer.okDessiner = true;
-		renderer.bezierColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill };
+		renderer.bezierColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
 		renderer.bezierFill = renderer.interface.fillEnabled;
 		renderer.bezierStroke = renderer.interface.slider_stroke_weight;
 		auto button = make_unique<ofxToggle>();
