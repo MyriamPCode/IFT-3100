@@ -10,6 +10,15 @@ using namespace std;
 void Renderer::setup() {
 	ofSetFrameRate(60);
 	interface.setup();
+	
+	gui.setup("Exportation");
+	nameField.set("Image name", "name");
+	gui.add(nameField);
+	exportButton.setName("Export");
+	gui.add(exportButton);
+	visibleButton.setName("Close");
+	gui.add(visibleButton);
+	gui.setPosition(200, 40);
 
 	is_mouse_button_pressed = false;
 	is_mouse_button_dragged = false;
@@ -37,6 +46,17 @@ void Renderer::setup(vector<unique_ptr<Forme>>& v_formes)
 void Renderer::draw() {
 	interface.draw();
 	ofSetBackgroundColor(interface.color_picker_background);
+
+	if (!visibleButton) {
+		gui.draw();
+
+		if (exportButton) {
+			image_export(nameField, "png");
+			exportButton = false;
+			//close the gui, but we do not want to see the close checkbox checked
+			visibleButton = true;
+		}
+	}
 
 	auto currImg = imgPosList.begin();
 	for (list<ofImage>::iterator iter = imageList.begin(); iter != imageList.end(); ++iter) {
@@ -264,7 +284,6 @@ void Renderer::draw_cursor(float x, float y) const {
 
 void Renderer::update()
 {
-
 	if (isRecording)
 	{
 		frameCounter++;
@@ -279,8 +298,12 @@ void Renderer::update()
 		}
 	}
 }
-void Renderer::image_export(const string name, const string extension)const
-{
+
+void Renderer::toggleExportGUI() {
+	visibleButton = !visibleButton;
+}
+
+void Renderer::image_export(const string name, const string extension) const {
 	ofImage image;
 
 	// extraire des données temporelles formatées
@@ -297,6 +320,7 @@ void Renderer::image_export(const string name, const string extension)const
 
 	ofLog() << "<export image: " << file_name << ">";
 }
+
 void Renderer::captureImage() {
 	// Exporter l'image
 	ofSaveScreen(ofToString(frameCounter) + ".png");

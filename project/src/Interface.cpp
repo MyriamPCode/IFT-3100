@@ -95,7 +95,6 @@ void Interface::sideButtons() {
 	}
 }
 
-
 void Interface::showOutils(bool& value) {
 	outilsPressed = !outilsPressed;
 }
@@ -115,16 +114,6 @@ void Interface::backgroundLine() {
 	for (int i = 0; i < HEIGHT; i += WIDTH / 40) {
 		ofDrawLine(0, i, WIDTH, i);
 	};
-
-//	// Dessiner les lignes verticales
-//	for (int i = 255; i < WIDTH; i += WIDTH / 40) {
-//		ofDrawLine(i, 0, i, HEIGHT);
-//	}
-//
-//	// Dessiner les lignes horizontales
-//	for (int i = 40; i < HEIGHT; i += WIDTH / 40) {
-//		ofDrawLine(0, i, WIDTH, i);
-//	}
 }
 
 void Interface::backgroundInteraction() {
