@@ -74,9 +74,11 @@ void Interface::topButtons() {
 	for (int i = 0; i < iconTopBar.size(); i++) {
 		if (i == 0) {
 			iconTopBar[i].draw(0, 0, iconWidth, iconWidth);
-		} else {
+		}
+		else {
 			iconTopBar[i].draw(10 + iconWidth * i, 0, iconWidth, iconWidth);
-		}	
+		}
+	}
 }
 
 void Interface::sideButtons() {
