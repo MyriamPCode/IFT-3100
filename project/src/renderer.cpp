@@ -23,8 +23,9 @@ void Renderer::setup() {
 	import_activate = false;
 
 	// chargement du modèle 3D en mémoire
-	teapot.loadModel("teapot.obj");
-	bunny.loadModel("bun_zipper.ply");
+	model1.loadModel("models/teapot.obj");
+	model2.loadModel("models/bun_zipper.ply");
+	model3.loadModel("models/knight.obj");
 
 	typeRender = MeshRenderMode::wireframe;
 
@@ -69,21 +70,9 @@ void Renderer::draw() {
 
 	}
 
-	teapot.setPosition(1350,1000,0);
-	bunny.setPosition(400, 1300, 0);
-
-	if (typeRender == MeshRenderMode::wireframe) {
-		teapot.draw(OF_MESH_WIREFRAME);
-		bunny.draw(OF_MESH_WIREFRAME);
-	}
-	else if (typeRender == MeshRenderMode::fill) {
-		teapot.draw(OF_MESH_FILL);
-		bunny.draw(OF_MESH_FILL);
-	}
-	else if (typeRender == MeshRenderMode::vertex) {
-		teapot.draw(OF_MESH_POINTS);
-		bunny.draw(OF_MESH_POINTS);
-	}
+	model1.setPosition(1410,700, 0);
+	model2.setPosition(-50, 1200, -400);
+	model3.setPosition(800, 1000, -600);
 
 	//////////////////////////////////////////////////////////////////
 	if (okDessiner)
@@ -96,6 +85,22 @@ void Renderer::draw() {
 		dessinerBezier(); 
 	}
 	//////////////////////////////////////////////////////////////////
+
+	if (typeRender == MeshRenderMode::wireframe) {
+		model1.draw(OF_MESH_WIREFRAME);
+		model2.draw(OF_MESH_WIREFRAME);
+		model3.draw(OF_MESH_WIREFRAME);
+	}
+	else if (typeRender == MeshRenderMode::fill) {
+		model1.draw(OF_MESH_FILL);
+		model2.draw(OF_MESH_FILL);
+		model3.draw(OF_MESH_FILL);
+	}
+	else if (typeRender == MeshRenderMode::vertex) {
+		model1.draw(OF_MESH_POINTS);
+		model2.draw(OF_MESH_POINTS);
+		model3.draw(OF_MESH_POINTS);
+	}
 
 	draw_cursor(mouse_current_x, mouse_current_y);
 

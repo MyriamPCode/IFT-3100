@@ -19,8 +19,9 @@ class Renderer {
 		list<ofImage> imageList; //Liste d'images import�es
 		list<vector<int>> imgPosList; //Positions x et y des images import�es
 
-        ofxAssimpModelLoader teapot;
-        ofxAssimpModelLoader bunny;
+        ofxAssimpModelLoader model1;
+        ofxAssimpModelLoader model2;
+        ofxAssimpModelLoader model3;
         MeshRenderMode typeRender;
 
 
