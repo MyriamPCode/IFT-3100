@@ -261,17 +261,22 @@ void Renderer::draw_cursor(float x, float y) const {
 
 	if (is_mouse_button_dragged) {
 		ofSetColor(254, 142, 118); // Couleur rouge
+		ofDrawCircle(x, y, 20);
 	}
 
 	else if (is_mouse_button_pressed) {
 		ofSetColor(249, 220, 40); // Couleur jaune
+		ofDrawRectangle(x - 20, y - 20, 40, 40);
 	}
 	else if (import_activate) {
 		ofSetColor(135, 210, 88); // Couleur verte
+		float tailleTriangle = 20;
+		ofDrawTriangle(x, y - tailleTriangle, x - tailleTriangle, y + tailleTriangle, x + tailleTriangle, y + tailleTriangle);
 	}
 
 	else
 		ofSetColor(255); // Couleur blanche
+
 
 	ofDrawLine(x + offset, y, x + offset + length, y);
 	ofDrawLine(x - offset, y, x - offset - length, y);

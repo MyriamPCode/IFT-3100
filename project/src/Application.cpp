@@ -8,6 +8,8 @@ void Application::setup(){
 	ofSetWindowTitle("Team 7");
 	ofBackground(backgroundColor);
 	renderer.setup();
+
+	cam.setDistance(100);
 	
 	gui.setup();
 	gui.setPosition(300, 40);
@@ -21,6 +23,9 @@ void Application::setup(){
 	draw_triangle = false;
 	draw_circle = false;
 	draw_rectangle = false;
+	rotation_activate = false;
+	mesh_activate = false;
+	noise_activate = false;
 
 	primitivesGroupe.setup("Primitives");
 
@@ -47,6 +52,36 @@ void Application::setup(){
 	resetButton.addListener(this, &Application::reset);
 	gui.add(&reinitialisationGroupe);
 
+	animationGroupe.setup("Animations");
+	animationGroupe.add(rotationButton.setup("Rotation", false));
+	rotationButton.addListener(this, &Application::button_rotation);
+	gui.add(&animationGroupe);
+
+	meshGroupe.setup("Maille geométrique");
+	meshGroupe.add(meshButton.setup("Maille", false));
+	meshButton.addListener(this, &Application::button_mesh);
+	meshGroupe.add(bruitButton.setup("Bruit", false));
+	bruitButton.addListener(this, &Application::button_noise);
+	gui.add(&meshGroupe);
+
+	// Création de la maille
+	for (int x = 0; x < size; x++) {
+		for (int y = 0; y < size; y++) {
+			mesh.addVertex(ofPoint(x - size / 2, y - size / 2));
+		}
+	}
+
+	for (int y = 0; y < size - 1; y++) {
+		for (int x = 0; x < size - 1; x++) {
+			mesh.addIndex(x + y * size);
+			mesh.addIndex((x + 1) + y * size);
+			mesh.addIndex(x + (y + 1) * size);
+			mesh.addIndex((x + 1) + y * size);
+			mesh.addIndex((x + 1) + (y + 1) * size);
+			mesh.addIndex(x + (y + 1) * size);
+		}
+	}
+
 	//renderer.setup(forme.v_formes);
 	renderer.setup(renderer.v_formes);
 	forme.setup();
@@ -67,6 +102,21 @@ void Application::setup(){
 
 void Application::update()
 {
+	// Rotations des primitives vectorielles
+	rotate++;
+
+	// Animation sur la maille 
+	if (noise_activate) {
+		int count = 0;
+		for (int x = 0; x < size; x++) {
+			for (int y = 0; y < size; y++) {
+				ofVec3f vertex = mesh.getVertex(count);
+				vertex.z = ofMap(ofNoise(count, ofGetElapsedTimef()), 0, 1, 0, uiAmount);
+				mesh.setVertex(count, vertex);
+				count++;
+			}
+		}
+	}
 	if (renderer.isRecording) {
 		// Mettez � jour et capturez l'image � intervalles r�guliers
 		renderer.update();
@@ -83,6 +133,7 @@ void Application::draw(){
 	// Partie Myriam 
 	//************** 
 	//ofPushMatrix();
+	// cam.begin();
 	//ofTranslate(uiPosition->x, uiPosition->y);
 	//for (int i = 0; i < uiAmount; i++) {
 	//	ofPushMatrix();
@@ -94,21 +145,45 @@ void Application::draw(){
 	//	ofScale(uiSize->x, uiSize->y);
 	//	ofBeginShape();
 	//	if (draw_triangle) {
+	//     if (rotation_activate == true) {
+	            //ofRotateXDeg(rotate);
+	            //ofRotateYDeg(rotate);
+	            //ofRotateZDeg(rotate);
+            //}
 	//		//ofDrawTriangle(0, 0, -16, 32, 16, 32);
 	//	} 
 	//	if (draw_circle) {
+	//      if (rotation_activate == true) {
+	            //ofRotateXDeg(rotate);
+	            //ofRotateYDeg(rotate);
+	            //ofRotateZDeg(rotate);
+            //}
 	//		//ofDrawCircle(100, 100, 50);
 	//		//ofSetCircleResolution(55);
 	//	}
 	//	if (draw_rectangle) {
-	//		/*ofDrawRectangle(50, 50, 100, 200);*/
-	//	}
+	/*
+	if (rotation_activate == true) {
+		ofRotateXDeg(rotate);
+		ofRotateYDeg(rotate);
+		ofRotateZDeg(rotate);
+	}
+	ofDrawRectangle(50, 50, 100, 200);
+    }
+    if (mesh_activate) {
+	    mesh.drawWireframe();
+	    if (noise_activate) {
+		    button_noise(noise_activate);
+	    }
+
+    }*/
 	//	ofEndShape();
 	//	ofPopMatrix();
 
 	//}
 	
 	renderer.draw();
+	//cam.end();
 	ofPopMatrix();
 	gui.draw();
 	guiScene.draw();
@@ -464,6 +539,7 @@ void Application::windowResized(int w, int h){
 
 
 void Application::gotMessage(ofMessage msg){
+	ofEasyCam cam;
 
 }
 
@@ -587,6 +663,12 @@ void Application::reset(bool& value) {
 		draw_rectangle = false;
 		drawRectangle = false;
 		resetButton = false;
+		rotationButton = false;
+		rotation_activate = false;
+		mesh_activate = false;
+		meshButton = false;
+		noise_activate = false;
+		bruitButton = false;
 	}
 }
 
@@ -632,5 +714,26 @@ void Application::buttons_list(bool& value)
 				//}
 			//}
 		//}
+	}
+}
+
+void Application::button_rotation(bool& value) {
+	rotation_activate = value;
+	if (value) {
+		rotation_activate = true;
+	}
+}
+
+void Application::button_mesh(bool& value) {
+	mesh_activate = value;
+	if (value) {
+		mesh_activate = true;
+	}
+}
+
+void Application::button_noise(bool& value) {
+	noise_activate = value;
+	if (value) {
+		noise_activate = true;
 	}
 }
