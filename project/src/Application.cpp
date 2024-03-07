@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "Constants.h"
 #include <cmath>
+#include <iostream>
 
 using namespace std;
 
@@ -8,29 +9,28 @@ void Application::setup(){
 	ofSetWindowTitle("Team 7");
 	ofBackground(backgroundColor);
 	renderer.setup();
-	
+	//toggleDraw, toggleTransform
 	gui.setup();
 	gui.setPosition(300, 40);
-	gui.add(uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
-	gui.add(uiAmount.set("amount", 1, 0, 64)); // La quantit� de primitives. Nombre maximal est 64 et nombre minimum est 1
-	gui.add(uiStep.set("step", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
-	gui.add(uiRotate.set("rotate", ofVec3f(0), ofVec3f(-180), ofVec3f(180))); // La rotation des primitives
-	gui.add(uiShift.set("shift", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
-	gui.add(uiSize.set("size", ofVec2f(6), ofVec2f(0), ofVec2f(30)));
-
-	draw_triangle = false;
-	draw_circle = false;
-	draw_rectangle = false;
+	primitivesMode.setup("Mode");
+	primitivesMode.add(toggleDraw.setup("Drawing", false));
+	primitivesMode.add(toggleTransform.setup("Transformation", false));
+	renderer.inputIndex.setup("Index de la liste: ", 0);
+	gui.add(&renderer.inputIndex);
+	//gui.add(renderer.uiIndex.set("Index de la liste: ", int(0))); 
+	toggleDraw.addListener(this, &Application::button_modeDraw);
+	toggleTransform.addListener(this, &Application::button_modeTransform);
+	gui.add(&primitivesMode);
 
 	primitivesGroupe.setup("Primitives");
 
 	// Ajout des boutons pour les primitives
-	primitivesGroupe.add(drawTriangle.setup("Draw Triangle",false));
-	primitivesGroupe.add(drawCircle.setup("Draw Circle",false));
-	primitivesGroupe.add(drawRectangle.setup("Draw Rectangle",false));
-	primitivesGroupe.add(drawLine.setup("Draw Line", false));
-	primitivesGroupe.add(drawEllipse.setup("Draw Ellipse", false));
-	primitivesGroupe.add(drawBezier.setup("Draw Bezier", false));
+	primitivesGroupe.add(drawTriangle.setup("Triangle",false));
+	primitivesGroupe.add(drawCircle.setup("Circle",false));
+	primitivesGroupe.add(drawRectangle.setup("Rectangle",false));
+	primitivesGroupe.add(drawLine.setup("Line", false));
+	primitivesGroupe.add(drawEllipse.setup("Ellipse", false));
+	primitivesGroupe.add(drawBezier.setup("Bezier", false));
 	
 	// Associer des fonctions de rappel aux boutons
 	drawTriangle.addListener(this, &Application::button_triangle);
@@ -41,13 +41,18 @@ void Application::setup(){
 	drawBezier.addListener(this, &Application::button_bezier);
 
 	gui.add(&primitivesGroupe);
+	gui.add(renderer.uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
+	gui.add(uiAmount.set("amount", renderer.v_formes.size(), 0, renderer.v_formes.max_size()));
+	gui.add(renderer.uiStep.set("step", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
+	gui.add(renderer.uiRotate.set("rotate", ofVec3f(0), ofVec3f(-180), ofVec3f(180))); // La rotation des primitives
+	gui.add(renderer.uiShift.set("shift", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
+	gui.add(renderer.uiSize.set("size", ofVec2f(1), ofVec2f(1), ofVec2f(5)));
 
 	reinitialisationGroupe.setup("Reinitialisation");
 	reinitialisationGroupe.add(resetButton.setup("Reset", false));
 	resetButton.addListener(this, &Application::reset);
 	gui.add(&reinitialisationGroupe);
 
-	//renderer.setup(forme.v_formes);
 	renderer.setup(renderer.v_formes);
 	forme.setup();
 	diffX = (abs(forme.getX2() - forme.getX3())) / 2;
@@ -57,7 +62,10 @@ void Application::setup(){
 	newX3 = 0;
 	newY3 = 0;
 
-	draw_line = draw_ellipse = draw_bezier = false; 
+	// état par défaut des bool
+	draw_triangle = draw_circle = draw_rectangle =
+		draw_line = draw_ellipse = draw_bezier = false;
+	
 
 	shapeBool = false; 
 	v_buttons_ptr = &v_buttons;
@@ -80,36 +88,7 @@ void Application::draw(){
 		renderer.import_activate = true;
 		ofDrawBitmapString("Please drag an image to import it.", 30, 30);
 	}
-	
-	// Partie Myriam 
-	//************** 
-	//ofPushMatrix();
-	//ofTranslate(uiPosition->x, uiPosition->y);
-	//for (int i = 0; i < uiAmount; i++) {
-	//	ofPushMatrix();
-	//	ofTranslate(i * uiStep->x, i * uiStep->y);
-	//	ofRotateXDeg(i * uiRotate->x);
-	//	ofRotateYDeg(i * uiRotate->y);
-	//	ofRotateZDeg(i * uiRotate->z);
-	//	ofTranslate(i * uiShift->x, i * uiShift->y);
-	//	ofScale(uiSize->x, uiSize->y);
-	//	ofBeginShape();
-	//	if (draw_triangle) {
-	//		//ofDrawTriangle(0, 0, -16, 32, 16, 32);
-	//	} 
-	//	if (draw_circle) {
-	//		//ofDrawCircle(100, 100, 50);
-	//		//ofSetCircleResolution(55);
-	//	}
-	//	if (draw_rectangle) {
-	//		/*ofDrawRectangle(50, 50, 100, 200);*/
-	//	}
-	//	ofEndShape();
-	//	ofPopMatrix();
 
-	//}
-
-	
 	renderer.draw();
 	ofPopMatrix();
 	gui.draw();
@@ -117,6 +96,7 @@ void Application::draw(){
 }
 
 
+// a modifier ou effacer 
 void Application::deleteShapeSelected()
 {
 	// Vecteur temporaire pour stocker les indices des boutons � supprimer
@@ -138,48 +118,64 @@ void Application::deleteShapeSelected()
 		}
 
 	}
-	//for (int i = 0; i < v_buttons.size(); ++i)
-	//{
-	//	// V�rifier si le bouton est en �tat TRUE
-	//	if (i == shapeBool) // v_buttons[i] Acc�der � l'�tat bool�en du bouton
-	//	{
-	//		cout << "Il est cense avoir " << i << " forme a effacer" << endl;
-	//		// Ajouter l'index du bouton � supprimer dans le vecteur temporaire
-	//		buttonsToDelete.push_back(i);
-	//	}
-	//}
-
 
 	if (!buttonsToDelete.empty())
 	{
 		cout << "Deletion is possible! " << endl;
 		cout << "Size of the deletion list is " << buttonsToDelete.size() << endl;
 	}
-
-	// Parcourir tous les boutons dans la liste
-	//for (int i = 0; i < buttonStates.size(); ++i)
-	//{
-	//	// V�rifier si le bouton est en �tat TRUE
-	//	if (buttonStates[i] == TRUE)
-	//	{
-	//		// Ajouter l'index du bouton � supprimer dans le vecteur temporaire
-	//		buttonsToDelete.push_back(i);
-	//	}
-	//}
-
-
-	// Supprimer les boutons en parcourant le vecteur temporaire en sens inverse
-	//for (int i = buttonsToDelete.size() - 1; i >= 0; --i)
-	//{
-	//	v_buttons.erase(v_buttons.begin() + buttonsToDelete[i]);
-	//	buttonStates.erase(buttonStates.begin() + buttonsToDelete[i]); // Supprimer �galement l'�tat correspondant
-	//}
 }
 
 void Application::keyPressed(int key) 
 {
-	if (key == 100) { // 105 = key "d"
-		deleteShapeSelected();
+	if (key == 'd') { // 105 = key "d"
+		//deleteShapeSelected();
+		int index = renderer.inputIndex;
+
+
+		if (index >= 0 && index < v_buttons.size() && index < renderer.v_formes.size()) {
+			v_buttons.erase(v_buttons.begin() + index); // Supprimer l'élément du vecteur v_buttons
+			//renderer.v_formes.erase(renderer.v_formes.begin() + index); // Supprimer l'élément du vecteur renderer.v_formes
+		}
+
+
+		//if (index >= 0 && index < v_buttons_ptr->size() && index < renderer.v_formes_ptr->size()) {
+		//	v_buttons_ptr->at(index).reset(); // Libérer la mémoire associée à l'élément de v_buttons_ptr
+		//	renderer.v_formes_ptr->at(index).reset(); // Libérer la mémoire associée à l'élément de renderer.v_formes_ptr
+
+		//	v_buttons_ptr->erase(v_buttons_ptr->begin() + index); // Supprimer le pointeur du vecteur v_buttons_ptr
+		//	renderer.v_formes_ptr->erase(renderer.v_formes_ptr->begin() + index); // Supprimer le pointeur du vecteur renderer.v_formes_ptr
+		//}
+
+		//if (index >= 0 && index < v_buttons_ptr->size() && index < renderer.v_formes_ptr->size()) {
+		//	v_buttons_ptr->erase(v_buttons_ptr->begin() + index); // Supprimer le pointeur du vecteur v_buttons_ptr
+		//	renderer.v_formes_ptr->erase(renderer.v_formes_ptr->begin() + index); // Supprimer le pointeur du vecteur renderer.v_formes_ptr
+		//}
+
+
+		//if (index >= 0 && index < v_buttons_ptr->size() && index < renderer.v_formes_ptr->size()) {
+		//	// Extraire les pointeurs bruts
+		//	ofxToggle* buttonPtr = v_buttons_ptr->at(index).release();
+		//	Forme* formePtr = renderer.v_formes_ptr->at(index).release();
+
+		//	// Supprimer les pointeurs du vecteur
+		//	v_buttons_ptr->erase(v_buttons_ptr->begin() + index);
+		//	renderer.v_formes_ptr->erase(renderer.v_formes_ptr->begin() + index);
+
+		//	// Libérer manuellement la mémoire
+		//	delete buttonPtr;
+		//	delete formePtr;
+		//}
+
+	}
+	// Pour tester les pointeurs 
+	if (key == 'f') {
+		for (const auto& ptr : *renderer.v_formes_ptr) {
+			cout << "Adresse du pointeur : " << &ptr << endl;
+			cout << "Adresse de l'objet Forme : " << ptr.get() << endl; // Obtenir l'adresse de l'objet pointé
+			cout << "Valeur de l'objet Forme : " << ptr << endl;
+			cout << endl;
+		}		
 	}
 
 	// D�marrer/arr�ter l'enregistrement lors de l'appui sur la touche 'r'
@@ -249,133 +245,185 @@ void Application::mousePressed(int x, int y, int button){
 
 	renderer.mouse_press_x = x;
 	renderer.mouse_press_y = y;
-
-	if(draw_triangle && drawTriangle)
-	{
-		// A partir du mouse click, calcul des 2 autres sommets 
-		newX2 = renderer.mouse_press_x - diffX;
-		newY2 = renderer.mouse_press_y + diffY;
-		newX3 = renderer.mouse_press_x + diffX;
-		newY3 = renderer.mouse_press_y + diffY;
-		forme.setX1(x);
-		forme.setY1(y);
-		forme.setX2(newX2);
-		forme.setY2(newY2);
-		forme.setX3(newX3);
-		forme.setY3(newY3);
-
-		renderer.v_formes.push_back(make_unique<Forme>(Forme::TRIANGLE, forme.getX1(), forme.getY1(),
-			forme.getX2(), forme.getY2(),
-			forme.getX3(), forme.getY3()));
-
-		renderer.okDessiner = true;
-		renderer.triangleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
-		renderer.triangleFill = renderer.interface.fillEnabled;
-		renderer.triangleStroke = renderer.interface.slider_stroke_weight;
-		//ofxToggle button;
-		auto button = make_unique<ofxToggle>();
-		button->addListener(this, &Application::buttons_list);
-		guiScene.add(button->setup("TRIANGLE", shapeBool)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton � la liste des boutons
-	}
-
-	if(draw_circle && drawCircle)
-	{ 
-		forme.setXC(renderer.mouse_press_x); 
-		forme.setYC(renderer.mouse_press_y); 
-		renderer.v_formes.push_back(make_unique<Forme>(Forme::CERCLE, forme.getXC(), forme.getYC(), forme.getRayon()));
-		//ofSetCircleResolution(55);
-		renderer.okDessiner = true; 
-		renderer.cercleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
-		renderer.cercleFill = renderer.interface.fillEnabled;
-		renderer.cercleStroke = renderer.interface.slider_stroke_weight;
-		//ofxToggle button;
-		auto button = make_unique<ofxToggle>();
-		guiScene.add(button->setup("CERCLE", false)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton � la liste des boutons
-	}
-
-	if(draw_rectangle && drawRectangle)
-	{ 
-		forme.setXR(renderer.mouse_current_x);
-		forme.setYR(renderer.mouse_current_y); 
-		renderer.v_formes.push_back(make_unique<Forme>(Forme::RECTANGLE, forme.getXR(), forme.getYR(), forme.getWidth(), forme.getHeight()));
-		renderer.okDessiner = true;
-		renderer.rectangleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
-		renderer.rectangleFill = renderer.interface.fillEnabled;
-		renderer.rectangleStroke = renderer.interface.slider_stroke_weight;
-		//ofxToggle button;
-		auto button = make_unique<ofxToggle>();
-		guiScene.add(button->setup("RECTANGLE", false)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton � la liste des boutons
-	}
-
 	
-	// DRAW LINE
-	///////////////////////////////
-	if (draw_line && drawLine)
+
+	if (renderer.modeDrawState && toggleDraw)
 	{
-		//renderer.vecteur_lignes_ptr->emplace_back(make_unique<ofPolyline>());
-		//auto& polyline = renderer.vecteur_lignes_ptr->back();
-		//polyline->addVertex(renderer.mouse_press_x, renderer.mouse_press_y);
+		if (draw_triangle && drawTriangle)
+		{
+			// A partir du mouse click, calcul des 2 autres sommets 
+			newX2 = renderer.mouse_press_x - diffX;
+			newY2 = renderer.mouse_press_y + diffY;
+			newX3 = renderer.mouse_press_x + diffX;
+			newY3 = renderer.mouse_press_y + diffY;
+			forme.setX1(x);
+			forme.setY1(y);
+			forme.setX2(newX2);
+			forme.setY2(newY2);
+			forme.setX3(newX3);
+			forme.setY3(newY3);
 
-		renderer.ligne.addVertex(renderer.mouse_press_x, renderer.mouse_press_y);
-		renderer.okDessiner = true;
-		renderer.ligneColor = renderer.interface.color_picker_stroke; // Ajuste les parametres
-		renderer.ligneStroke = renderer.interface.slider_stroke_weight;
-		auto button = make_unique<ofxToggle>();
-		guiScene.add(button->setup("LIGNE", false)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton � la liste des boutons
+			renderer.v_formes.push_back(make_unique<Forme>(Forme::TRIANGLE, forme.getX1(), forme.getY1(),
+				forme.getX2(), forme.getY2(),
+				forme.getX3(), forme.getY3()));
+
+
+			renderer.okDessiner = true;
+			renderer.triangleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
+			renderer.triangleFill = renderer.interface.fillEnabled;
+			renderer.triangleStroke = renderer.interface.slider_stroke_weight;
+			auto button = make_unique<ofxToggle>();
+			//button->addListener(this, &Application::buttons_list);
+			guiScene.add(button->setup("TRIANGLE", false)); // Nom du bouton shapeBool
+			v_buttons.push_back(move(button)); // Ajoutez le bouton � la liste des boutons
+		}
+
+		if (draw_circle && drawCircle)
+		{
+			forme.setXC(renderer.mouse_press_x);
+			forme.setYC(renderer.mouse_press_y);
+			renderer.v_formes.push_back(make_unique<Forme>(Forme::CERCLE, forme.getXC(), forme.getYC(), forme.getRayon()));
+			//ofSetCircleResolution(55);
+			renderer.okDessiner = true;
+			renderer.cercleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
+			renderer.cercleFill = renderer.interface.fillEnabled;
+			renderer.cercleStroke = renderer.interface.slider_stroke_weight;
+			auto button = make_unique<ofxToggle>();
+			guiScene.add(button->setup("CERCLE", false)); // Nom du bouton
+			v_buttons.push_back(move(button)); // Ajoutez le bouton � la liste des boutons
+		}
+
+		if (draw_rectangle && drawRectangle)
+		{
+			forme.setXR(renderer.mouse_current_x);
+			forme.setYR(renderer.mouse_current_y);
+			renderer.v_formes.push_back(make_unique<Forme>(Forme::RECTANGLE, forme.getXR(), forme.getYR(), forme.getWidth(), forme.getHeight()));
+			renderer.okDessiner = true;
+			renderer.rectangleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
+			renderer.rectangleFill = renderer.interface.fillEnabled;
+			renderer.rectangleStroke = renderer.interface.slider_stroke_weight;
+			auto button = make_unique<ofxToggle>();
+			guiScene.add(button->setup("RECTANGLE", false)); // Nom du bouton
+			v_buttons.push_back(move(button)); // Ajoutez le bouton � la liste des boutons
+		}
+
+		// DRAW LINE
+		///////////////////////////////
+		if (draw_line && drawLine)
+		{
+			ofVec3f v(renderer.mouse_press_x, renderer.mouse_press_y, 0);
+			renderer.addPoint(v);
+
+			// Ajoutez le bouton pour la ligne
+			renderer.v_formes.push_back(make_unique<Forme>(Forme::LIGNE, v));
+
+			renderer.okDessiner = true;
+			renderer.ligneColor = renderer.interface.color_picker_stroke; // Ajuste les parametres
+			renderer.ligneStroke = renderer.interface.slider_stroke_weight;
+
+			// Ajoutez également un bouton pour cette ligne
+			auto button = make_unique<ofxToggle>();
+			guiScene.add(button->setup("LIGNE", false));
+			v_buttons.push_back(move(button));
+		}
+		///////////////////////////////
+
+		if (draw_ellipse && drawEllipse)
+		{
+			forme.setXR(renderer.mouse_press_x);
+			forme.setYR(renderer.mouse_press_y);
+			renderer.v_formes.push_back(make_unique<Forme>(Forme::ELLIPSE, forme.getXR(), forme.getYR(), forme.getWidth(), forme.getHeight()));
+			renderer.okDessiner = true;
+			renderer.ellipseColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
+			renderer.ellipseFill = renderer.interface.fillEnabled;
+			renderer.ellipseStroke = renderer.interface.slider_stroke_weight;
+			auto button = make_unique<ofxToggle>();
+			guiScene.add(button->setup("ELLIPSE", false)); // Nom du bouton
+			v_buttons.push_back(move(button)); // Ajoutez le bouton � la liste des boutons
+		}
+
+		if (draw_bezier && drawBezier)
+		{
+			float x1 = renderer.mouse_press_x;
+			float y1 = renderer.mouse_press_y;
+			float x4 = x1;
+			float y4 = y1 + 50;
+			float x2, y2, x3, y3;
+			x2 = x1 * 0.75;
+			y2 = y1 * 0.75;
+			x3 = x4 * 0.75;
+			y3 = y4 * 0.75;
+			forme.setX1(x1);
+			forme.setY1(y1);
+			forme.setX2(x4);
+			forme.setY2(y4);
+			forme.setXB1(x2);
+			forme.setYB1(y2);
+			forme.setXB2(x3);
+			forme.setYB2(y3);
+
+			renderer.v_formes.push_back(make_unique<Forme>(Forme::BEZIER, forme.getX1(), forme.getY1(), forme.getXB1(), forme.getYB1(),
+				forme.getXB2(), forme.getYB2(), forme.getX2(), forme.getY2()));
+			renderer.okDessiner = true;
+			renderer.bezierColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
+			renderer.bezierFill = renderer.interface.fillEnabled;
+			renderer.bezierStroke = renderer.interface.slider_stroke_weight;
+			auto button = make_unique<ofxToggle>();
+			guiScene.add(button->setup("BEZIER", false)); // Nom du bouton
+			v_buttons.push_back(move(button)); // Ajoutez le bouton � la liste des boutons
+		}
 	}
-	///////////////////////////////
 
-	if (draw_ellipse && drawEllipse)
-	{
-		forme.setXR(renderer.mouse_press_x);
-		forme.setYR(renderer.mouse_press_y);
-		renderer.v_formes.push_back(make_unique<Forme>(Forme::ELLIPSE, forme.getXR(), forme.getYR(), forme.getWidth(), forme.getHeight()));
-		renderer.okDessiner = true;
-		renderer.ellipseColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
-		renderer.ellipseFill = renderer.interface.fillEnabled;
-		renderer.ellipseStroke = renderer.interface.slider_stroke_weight;
-		auto button = make_unique<ofxToggle>();
-		guiScene.add(button->setup("ELLIPSE", false)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton � la liste des boutons
-	}
 
-	if(draw_bezier && drawBezier)
-	{
-		float x1 = renderer.mouse_press_x; 
-		float y1 = renderer.mouse_press_y; 
-		float x4 = x1; 
-		float y4 = y1 + 50; 
-		float x2, y2, x3, y3;
-		x2 = x1 * 0.75; 
-		y2 = y1 * 0.75; 
-		x3 = x4 * 0.75;
-		y3 = y4 * 0.75;
-		forme.setX1(x1); 
-		forme.setY1(y1); 
-		forme.setX2(x4);
-		forme.setY2(y4); 
-		forme.setXB1(x2);
-		forme.setYB1(y2);
-		forme.setXB2(x3);
-		forme.setYB2(y3);
-
-		renderer.v_formes.push_back(make_unique<Forme>(Forme::BEZIER, forme.getX1(), forme.getY1(), forme.getXB1(), forme.getYB1(),
-			forme.getXB2(), forme.getYB2(), forme.getX2(), forme.getY2()));
-		renderer.okDessiner = true;
-		renderer.bezierColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
-		renderer.bezierFill = renderer.interface.fillEnabled;
-		renderer.bezierStroke = renderer.interface.slider_stroke_weight;
-		auto button = make_unique<ofxToggle>();
-		guiScene.add(button->setup("BEZIER", false)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton � la liste des boutons
-	}
-
+	//showButtonsList();
+	int nombre = renderer.v_formes.size();
+	int max = renderer.v_formes.max_size();
+	uiAmount.set(nombre);
 }
 
+void Application::showButtonsList(){
+	if(v_buttons_ptr)
+	{ 
+	// Parcourir la liste des boutons
+	for (size_t i = 0; i < v_buttons.size(); ++i) {
+		auto& button = v_buttons[i];
+		auto& forme = *renderer.v_formes[i];
+
+		// Déterminer le type de forme
+		string formeType;
+		switch (forme.getType()) {
+		case Forme::TRIANGLE:
+			formeType = "TRIANGLE";
+			break;
+		case Forme::CERCLE:
+			formeType = "CERCLE";
+			break;
+		case Forme::RECTANGLE:
+			formeType = "RECTANGLE";
+			break;
+		//case Forme::LIGNE:
+		//	formeType = "LIGNE";
+		//	break;
+		case Forme::ELLIPSE:
+			formeType = "ELLIPSE";
+			break;
+		case Forme::BEZIER:
+			formeType = "BEZIER";
+			break;
+			// Ajoutez d'autres cas pour les autres types de forme
+		default:
+			formeType = "INCONNU";
+			break;
+		}
+
+		// Créer l'étiquette en fonction du type et de l'index de la forme
+		string label = to_string(i) + " " + formeType;
+
+		// Ajouter le bouton avec l'étiquette dynamique
+		guiScene.add(button->setup(label, false));
+		}
+	}
+}
 
 void Application::mouseReleased(int x, int y, int button){
 	if (isRepositioning) { //Si une image est en repositionnement
@@ -432,7 +480,6 @@ void Application::mouseReleased(int x, int y, int button){
 	}
 
 
-
 	renderer.mouse_current_x = x;
 	renderer.mouse_current_y = y;
 
@@ -455,25 +502,20 @@ void Application::mouseEntered(int x, int y){
 	renderer.mouse_current_y = y;
 }
 
-
 void Application::mouseExited(int x, int y){
 
 	renderer.mouse_current_x = x;
 	renderer.mouse_current_y = y;
 }
 
-
 void Application::windowResized(int w, int h){
 	WIDTH = w;
 	HEIGHT = h;
 }
 
-
 void Application::gotMessage(ofMessage msg){
 
 }
-
-
 
 void Application::dragEvent(ofDragInfo dragInfo) {
 	if (isImportable) {
@@ -579,12 +621,12 @@ void Application::button_bezier(bool& value) {
 
 void Application::reset(bool& value) {
 	if (value) {
-		uiPosition.set(ofVec2f(0));
+		renderer.uiPosition.set(ofVec2f(0));
 		uiAmount.set(1);
-		uiStep.set(ofVec2f(0));
-		uiRotate.set(ofVec3f(0));
-		uiShift.set(ofVec2f(0));
-		uiSize.set(ofVec2f(6));
+		renderer.uiStep.set(ofVec2f(0));
+		renderer.uiRotate.set(ofVec3f(0));
+		renderer.uiShift.set(ofVec2f(0));
+		renderer.uiSize.set(ofVec2f(6));
 
 		draw_triangle = false;
 		drawTriangle = false;
@@ -596,47 +638,18 @@ void Application::reset(bool& value) {
 	}
 }
 
-void Application::buttons_list(bool& value)
-{
+void Application::button_modeDraw(bool& value) {
 	if (value) {
-		// Vecteur temporaire pour stocker les indices des boutons � supprimer
-		//vector<int> buttonsToDelete;
-		//// Vecteur pour stocker l'�tat de chaque bouton
-		//vector<bool> buttonStates;
-
-		cout << "Je t'ecoute!!" << endl;
-		shapeBool = !shapeBool; 
-		//if (!shapeBool)
-		//{
-		//	for(int i = 0; v_buttons.size(); i++)
-		//	{
-		//		buttonsToDelete.push_back(i);
-
-		//		if (!buttonsToDelete.empty())
-		//		{
-		//			cout << "Deletion is possible! " << endl;
-		//			cout << "Size of the deletion list is " << buttonsToDelete.size() << endl;
-		//		}
-
-				// Parcourir tous les boutons dans la liste
-				//for (int i = 0; i < buttonStates.size(); ++i)
-				//{
-				//	// V�rifier si le bouton est en �tat TRUE
-				//	if (buttonStates[i] == TRUE)
-				//	{
-				//		// Ajouter l'index du bouton � supprimer dans le vecteur temporaire
-				//		buttonsToDelete.push_back(i);
-				//	}
-				//}
-
-
-				// Supprimer les boutons en parcourant le vecteur temporaire en sens inverse
-				//for (int i = buttonsToDelete.size() - 1; i >= 0; --i)
-				//{
-				//	v_buttons.erase(v_buttons.begin() + buttonsToDelete[i]);
-				//	buttonStates.erase(buttonStates.begin() + buttonsToDelete[i]); // Supprimer �galement l'�tat correspondant
-				//}
-			//}
-		//}
+		renderer.modeDrawState = !renderer.modeDrawState;
+		renderer.modeTransformState = toggleTransform = false;
 	}
 }
+
+void Application::button_modeTransform(bool& value) {
+	if (value) {
+		renderer.modeTransformState = !renderer.modeTransformState;
+		renderer.modeDrawState = toggleDraw = false;
+	}
+}
+
+

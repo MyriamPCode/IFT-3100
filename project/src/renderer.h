@@ -4,20 +4,21 @@
 #include "Interface.h"
 #include "Forme.h"
 #include <memory>
+#include "ofxGui.h"
 
 using namespace std;
 
 class Renderer {
-	public:
-		Interface interface;
-		ofImage image;
+public:
+    Interface interface;
+    ofImage image;
 
-		list<ofImage> imageList; //Liste d'images import�es
-		list<vector<int>> imgPosList; //Positions x et y des images import�es
+    list<ofImage> imageList; //Liste d'images import�es
+    list<vector<int>> imgPosList; //Positions x et y des images import�es
 
     int mouse_press_x;
     int mouse_press_y;
-    
+
     int mouse_current_x;
     int mouse_current_y;
 
@@ -34,24 +35,25 @@ class Renderer {
     void newImage(string filePath, int posX, int posY);
     void draw_cursor(float x, float y) const;
 
-    Forme forme; 
+    Forme forme;
     vector<unique_ptr<Forme>>* v_formes_ptr;
     vector<unique_ptr<Forme>> v_formes;
     void setup(vector<unique_ptr<Forme>>& v_formes);
-    bool okDessiner; 
+    bool okDessiner;
     void dessinerTriangle();
+   //void dessinerTriangle(int inputIndex = 0);
     vector<ofColor> triangleColors = {}; // Contient les couleurs du dessin
     bool triangleFill = false; // Indique si l'interieur de la forme doit etre colore
     float triangleStroke; // Taille du outline
-    void dessinerCercle(); 
+    void dessinerCercle();
     vector<ofColor> cercleColors = {}; // Contient les couleurs du dessin
     bool cercleFill = false; // Indique si l'interieur de la forme doit etre colore
     float cercleStroke; // Taille du outline
-    void dessinerRectangle(); 
+    void dessinerRectangle();
     vector<ofColor> rectangleColors = {}; // Contient les couleurs du dessin
     bool rectangleFill = false; // Indique si l'interieur de la forme doit etre colore
     float rectangleStroke; // Taille du outline
-    void dessinerLigne(); 
+    void dessinerLigne();
     ofColor ligneColor; // Contient la couleur du dessin
     float ligneStroke; // Taille du outline
     void dessinerEllipse();
@@ -67,8 +69,13 @@ class Renderer {
         return &v_formes;
     }
 
+    bool modeDrawState, modeTransformState; // pour indiquer si en mode draw ou transformation
 
     ofPolyline ligne;
+    void addPoint(const ofVec3f& point) {
+        // Ajouter le point à une liste de points
+        ligne.addVertex(point);
+    }
     vector<ofPolyline> vecteur_lignes;
 
     //Capture images
@@ -77,4 +84,11 @@ class Renderer {
     void captureImage();
     int frameCounter, captureInterval, compteur;
     bool isRecording;
+
+    ofParameter<ofVec2f> uiPosition, uiStep, uiShift, uiSize;
+    ofParameter <ofVec3f> uiRotate;
+
+    ofxInputField<int> inputIndex; 
+    void updateCoordinates(int x, int y);
+    void transformation();
 };

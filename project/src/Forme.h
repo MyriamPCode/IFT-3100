@@ -12,15 +12,22 @@ public:
         TRIANGLE, CERCLE, RECTANGLE, LIGNE, ELLIPSE, BEZIER
     };
 
-    Forme(TypeForme type, float x1, float y1, float x2, float y2, float x3, float y3);
-    Forme(TypeForme type, float x, float y, float rayon);
-    Forme(TypeForme type, float x, float y, float width, float height);
-    Forme(TypeForme type, float x1, float y1, float xB1, float yB1, float xB2, float yB2, float x2, float y2); 
-    //Forme(TypeForme type, float x, float y, float width, float height); 
+    Forme(TypeForme type, float x1, float y1, float x2, float y2, float x3, float y3); // Triangle
+    Forme(TypeForme type, float x, float y, float rayon); // Cercle
+    Forme(TypeForme type, float x, float y, float width, float height); // Rectangle et Ellipse
+    Forme(TypeForme type, float x1, float y1, float xB1, float yB1, float xB2, float yB2, float x2, float y2); // Bezier 
+    Forme(TypeForme type, ofVec3f p); // Lignes
+    Forme(TypeForme type, ofVec3f point1, ofVec3f point2, ofVec3f point3); // Triangle avec pts 3d 
+    
 
-    bool containsPoint(float x, float y);
+    ofVec3f getPoint1() const { return point1; }
+    ofVec3f getPoint2() const { return point2; }
+    ofVec3f getPoint3() const { return point3; }
+    void setPoint1(ofVec3f pt) { this->point1 = pt; }
+    void setPoint2(ofVec3f pt) { this->point2 = pt; }
+    void setPoint3(ofVec3f pt) { this->point3 = pt; }
 
-    void draw();
+
     void setup();
 
     // Constructeur
@@ -73,11 +80,8 @@ public:
     //void setWidthEllipse(float w)  { this->wE = w; }
     //void setHeightEllipse(float h) { this->hE = h; }
 
-    //using TypeForme = string;
     TypeForme getType() const { return type; }
 
-
-    ofPolyline ligne; // ligne
 
 private:
     TypeForme type;
@@ -87,7 +91,7 @@ private:
     float xL, yL; // Pour les lignes
     float xE, yE, wE, hE; // Pour les ellipses
     float xB1, xB2, yB1, yB2; // Pour les beziers 
-    bool containsPointTriangle, containsPointCercle, containsPointRectangle;
-    
+
+    ofVec3f point1, point2, point3, p;
 };
 

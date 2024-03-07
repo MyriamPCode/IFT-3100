@@ -36,12 +36,8 @@ class Application : public ofBaseApp{
 		void reset(bool& value);
 
 		ofxPanel gui;
-		ofParameter <ofVec2f> uiPosition;
-		ofParameter <int> uiAmount;
-		ofParameter <ofVec2f> uiStep;
-		ofParameter <ofVec3f> uiRotate;
-		ofParameter <ofVec2f> uiShift;
-		ofParameter <ofVec2f> uiSize;
+
+		ofParameter <int> uiAmount; // Total de la liste formes 
 
 		ofxGuiGroup primitivesGroupe; // Cr�er un groupe pour les boutons
 		ofxToggle drawTriangle; // Bouton pour le triangle 
@@ -54,6 +50,10 @@ class Application : public ofBaseApp{
 		ofxGuiGroup reinitialisationGroupe;
 		ofxToggle resetButton; // Bouton de r�initialisation
 
+		ofxGuiGroup primitivesMode;
+		ofxToggle toggleDraw, toggleTransform; //Boutons toggle pour les modes draw & transform
+		ofxIntField indexBox; 
+
 		bool draw_triangle;
 		bool draw_circle;
 		bool draw_rectangle;
@@ -65,15 +65,17 @@ class Application : public ofBaseApp{
 		void button_line(bool& value);
 		void button_ellipse(bool& value);
 		void button_bezier(bool& value);
-
+		void button_modeDraw(bool& value);
+		void button_modeTransform(bool& value);
 
 		float diffX, diffY, newX2, newY2, newX3, newY3;
 
-		void buttons_list(bool& value);
+	
+		void showButtonsList(); 
 		ofColor backgroundPanelSceneColor = ofColor(125);
 		ofxPanel guiScene; 
 		vector<unique_ptr<ofxToggle>> v_buttons;
 		vector<unique_ptr<ofxToggle>>* v_buttons_ptr;
 		void deleteShapeSelected();
-		bool shapeBool; 
+		bool shapeBool;
 };
