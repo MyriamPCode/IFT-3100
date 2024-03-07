@@ -13,6 +13,10 @@ class Application : public ofBaseApp{
 		Renderer renderer;
 		Forme forme;
 		ofColor backgroundColor = ofColor(178, 184, 194);
+		ofMesh mesh;
+		int size = 96; // Taille de la maille
+
+		ofEasyCam cam;
 
 		bool isImportable = false; //Indique si le mode d'importation est actif ou non
 		int imgDistFromMax = 0; //Indicateur de la position de l'image par rapport � la taille maximale de la liste
@@ -54,10 +58,20 @@ class Application : public ofBaseApp{
 		ofxGuiGroup reinitialisationGroupe;
 		ofxToggle resetButton; // Bouton de r�initialisation
 
+		ofxGuiGroup animationGroupe;
+		ofxToggle rotationButton; // Bouton pour l'animation de rotation
+
+		ofxGuiGroup meshGroupe;
+		ofxToggle meshButton;
+		ofxToggle meshAnimationButton; // Bouton pour l'animation sur la maille géométrique 
+
 		bool draw_triangle;
 		bool draw_circle;
 		bool draw_rectangle;
-		bool draw_line, draw_ellipse, draw_bezier; 
+		bool draw_line, draw_ellipse, draw_bezier;
+		bool rotation_activate;
+		bool mesh_activate;
+		bool noise_activate;
 
 		void button_triangle(bool & value);
 		void button_circle(bool& value);
@@ -65,6 +79,11 @@ class Application : public ofBaseApp{
 		void button_line(bool& value);
 		void button_ellipse(bool& value);
 		void button_bezier(bool& value);
+		void button_rotation(bool& value);
+		void button_mesh(bool& value);
+		void button_noise(bool& value);
+
+		float rotate;
 
 
 		float diffX, diffY, newX2, newY2, newX3, newY3;
