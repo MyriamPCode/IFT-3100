@@ -60,8 +60,8 @@ void Application::setup(){
 	meshGroupe.setup("Maille geométrique");
 	meshGroupe.add(meshButton.setup("Maille", false));
 	meshButton.addListener(this, &Application::button_mesh);
-	meshGroupe.add(bruitButton.setup("Bruit", false));
-	bruitButton.addListener(this, &Application::button_noise);
+	meshGroupe.add(meshAnimationButton.setup("Bruit", false));
+	meshAnimationButton.addListener(this, &Application::button_noise);
 	gui.add(&meshGroupe);
 
 	// Création de la maille
@@ -668,7 +668,7 @@ void Application::reset(bool& value) {
 		mesh_activate = false;
 		meshButton = false;
 		noise_activate = false;
-		bruitButton = false;
+		meshAnimationButton = false;
 	}
 }
 

@@ -63,7 +63,7 @@ class Application : public ofBaseApp{
 
 		ofxGuiGroup meshGroupe;
 		ofxToggle meshButton;
-		ofxToggle bruitButton; // Bouton pour l'animation sur la maille géométrique 
+		ofxToggle meshAnimationButton; // Bouton pour l'animation sur la maille géométrique 
 
 		bool draw_triangle;
 		bool draw_circle;
