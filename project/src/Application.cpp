@@ -74,7 +74,6 @@ void Application::update()
 	}
 }
 
-
 void Application::draw(){
 	if (isImportable) {
 		renderer.import_activate = true;
@@ -108,14 +107,12 @@ void Application::draw(){
 	//	ofPopMatrix();
 
 	//}
-
 	
 	renderer.draw();
 	ofPopMatrix();
 	gui.draw();
 	guiScene.draw();
 }
-
 
 void Application::deleteShapeSelected()
 {
@@ -148,7 +145,6 @@ void Application::deleteShapeSelected()
 	//		buttonsToDelete.push_back(i);
 	//	}
 	//}
-
 
 	if (!buttonsToDelete.empty())
 	{
@@ -197,14 +193,12 @@ void Application::keyPressed(int key)
 	}
 }
 
-
 void Application::keyReleased(int key){
 	if (key == 105) { // 105 = key "i"
 		isImportable = !isImportable;
 		renderer.import_activate = !renderer.import_activate;
 	}
 }
-
 
 void Application::mouseMoved(int x, int y ){
 	renderer.mouse_current_x = x;
@@ -321,7 +315,6 @@ void Application::mousePressed(int x, int y, int button){
 		v_buttons.push_back(move(button)); // Ajoutez le bouton � la liste des boutons
 	}
 
-	
 	// DRAW LINE
 	///////////////////////////////
 	if (draw_line && drawLine)
@@ -407,7 +400,8 @@ void Application::mouseReleased(int x, int y, int button){
 	}
 
 	if (button == 0 && y < INTERACTION_BAR_HEIGHT) {
-		switch (static_cast<int>(floor(x / iconWidth))) {
+		int index = static_cast<int>(floor(x / (iconWidth)));
+		switch (index) {
 			case 0:
 				//call to import image method
 				cout << "import \n";
@@ -415,7 +409,7 @@ void Application::mouseReleased(int x, int y, int button){
 				break;
 			case 1:
 				//call to export method
-				cout << "export \n";
+				renderer.toggleExportGUI();
 				break;
 			case 2:
 				//call to animation method
@@ -428,8 +422,7 @@ void Application::mouseReleased(int x, int y, int button){
 		switch (static_cast<int>(floor((y / iconWidth)) - 1)) {
 		case 0:
 			//call to color wheel
-			cout << "color wheel \n";
-			renderer.interface.outilsPressed = !renderer.interface.outilsPressed;
+			renderer.toggleColorWheelGUI();
 			break;
 		case 1:
 			//call to pen method

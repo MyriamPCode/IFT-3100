@@ -5,7 +5,7 @@
 using namespace std;
 
 void Interface::setup() {
-	buttonFont.load("roboto/Roboto-Regular.ttf", 24);
+	//buttonFont.load("roboto/Roboto-Regular.ttf", 24);
 
 	//we only need to add the images of the buttons here to add it to the top bar
 	imgImport.load("img/import.png");
@@ -29,7 +29,7 @@ void Interface::setup() {
 
 	outilsGui.setup();
 	outilsGui.loadFont("roboto/Roboto-Regular.ttf", 10);
-	outilsGui.setPosition(WIDTH - 240, 40);
+	outilsGui.setPosition(WIDTH - outilsGui.getWidth() - INTERACTION_BAR_HEIGHT, INTERACTION_BAR_HEIGHT);
 	outilsGui.setSize(200, 1080);
 
 	color_picker_background.set("Couleur du canevas", ofColor(31), ofColor(0, 0), ofColor(255, 255));
@@ -84,8 +84,11 @@ void Interface::sideButtons() {
 	}
 }
 
-
 void Interface::showOutils(bool& value) {
+	outilsPressed = !outilsPressed;
+}
+
+void Interface::toggleColorWheel() {
 	outilsPressed = !outilsPressed;
 }
 
@@ -104,16 +107,6 @@ void Interface::backgroundLine() {
 	for (int i = 0; i < HEIGHT; i += WIDTH / 40) {
 		ofDrawLine(0, i, WIDTH, i);
 	};
-
-//	// Dessiner les lignes verticales
-//	for (int i = 255; i < WIDTH; i += WIDTH / 40) {
-//		ofDrawLine(i, 0, i, HEIGHT);
-//	}
-//
-//	// Dessiner les lignes horizontales
-//	for (int i = 40; i < HEIGHT; i += WIDTH / 40) {
-//		ofDrawLine(0, i, WIDTH, i);
-//	}
 }
 
 void Interface::backgroundInteraction() {
