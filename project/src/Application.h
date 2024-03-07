@@ -95,4 +95,7 @@ class Application : public ofBaseApp{
 		vector<unique_ptr<ofxToggle>>* v_buttons_ptr;
 		void deleteShapeSelected();
 		bool shapeBool; 
+
+		bool moveCameraRight;
+		bool moveCameraLeft;
 };

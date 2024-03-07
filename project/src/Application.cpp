@@ -8,11 +8,13 @@ void Application::setup(){
 	ofSetWindowTitle("Team 7");
 	ofBackground(backgroundColor);
 	renderer.setup();
-
-	cam.setDistance(100);
+	//ofSetOrientation(OF_ORIENTATION_180);
+	cam.setPosition(ofVec3f(0, 0, 500));
+	//gui.setPosition(ofGetWidth() - gui.getWidth(), ofGetHeight() - gui.getHeight());
+	cam.setDistance(500);
 	
 	gui.setup();
-	gui.setPosition(300, 40);
+	gui.setPosition(0, 0);
 	gui.add(uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
 	gui.add(uiAmount.set("amount", 1, 0, 64)); // La quantit� de primitives. Nombre maximal est 64 et nombre minimum est 1
 	gui.add(uiStep.set("step", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
@@ -60,7 +62,7 @@ void Application::setup(){
 	meshGroupe.setup("Maille geométrique");
 	meshGroupe.add(meshButton.setup("Maille", false));
 	meshButton.addListener(this, &Application::button_mesh);
-	meshGroupe.add(meshAnimationButton.setup("Bruit", false));
+	meshGroupe.add(meshAnimationButton.setup("Animation", false));
 	meshAnimationButton.addListener(this, &Application::button_noise);
 	gui.add(&meshGroupe);
 
@@ -122,9 +124,21 @@ void Application::update()
 		renderer.update();
 		renderer.captureImage();
 	}
+
+	// Déplacer la caméra de gauche à droite si moveCameraLeft est vrai
+	if (moveCameraLeft) {
+		cam.move(-1, 0, 0); // Déplacer la caméra vers la gauche
+	}
+
+	// Déplacer la caméra de droite à gauche si moveCameraRight est vrai
+	if (moveCameraRight) {
+		cam.move(1, 0, 0); // Déplacer la caméra vers la droite
+	}
 }
 
 void Application::draw(){
+	gui.draw();
+	cam.begin();
 	if (isImportable) {
 		renderer.import_activate = true;
 		ofDrawBitmapString("Please drag an image to import it.", 30, 30);
@@ -183,9 +197,11 @@ void Application::draw(){
 	//}
 	
 	renderer.draw();
-	//cam.end();
-	ofPopMatrix();
-	gui.draw();
+	
+	//ofPopMatrix();
+	
+	cam.end();
+
 	guiScene.draw();
 }
 
@@ -266,12 +282,25 @@ void Application::keyPressed(int key)
 			cout << "Enregistrement arr�t�." << endl;
 		}
 	}
+
+	if (key == OF_KEY_LEFT) {
+		moveCameraLeft = true;
+	}
+	if (key == OF_KEY_RIGHT) {
+		moveCameraRight = true;
+	}
 }
 
 void Application::keyReleased(int key){
 	if (key == 105) { // 105 = key "i"
 		isImportable = !isImportable;
 		renderer.import_activate = !renderer.import_activate;
+	}
+	if (key == OF_KEY_LEFT) {
+		moveCameraLeft = false;
+	}
+	if (key == OF_KEY_RIGHT) {
+		moveCameraRight = false;
 	}
 }
 
