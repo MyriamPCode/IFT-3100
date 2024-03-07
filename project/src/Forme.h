@@ -12,13 +12,14 @@ public:
         TRIANGLE, CERCLE, RECTANGLE, LIGNE, ELLIPSE, BEZIER
     };
 
-    Forme(TypeForme type, float x1, float y1, float x2, float y2, float x3, float y3);
-    Forme(TypeForme type, float x, float y, float rayon);
-    Forme(TypeForme type, float x, float y, float width, float height);
-    Forme(TypeForme type, float x1, float y1, float xB1, float yB1, float xB2, float yB2, float x2, float y2); 
+    Forme(TypeForme type, float x1, float y1, float x2, float y2, float x3, float y3, vector<ofColor> colors, bool fill, float stroke);
+    Forme(TypeForme type, float x, float y, float rayon, vector<ofColor> colors, bool fill, float stroke);
+    Forme(TypeForme type, float x, float y, float width, float height, vector<ofColor> colors, bool fill, float stroke);
+    Forme(TypeForme type, float x1, float y1, float xB1, float yB1, float xB2, float yB2, float x2, float y2, vector<ofColor> colors, bool fill, float stroke);
     //Forme(TypeForme type, float x, float y, float width, float height); 
 
     bool containsPoint(float x, float y);
+    void setColorParameters();
 
     void draw();
     void setup();
@@ -46,6 +47,9 @@ public:
     float getYB1() const { return yB1; }
     float getXB2() const { return xB2; }
     float getYB2() const { return yB2; }
+    vector<ofColor> getColors() const { return formeColors; }
+    bool getIsFilled() const { return formeFill; }
+    float getOutlineWeight() const { return formeStroke; }
     //float getXE() const { return xE; }
     //float getYE() const { return yE; }
     //float getWidthEllipse() const { return wE; }
@@ -68,6 +72,9 @@ public:
     void setYB1(float y) { this->yB1 = y; }
     void setXB2(float x) { this->xB2 = x; }
     void setYB2(float y) { this->yB2 = y; }
+    void setColors(ofColor outline, ofColor fill) { this->formeColors = {outline, fill}; }
+    void setIsFilled(bool fill) { this->formeFill = fill; }
+    void setOutlineWeight(float stroke) { this->formeStroke = stroke; }
     //void setXE(float x)  { this->xE = x; }
     //void setYE(float y)  { this->yE = y; }
     //void setWidthEllipse(float w)  { this->wE = w; }
@@ -88,6 +95,9 @@ private:
     float xE, yE, wE, hE; // Pour les ellipses
     float xB1, xB2, yB1, yB2; // Pour les beziers 
     bool containsPointTriangle, containsPointCercle, containsPointRectangle;
+    vector<ofColor> formeColors = {}; // Contient les couleurs du dessin
+    bool formeFill = false; // Indique si l'interieur de la forme doit etre colore
+    float formeStroke; // Taille du outline
     
 };
 

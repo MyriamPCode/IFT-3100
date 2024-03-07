@@ -263,13 +263,16 @@ void Application::mousePressed(int x, int y, int button){
 		forme.setY2(newY2);
 		forme.setX3(newX3);
 		forme.setY3(newY3);
+		forme.setColors(renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill);
+		forme.setIsFilled(renderer.interface.fillEnabled);
+		forme.setOutlineWeight(renderer.interface.slider_stroke_weight);
 
 		renderer.v_formes.push_back(make_unique<Forme>(Forme::TRIANGLE, forme.getX1(), forme.getY1(),
 			forme.getX2(), forme.getY2(),
-			forme.getX3(), forme.getY3()));
+			forme.getX3(), forme.getY3(), forme.getColors(), forme.getIsFilled(), forme.getOutlineWeight()));
 
 		renderer.okDessiner = true;
-		renderer.triangleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
+		renderer.triangleColors = {renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill}; // Ajuste les parametres
 		renderer.triangleFill = renderer.interface.fillEnabled;
 		renderer.triangleStroke = renderer.interface.slider_stroke_weight;
 		//ofxToggle button;
@@ -283,7 +286,11 @@ void Application::mousePressed(int x, int y, int button){
 	{ 
 		forme.setXC(renderer.mouse_press_x); 
 		forme.setYC(renderer.mouse_press_y); 
-		renderer.v_formes.push_back(make_unique<Forme>(Forme::CERCLE, forme.getXC(), forme.getYC(), forme.getRayon()));
+		forme.setColors(renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill);
+		forme.setIsFilled(renderer.interface.fillEnabled);
+		forme.setOutlineWeight(renderer.interface.slider_stroke_weight);
+		renderer.v_formes.push_back(make_unique<Forme>(Forme::CERCLE, forme.getXC(), forme.getYC(), forme.getRayon(), 
+			forme.getColors(), forme.getIsFilled(), forme.getOutlineWeight()));
 		//ofSetCircleResolution(55);
 		renderer.okDessiner = true; 
 		renderer.cercleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
@@ -299,7 +306,11 @@ void Application::mousePressed(int x, int y, int button){
 	{ 
 		forme.setXR(renderer.mouse_current_x);
 		forme.setYR(renderer.mouse_current_y); 
-		renderer.v_formes.push_back(make_unique<Forme>(Forme::RECTANGLE, forme.getXR(), forme.getYR(), forme.getWidth(), forme.getHeight()));
+		forme.setColors(renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill);
+		forme.setIsFilled(renderer.interface.fillEnabled);
+		forme.setOutlineWeight(renderer.interface.slider_stroke_weight);
+		renderer.v_formes.push_back(make_unique<Forme>(Forme::RECTANGLE, forme.getXR(), forme.getYR(), forme.getWidth(), forme.getHeight(),
+			forme.getColors(), forme.getIsFilled(), forme.getOutlineWeight()));
 		renderer.okDessiner = true;
 		renderer.rectangleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
 		renderer.rectangleFill = renderer.interface.fillEnabled;
@@ -333,7 +344,11 @@ void Application::mousePressed(int x, int y, int button){
 	{
 		forme.setXR(renderer.mouse_press_x);
 		forme.setYR(renderer.mouse_press_y);
-		renderer.v_formes.push_back(make_unique<Forme>(Forme::ELLIPSE, forme.getXR(), forme.getYR(), forme.getWidth(), forme.getHeight()));
+		forme.setColors(renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill);
+		forme.setIsFilled(renderer.interface.fillEnabled);
+		forme.setOutlineWeight(renderer.interface.slider_stroke_weight);
+		renderer.v_formes.push_back(make_unique<Forme>(Forme::ELLIPSE, forme.getXR(), forme.getYR(), forme.getWidth(), forme.getHeight(),
+			forme.getColors(), forme.getIsFilled(), forme.getOutlineWeight()));
 		renderer.okDessiner = true;
 		renderer.ellipseColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
 		renderer.ellipseFill = renderer.interface.fillEnabled;
@@ -362,9 +377,12 @@ void Application::mousePressed(int x, int y, int button){
 		forme.setYB1(y2);
 		forme.setXB2(x3);
 		forme.setYB2(y3);
+		forme.setColors(renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill);
+		forme.setIsFilled(renderer.interface.fillEnabled);
+		forme.setOutlineWeight(renderer.interface.slider_stroke_weight);
 
 		renderer.v_formes.push_back(make_unique<Forme>(Forme::BEZIER, forme.getX1(), forme.getY1(), forme.getXB1(), forme.getYB1(),
-			forme.getXB2(), forme.getYB2(), forme.getX2(), forme.getY2()));
+			forme.getXB2(), forme.getYB2(), forme.getX2(), forme.getY2(), forme.getColors(), forme.getIsFilled(), forme.getOutlineWeight()));
 		renderer.okDessiner = true;
 		renderer.bezierColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
 		renderer.bezierFill = renderer.interface.fillEnabled;

@@ -89,7 +89,21 @@ void Renderer::dessinerTriangle()
 		{ 
 			if (formeCourante->getType() == Forme::TRIANGLE) 
 			{
-				if (triangleFill) { // Remplissage
+				if (formeCourante->getIsFilled()) { // Remplissage
+					ofFill();
+					ofSetColor(formeCourante -> getColors()[1]);
+					ofDrawTriangle(formeCourante->getX1(), formeCourante->getY1(),
+						formeCourante->getX2(), formeCourante->getY2(),
+						formeCourante->getX3(), formeCourante->getY3());
+				}
+				ofNoFill(); // Outline
+				ofSetLineWidth(formeCourante -> getOutlineWeight());
+				ofSetColor(formeCourante -> getColors()[0]);
+				ofDrawTriangle(formeCourante->getX1(), formeCourante->getY1(),
+					formeCourante->getX2(), formeCourante->getY2(),
+					formeCourante->getX3(), formeCourante->getY3());
+
+				/*if (triangleFill) { // Remplissage
 					ofFill();
 					ofSetColor(triangleColors[1]);
 					ofDrawTriangle(formeCourante->getX1(), formeCourante->getY1(),
@@ -101,7 +115,7 @@ void Renderer::dessinerTriangle()
 				ofSetColor(triangleColors[0]);
 				ofDrawTriangle(formeCourante->getX1(), formeCourante->getY1(),
 					formeCourante->getX2(), formeCourante->getY2(),
-					formeCourante->getX3(), formeCourante->getY3());
+					formeCourante->getX3(), formeCourante->getY3());*/
 			}
 		}
 	}
@@ -119,14 +133,14 @@ void Renderer::dessinerCercle()
 		{
 			if (formeCourante->getType() == Forme::CERCLE)
 			{
-				if (cercleFill) { // Remplissage
+				if (formeCourante->getIsFilled()) { // Remplissage
 					ofFill();
-					ofSetColor(cercleColors[1]);
+					ofSetColor(formeCourante->getColors()[1]);
 					ofDrawCircle(formeCourante->getXC(), formeCourante->getYC(), formeCourante->getRayon());
 				}
 				ofNoFill(); // Outline
-				ofSetLineWidth(cercleStroke);
-				ofSetColor(cercleColors[0]);
+				ofSetLineWidth(formeCourante->getOutlineWeight());
+				ofSetColor(formeCourante->getColors()[0]);
 				ofDrawCircle(formeCourante->getXC(), formeCourante->getYC(), formeCourante->getRayon());
 			}
 		}
@@ -142,15 +156,15 @@ void Renderer::dessinerRectangle()
 		{
 			if (formeCourante->getType() == Forme::RECTANGLE)
 			{
-				if (rectangleFill) { // Remplissage
+				if (formeCourante->getIsFilled()) { // Remplissage
 					ofFill();
-					ofSetColor(rectangleColors[1]);
+					ofSetColor(formeCourante->getColors()[1]);
 					ofDrawRectangle(formeCourante->getXR(), formeCourante->getYR(),
 						formeCourante->getWidth(), formeCourante->getHeight());
 				}
 				ofNoFill(); // Outline
-				ofSetLineWidth(rectangleStroke);
-				ofSetColor(rectangleColors[0]);
+				ofSetLineWidth(formeCourante->getOutlineWeight());
+				ofSetColor(formeCourante->getColors()[0]);
 				ofDrawRectangle(formeCourante->getXR(), formeCourante->getYR(),
 						formeCourante->getWidth(), formeCourante->getHeight());
 			}
@@ -186,15 +200,15 @@ void Renderer::dessinerEllipse()
 		{
 			if (formeCourante->getType() == Forme::ELLIPSE)
 			{
-				if (ellipseFill) { // Remplissage
+				if (formeCourante->getIsFilled()) { // Remplissage
 					ofFill();
-					ofSetColor(ellipseColors[1]);
+					ofSetColor(formeCourante->getColors()[1]);
 					ofDrawEllipse(formeCourante->getXR(), formeCourante->getYR(),
 						formeCourante->getWidth(), formeCourante->getHeight());
 				}
 				ofNoFill(); // Outline
-				ofSetLineWidth(ellipseStroke);
-				ofSetColor(ellipseColors[0]);
+				ofSetLineWidth(formeCourante->getOutlineWeight());
+				ofSetColor(formeCourante->getColors()[0]);
 				ofDrawEllipse(formeCourante->getXR(), formeCourante->getYR(),
 				 formeCourante->getWidth(), formeCourante->getHeight());
 			}
@@ -212,15 +226,15 @@ void Renderer::dessinerBezier()
 		{
 			if (formeCourante->getType() == Forme::BEZIER)
 			{
-				if (bezierFill) { // Remplissage
+				if (formeCourante->getIsFilled()) { // Remplissage
 					ofFill();
-					ofSetColor(bezierColors[1]);
+					ofSetColor(formeCourante->getColors()[1]);
 					ofDrawBezier(formeCourante->getX1(), formeCourante->getX2(), formeCourante->getXB1(), formeCourante->getYB1(),
 						formeCourante->getXB2(), formeCourante->getYB2(), formeCourante->getX2(), formeCourante->getY2());
 				}
 				ofNoFill(); // Outline
-				ofSetLineWidth(bezierStroke);
-				ofSetColor(bezierColors[0]);
+				ofSetLineWidth(formeCourante->getOutlineWeight());
+				ofSetColor(formeCourante->getColors()[0]);
 				ofDrawBezier(formeCourante->getX1(), formeCourante->getX2(), formeCourante->getXB1(), formeCourante->getYB1(),
 				formeCourante->getXB2(), formeCourante->getYB2(), formeCourante->getX2(), formeCourante->getY2());
 			}
