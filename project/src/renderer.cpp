@@ -25,9 +25,9 @@ void Renderer::setup() {
 	// chargement du modèle 3D en mémoire
 	model1.loadModel("models/teapot.obj");
 	model2.loadModel("models/bun_zipper.ply");
-	model3.loadModel("models/knight.obj");
+	//model3.loadModel("models/knight.obj");
 
-	typeRender = MeshRenderMode::wireframe;
+	//typeRender = MeshRenderMode::wireframe;
 
 	mouse_current_x = mouse_current_y = mouse_press_x = mouse_press_y = mouse_drag_x = mouse_drag_y = 0;
 
@@ -72,7 +72,7 @@ void Renderer::draw() {
 
 	model1.setPosition(1410,700, 0);
 	model2.setPosition(-50, 1200, -400);
-	model3.setPosition(800, 1000, -600);
+	//model3.setPosition(800, 1000, -600);
 
 	//////////////////////////////////////////////////////////////////
 	if (okDessiner)
@@ -85,21 +85,22 @@ void Renderer::draw() {
 		dessinerBezier(); 
 	}
 	//////////////////////////////////////////////////////////////////
-
-	if (typeRender == MeshRenderMode::wireframe) {
-		model1.draw(OF_MESH_WIREFRAME);
-		model2.draw(OF_MESH_WIREFRAME);
-		model3.draw(OF_MESH_WIREFRAME);
-	}
-	else if (typeRender == MeshRenderMode::fill) {
-		model1.draw(OF_MESH_FILL);
-		model2.draw(OF_MESH_FILL);
-		model3.draw(OF_MESH_FILL);
-	}
-	else if (typeRender == MeshRenderMode::vertex) {
-		model1.draw(OF_MESH_POINTS);
-		model2.draw(OF_MESH_POINTS);
-		model3.draw(OF_MESH_POINTS);
+	if (interface.getShowModel()) {
+		if (interface.getRenderType() == MeshRenderMode::wireframe) {
+			model1.draw(OF_MESH_WIREFRAME);
+			model2.draw(OF_MESH_WIREFRAME);
+			//model3.draw(OF_MESH_WIREFRAME);
+		}
+		else if (interface.getRenderType() == MeshRenderMode::fill) {
+			model1.draw(OF_MESH_FILL);
+			model2.draw(OF_MESH_FILL);
+			//model3.draw(OF_MESH_FILL);
+		}
+		else if (interface.getRenderType() == MeshRenderMode::vertex) {
+			model1.draw(OF_MESH_POINTS);
+			model2.draw(OF_MESH_POINTS);
+			//model3.draw(OF_MESH_POINTS);
+		}
 	}
 
 	draw_cursor(mouse_current_x, mouse_current_y);

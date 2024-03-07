@@ -105,7 +105,6 @@ void Application::draw(){
 	//	}
 	//	ofEndShape();
 	//	ofPopMatrix();
-
 	//}
 	
 	renderer.draw();
@@ -199,7 +198,8 @@ void Application::keyReleased(int key){
 		renderer.import_activate = !renderer.import_activate;
 	}
 	if (key == 'o') { //Change le type de dessin des modèles 3D
-		if (renderer.typeRender == MeshRenderMode::wireframe) {
+		renderer.interface.toggleModelOptions();
+		/*if (renderer.typeRender == MeshRenderMode::wireframe) {
 			renderer.typeRender = MeshRenderMode::fill;
 		}
 		else if (renderer.typeRender == MeshRenderMode::fill) {
@@ -207,7 +207,7 @@ void Application::keyReleased(int key){
 		}
 		else if (renderer.typeRender == MeshRenderMode::vertex) {
 			renderer.typeRender = MeshRenderMode::wireframe;
-		}
+		}*/
 	}
 }
 

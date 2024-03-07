@@ -10,6 +10,8 @@
 
 using namespace std;
 
+enum class MeshRenderMode { fill, wireframe, vertex };
+
 class Interface {
 	public:
 		vector<ofImage> iconTopBar;
@@ -22,12 +24,25 @@ class Interface {
 		ofParameter<float> slider_stroke_weight;
 		bool fillEnabled = false;
 
+		ofxToggle modelToggle;
+		ofxToggle fillRender;
+		ofxToggle wireframeRender;
+		ofxToggle pointRender;
+
 		void setup();
 		void draw();
 		void toggleColorWheel();
+		void toggleModelOptions();
+		void setRenderType(MeshRenderMode renderMode) { typeRender = renderMode; }
+		MeshRenderMode getRenderType() { return typeRender; }
+		bool getShowModel() { return showModels; }
 
 	private:
 		bool outilsPressed = false;
+		bool modelsPressed = false;
+		bool showModels = false;
+		MeshRenderMode typeRender;
+
 		ofTrueTypeFont buttonFont;
 
 		ofImage imgImport;
@@ -46,6 +61,7 @@ class Interface {
 		ofColor textColor = backgroundLineColor;
 
 		ofxPanel outilsGui;
+		ofxPanel modelsGui;
 
 		void backgroundLine();
 		void backgroundInteraction();
@@ -57,6 +73,10 @@ class Interface {
 		//Renderer& renderer;
 		void showOutils(bool& value);
 		void enableFill(bool& value);
+		void Interface::enableModels(bool& value);
+		void Interface::modelFill(bool& value);
+		void Interface::modelWireframe(bool& value);
+		void Interface::modelPoints(bool& value);
 };
 
 

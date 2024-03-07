@@ -49,6 +49,27 @@ void Interface::setup() {
 	outilsGui.setTextColor(backgroundInteractionColor);
 	outilsGui.maximizeAll();
 	outilsGui.disableHeader();
+
+	typeRender = MeshRenderMode::wireframe;
+
+	modelsGui.setup();
+	modelsGui.loadFont("roboto/Roboto-Regular.ttf", 10);
+	modelsGui.setPosition((WIDTH - INTERACTION_BAR_HEIGHT)/2, INTERACTION_BAR_HEIGHT);
+
+	modelsGui.add(modelToggle.setup("Montrer les modeles", false));
+	modelsGui.add(fillRender.setup("Render en remplissant", false));
+	modelsGui.add(wireframeRender.setup("Render avec du wireframe", true));
+	modelsGui.add(pointRender.setup("Render avec des points", false));
+
+	modelToggle.addListener(this, &Interface::enableModels);
+	fillRender.addListener(this, &Interface::modelFill);
+	wireframeRender.addListener(this, &Interface::modelWireframe);
+	pointRender.addListener(this, &Interface::modelPoints);
+
+	modelsGui.setFillColor(backgroundInteractionColor);
+	modelsGui.setTextColor(backgroundInteractionColor);
+	modelsGui.maximizeAll();
+	modelsGui.disableHeader();
 }
 
 void Interface::draw() {
@@ -59,6 +80,9 @@ void Interface::draw() {
 
 	if (outilsPressed) {
 		outilsGui.draw();
+	}
+	if (modelsPressed) {
+		modelsGui.draw();
 	}
 }
 
@@ -92,8 +116,37 @@ void Interface::toggleColorWheel() {
 	outilsPressed = !outilsPressed;
 }
 
+void Interface::toggleModelOptions() {
+	modelsPressed = !modelsPressed;
+}
+
+void Interface::modelFill(bool& value) {
+	if (value) {
+		setRenderType(MeshRenderMode::fill);
+		wireframeRender = pointRender = false;
+	}
+}
+
+void Interface::modelWireframe(bool& value) {
+	if (value) {
+		setRenderType(MeshRenderMode::wireframe);
+		fillRender = pointRender = false;
+	}
+}
+
+void Interface::modelPoints(bool& value) {
+	if (value) {
+		setRenderType(MeshRenderMode::vertex);
+		fillRender = wireframeRender = false;
+	}
+}
+
 void Interface::enableFill(bool& value) {
 	fillEnabled = !fillEnabled;
+}
+
+void Interface::enableModels(bool& value) {
+	showModels = !showModels;
 }
 
 void Interface::backgroundLine() {

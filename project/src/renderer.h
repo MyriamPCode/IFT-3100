@@ -9,7 +9,7 @@
 
 using namespace std;
 
-enum class MeshRenderMode { fill, wireframe, vertex };
+//enum class MeshRenderMode { fill, wireframe, vertex };
 
 class Renderer {
 	public:
@@ -22,7 +22,7 @@ class Renderer {
         ofxAssimpModelLoader model1;
         ofxAssimpModelLoader model2;
         ofxAssimpModelLoader model3;
-        MeshRenderMode typeRender;
+        //MeshRenderMode typeRender;
 
 
     int mouse_press_x;
