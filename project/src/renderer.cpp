@@ -103,8 +103,8 @@ void Renderer::draw() {
 }
 
 
-
 void Renderer::dessinerSphere(){
+	ofSetLineWidth(1);
 	ofSetColor(255,0,0);
 	if (v_formes_ptr) {
 		for (const auto& formeCourante : *v_formes_ptr)
@@ -112,13 +112,13 @@ void Renderer::dessinerSphere(){
 			if(formeCourante->getType() == Forme::SPHERE){
 				ofVec3f viktor = formeCourante->getVSphere();
 				ofDrawSphere(viktor.x, viktor.y, 0, 150);
-
 			}
 		}
 	}
 }
 
 void Renderer::dessinerCube() {
+	ofSetLineWidth(1);
 	ofSetColor(255, 255, 0);
 	if (v_formes_ptr) {
 		for (const auto& formeCourante : *v_formes_ptr)

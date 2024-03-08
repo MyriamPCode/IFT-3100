@@ -64,6 +64,7 @@ public:
     float getZS() const { return zS; }
     float getSphereRad() const{ return sphereRad; }
     ofVec3f getVSphere() const { return v; }
+    float getSizeCube() const { return sizeCube; }
  
     void setX1(float x) { this->x1 = x; }
     void setY1(float y) { this->y1 = y; }
@@ -91,6 +92,7 @@ public:
     void setZS(float x) { this->zS = x; }
     void setSphereRad(float x) { this->sphereRad = x; }
     void setVSphere(ofVec3f v) { this->v = v; }
+    void setSizeCube(float size) { this->sizeCube = size; }
 
     TypeForme getType() const { return type; }
 
@@ -104,6 +106,7 @@ private:
     float xE, yE, wE, hE; // Pour les ellipses
     float xB1, xB2, yB1, yB2; // Pour les beziers 
     float xS, yS, zS, sphereRad; // sphere 3d 
+    float sizeCube; // cube 3D 
     ofVec3f point1, point2, point3, p, v;
 };
 

@@ -58,16 +58,6 @@ class Application : public ofBaseApp{
 
 		ofxPanel gui;
 
-		ofxGuiGroup primitivesGroupe; // Cr�er un groupe pour les boutons
-		ofxToggle drawTriangle; // Bouton pour le triangle 
-		ofxToggle drawCircle; // Bouton pour le cercle
-		ofxToggle drawRectangle; // Bouton pour le rectangle
-		ofxToggle drawLine; // Bouton pour le triangle 
-		ofxToggle drawEllipse; // Bouton pour le cercle
-		ofxToggle drawBezier; // Bouton pour le rectangle
-		ofxToggle drawSphere; 
-		ofxToggle drawCube; 
-
 		ofxPanel drawingGUI;
 		ofParameter <ofVec2f> uiPosition;
 		ofParameter <int> uiAmount;
@@ -76,13 +66,15 @@ class Application : public ofBaseApp{
 		ofParameter <ofVec2f> uiShift;
 		ofParameter <ofVec2f> uiSize;
 
-		//ofxGuiGroup primitivesGroupe; // Cr�er un groupe pour les boutons
-		//ofxToggle drawTriangle; // Bouton pour le triangle 
-		//ofxToggle drawCircle; // Bouton pour le cercle
-		//ofxToggle drawRectangle; // Bouton pour le rectangle
-		//ofxToggle drawLine; // Bouton pour le triangle 
-		//ofxToggle drawEllipse; // Bouton pour le cercle
-		//ofxToggle drawBezier; // Bouton pour le rectangle
+		ofxGuiGroup primitivesGroupe; // Cr�er un groupe pour les boutons
+		ofxToggle toggleDrawTriangle; // Bouton pour le triangle 
+		ofxToggle toggleDrawCircle; // Bouton pour le cercle
+		ofxToggle toggleDrawRectangle; // Bouton pour le rectangle
+		ofxToggle toggleDrawLine; // Bouton pour le triangle 
+		ofxToggle toggleDrawEllipse; // Bouton pour le cercle
+		ofxToggle toggleDrawBezier; // Bouton pour le rectangle
+		ofxToggle drawSphere;
+		ofxToggle drawCube;
 
 
 		ofxGuiGroup reinitialisationGroupe;
@@ -92,12 +84,6 @@ class Application : public ofBaseApp{
 		ofxGuiGroup primitivesMode;
 		ofxToggle toggleDraw, toggleTransform; //Boutons toggle pour les modes draw & transform
 		ofxIntField indexBox; 
-
-		bool draw_triangle;
-		bool draw_circle;
-		bool draw_rectangle;
-		bool draw_line, draw_ellipse, draw_bezier; 
-		bool draw_sphere, draw_cube; 
 
 		void button_triangle(bool & value);
 		void button_circle(bool& value);
@@ -125,21 +111,18 @@ class Application : public ofBaseApp{
 		bool rotation_activate;
 		bool mesh_activate;
 		bool noise_activate;
+		bool draw_sphere, draw_cube;
 
 		float rotate;
 
-
 		float diffX, diffY, newX2, newY2, newX3, newY3;
 
-	
 		void showButtonsList(); 
 		ofColor backgroundPanelSceneColor = ofColor(125);
 
 		vector<unique_ptr<ofxToggle>> v_buttons;
 		vector<unique_ptr<ofxToggle>>* v_buttons_ptr;
 		void deleteShapeSelected();
-
-		bool shapeBool; // peut etre utitlise si selection pour delete
 
 		void addAction(function<void()> undoAction, function<void()> redoAction) {
 			undoStack.push(move(undoAction));
@@ -197,6 +180,8 @@ private:
 		ofParameter<string> line = "LINE";
 		ofParameter<string> bezier = "BEZIER";
 		ofParameter<string> rectangle = "RECTANGLE";
+		ofParameter<string> sphere = "SPHERE";
+		ofParameter<string> cube = "CUBE";
 
 		void toggleDrawingGUI(Forme::TypeForme drawingShape);
 		void drawTriangle();
