@@ -1,6 +1,7 @@
 ﻿#include "Application.h"
 #include "Constants.h"
 #include <cmath>
+#include <iostream>
 
 using namespace std;
 
@@ -9,6 +10,50 @@ void Application::setup(){
 	ofBackground(backgroundColor);
 	renderer.setup();
 
+	//toggleDraw, toggleTransform
+	drawingGUI.setup();
+	drawingGUI.setPosition(300, 40);
+	primitivesMode.setup("Mode");
+	primitivesMode.add(toggleDraw.setup("Drawing", false));
+	primitivesMode.add(toggleTransform.setup("Transformation", false));
+	renderer.inputIndex.setup("Index de la liste: ", 0);
+	drawingGUI.add(&renderer.inputIndex);
+	//gui.add(renderer.uiIndex.set("Index de la liste: ", int(0))); 
+	toggleDraw.addListener(this, &Application::button_modeDraw);
+	toggleTransform.addListener(this, &Application::button_modeTransform);
+	drawingGUI.add(&primitivesMode);
+
+	primitivesGroupe.setup("Primitives");
+
+	// Ajout des boutons pour les primitives
+	primitivesGroupe.add(drawTriangle.setup("Triangle",false));
+	primitivesGroupe.add(drawCircle.setup("Circle",false));
+	primitivesGroupe.add(drawRectangle.setup("Rectangle",false));
+	primitivesGroupe.add(drawLine.setup("Line", false));
+	primitivesGroupe.add(drawEllipse.setup("Ellipse", false));
+	primitivesGroupe.add(drawBezier.setup("Bezier", false));
+	primitivesGroupe.add(drawSphere.setup("Sphere", false)); 
+	primitivesGroupe.add(drawCube.setup("Cube", false));
+	
+	// Associer des fonctions de rappel aux boutons
+	drawTriangle.addListener(this, &Application::button_triangle);
+	drawCircle.addListener(this, &Application::button_circle);
+	drawRectangle.addListener(this, &Application::button_rectangle);
+	drawLine.addListener(this, &Application::button_line);
+	drawEllipse.addListener(this, &Application::button_ellipse);
+	drawBezier.addListener(this, &Application::button_bezier);
+	drawSphere.addListener(this, &Application::button_sphere); 
+	drawCube.addListener(this, &Application::button_cube);
+
+	drawingGUI.add(&primitivesGroupe);
+	drawingGUI.add(renderer.uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
+	drawingGUI.add(renderer.uiAmount.set("amount", 1, 0, 5));
+	drawingGUI.add(renderer.uiStep.set("step", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
+	drawingGUI.add(renderer.uiRotate.set("rotate", ofVec3f(0), ofVec3f(-180), ofVec3f(180))); // La rotation des primitives
+	drawingGUI.add(renderer.uiShift.set("shift", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
+	drawingGUI.add(renderer.uiSize.set("size", ofVec2f(1), ofVec2f(1), ofVec2f(10)));
+
+
 	camera_setup_perspective(WIDTH, HEIGHT, 60.0f, 0.0f, 0.0f);
 	cam.enableOrtho();
 	orthoEnabled = true;
@@ -16,14 +61,6 @@ void Application::setup(){
 	setupCamera();
 	is_visible_camera = true;
 	
-	drawingGUI.setup();
-	drawingGUI.setPosition(300, 40);
-	drawingGUI.add(uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
-	drawingGUI.add(uiAmount.set("amount", 1, 0, 64)); // La quantit� de primitives. Nombre maximal est 64 et nombre minimum est 1
-	drawingGUI.add(uiStep.set("step", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
-	drawingGUI.add(uiRotate.set("rotate", ofVec3f(0), ofVec3f(-180), ofVec3f(180))); // La rotation des primitives
-	drawingGUI.add(uiShift.set("shift", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
-	drawingGUI.add(uiSize.set("size", ofVec2f(6), ofVec2f(0), ofVec2f(30)));
 
 	draw_triangle = false;
 	draw_circle = false;
@@ -51,6 +88,7 @@ void Application::setup(){
 	//drawBezier.addListener(this, &Application::button_bezier);
 
 	//drawingGUI.add(&primitivesGroupe);
+
 
 	reinitialisationGroupe.setup("Reinitialisation");
 	reinitialisationGroupe.add(resetButton.setup("Reset", false));
@@ -87,7 +125,6 @@ void Application::setup(){
 		}
 	}
 
-	//renderer.setup(forme.v_formes);
 	renderer.setup(renderer.v_formes);
 	forme.setup();
 	diffX = (abs(forme.getX2() - forme.getX3())) / 2;
@@ -97,12 +134,17 @@ void Application::setup(){
 	newX3 = 0;
 	newY3 = 0;
 
-	draw_line = draw_ellipse = draw_bezier = false; 
+	// état par défaut des bool
+	draw_triangle = draw_circle = draw_rectangle =
+		draw_line = draw_ellipse = draw_bezier = draw_sphere = false;
+	
 
 	shapeBool = false; 
 	v_buttons_ptr = &v_buttons;
 	guiScene.setup();
 	guiScene.setPosition(0, 40);
+
+	addAction([this]() { undo(); }, [this]() { redo(); });
 }
 
 void Application::update()
@@ -128,6 +170,7 @@ void Application::update()
 		renderer.captureImage();
 	}
 
+
 	if (moveCameraLeft) {
 		cam.move(-1, 0, 0); // DÃ©placer la camÃ©ra vers la gauche
 	}
@@ -151,6 +194,7 @@ void Application::update()
 		cam.move(0, 0, -1); // DÃ©placer la camÃ©ra en s'eloignant
 	}
 }
+
 
 void Application::draw(){
 	renderer.interface.drawBackground();
@@ -212,59 +256,9 @@ void Application::draw(){
 				camBottom.draw();
 		}
 	}
-	
-	// Partie Myriam 
-	//************** 
-	//ofPushMatrix();
-	// cam.begin();
-	//ofTranslate(uiPosition->x, uiPosition->y);
-	//for (int i = 0; i < uiAmount; i++) {
-	//	ofPushMatrix();
-	//	ofTranslate(i * uiStep->x, i * uiStep->y);
-	//	ofRotateXDeg(i * uiRotate->x);
-	//	ofRotateYDeg(i * uiRotate->y);
-	//	ofRotateZDeg(i * uiRotate->z);
-	//	ofTranslate(i * uiShift->x, i * uiShift->y);
-	//	ofScale(uiSize->x, uiSize->y);
-	//	ofBeginShape();
-	//	if (draw_triangle) {
-	//     if (rotation_activate == true) {
-	            //ofRotateXDeg(rotate);
-	            //ofRotateYDeg(rotate);
-	            //ofRotateZDeg(rotate);
-            //}
-	//		//ofDrawTriangle(0, 0, -16, 32, 16, 32);
-	//	} 
-	//	if (draw_circle) {
-	//      if (rotation_activate == true) {
-	            //ofRotateXDeg(rotate);
-	            //ofRotateYDeg(rotate);
-	            //ofRotateZDeg(rotate);
-            //}
-	//		//ofDrawCircle(100, 100, 50);
-	//		//ofSetCircleResolution(55);
-	//	}
-	//	if (draw_rectangle) {
-	/*
-	if (rotation_activate == true) {
-		ofRotateXDeg(rotate);
-		ofRotateYDeg(rotate);
-		ofRotateZDeg(rotate);
-	}
-	ofDrawRectangle(50, 50, 100, 200);
-    }
-    if (mesh_activate) {
-	    mesh.drawWireframe();
-	    if (noise_activate) {
-		    button_noise(noise_activate);
-	    }
 
-    }*/
-	//	ofEndShape();
-	//	ofPopMatrix();
-	//}
-	
 	renderer.interface.backgroundLine();
+
 	renderer.draw();
 	
 	//ofPopMatrix();
@@ -298,6 +292,8 @@ void Application::toggleDrawingGUI(Forme::TypeForme drawingShape) {
 	}
 }
 
+
+// a modifier ou effacer 
 void Application::deleteShapeSelected()
 {
 	// Vecteur temporaire pour stocker les indices des boutons Ã¯Â¿Â½ supprimer
@@ -319,16 +315,7 @@ void Application::deleteShapeSelected()
 		}
 
 	}
-	//for (int i = 0; i < v_buttons.size(); ++i)
-	//{
-	//	// VÃ¯Â¿Â½rifier si le bouton est en Ã¯Â¿Â½tat TRUE
-	//	if (i == shapeBool) // v_buttons[i] AccÃ¯Â¿Â½der Ã¯Â¿Â½ l'Ã¯Â¿Â½tat boolÃ¯Â¿Â½en du bouton
-	//	{
-	//		cout << "Il est cense avoir " << i << " forme a effacer" << endl;
-	//		// Ajouter l'index du bouton Ã¯Â¿Â½ supprimer dans le vecteur temporaire
-	//		buttonsToDelete.push_back(i);
-	//	}
-	//}
+
 
 	if (!buttonsToDelete.empty())
 	{
@@ -336,30 +323,20 @@ void Application::deleteShapeSelected()
 		cout << "Size of the deletion list is " << buttonsToDelete.size() << endl;
 	}
 
-	// Parcourir tous les boutons dans la liste
-	//for (int i = 0; i < buttonStates.size(); ++i)
-	//{
-	//	// VÃ¯Â¿Â½rifier si le bouton est en Ã¯Â¿Â½tat TRUE
-	//	if (buttonStates[i] == TRUE)
-	//	{
-	//		// Ajouter l'index du bouton Ã¯Â¿Â½ supprimer dans le vecteur temporaire
-	//		buttonsToDelete.push_back(i);
-	//	}
-	//}
-
-
-	// Supprimer les boutons en parcourant le vecteur temporaire en sens inverse
-	//for (int i = buttonsToDelete.size() - 1; i >= 0; --i)
-	//{
-	//	v_buttons.erase(v_buttons.begin() + buttonsToDelete[i]);
-	//	buttonStates.erase(buttonStates.begin() + buttonsToDelete[i]); // Supprimer Ã¯Â¿Â½galement l'Ã¯Â¿Â½tat correspondant
-	//}
 }
 
 void Application::keyPressed(int key) 
 {
-	if (key == 100) { // 105 = key "d"
-		deleteShapeSelected();
+
+	
+	// Pour tester les pointeurs 
+	if (key == 'f') {
+		for (const auto& ptr : *renderer.v_formes_ptr) {
+			cout << "Adresse du pointeur : " << &ptr << endl;
+			cout << "Adresse de l'objet Forme : " << ptr.get() << endl; // Obtenir l'adresse de l'objet pointé
+			cout << "Valeur de l'objet Forme : " << ptr << endl;
+			cout << endl;
+		}		
 	}
 
 	// DÃ¯Â¿Â½marrer/arrÃ¯Â¿Â½ter l'enregistrement lors de l'appui sur la touche 'r'
@@ -375,6 +352,24 @@ void Application::keyPressed(int key)
 			cout << "Enregistrement arrÃ¯Â¿Â½tÃ¯Â¿Â½." << endl;
 		}
 	}
+
+
+	if(key == 'z')
+	{ 
+		if(!v_buttons.empty() && !renderer.v_formes.empty())
+		{ 
+			//undo();
+		}
+	}
+	if(key == 'x')
+	{ 
+		if (!v_buttons.empty() && !renderer.v_formes.empty())
+		{
+			//redo(); 
+		}
+	}
+}
+
 
 	if (key == OF_KEY_LEFT) {
 		moveCameraLeft = true;
@@ -506,6 +501,52 @@ void Application::mousePressed(int x, int y, int button){
 
 	renderer.interface.mouse_current_x = x;
 	renderer.interface.mouse_current_y = y;
+
+
+void Application::showButtonsList(){
+	if(v_buttons_ptr)
+	{ 
+	// Parcourir la liste des boutons
+	for (size_t i = 0; i < v_buttons.size(); ++i) {
+		auto& button = v_buttons[i];
+		auto& forme = *renderer.v_formes[i];
+
+		// Déterminer le type de forme
+		string formeType;
+		switch (forme.getType()) {
+		case Forme::TRIANGLE:
+			formeType = "TRIANGLE";
+			break;
+		case Forme::CERCLE:
+			formeType = "CERCLE";
+			break;
+		case Forme::RECTANGLE:
+			formeType = "RECTANGLE";
+			break;
+		//case Forme::LIGNE:
+		//	formeType = "LIGNE";
+		//	break;
+		case Forme::ELLIPSE:
+			formeType = "ELLIPSE";
+			break;
+		case Forme::BEZIER:
+			formeType = "BEZIER";
+			break;
+			// Ajoutez d'autres cas pour les autres types de forme
+		default:
+			formeType = "INCONNU";
+			break;
+		}
+
+		// Créer l'étiquette en fonction du type et de l'index de la forme
+		string label = to_string(i) + " " + formeType;
+
+		// Ajouter le bouton avec l'étiquette dynamique
+		guiScene.add(button->setup(label, false));
+		}
+	}
+}
+
 
 	renderer.interface.mouse_press_x = x;
 	renderer.interface.mouse_press_y = y;
@@ -640,7 +681,36 @@ void Application::mousePressed(int x, int y, int button){
 		
 		guiScene.add(bezier);
 	}
+  
+  if (draw_sphere && drawSphere)
+		{
+			float x = renderer.mouse_press_x / 1.00;
+			float y = renderer.mouse_press_y / 1.00;
+			ofVec3f viktor(x, y, 0);
+			forme.setVSphere(viktor); 
+			renderer.v_formes.push_back(make_unique<Forme>(Forme::SPHERE, forme.getVSphere(), forme.getSphereRad()));
+			renderer.okDessiner = true; 
+			auto button = make_unique<ofxToggle>(); 
+			guiScene.add(button->setup("SPHERE", false)); 
+			v_buttons.push_back(move(button)); 
+      //guiScene.add(sphere);
+		}
+
+		if (draw_cube && drawCube)
+		{
+			float x = renderer.mouse_press_x;
+			float y = renderer.mouse_press_y;
+			ofVec3f viktor(x, y, 0);
+			forme.setVSphere(viktor);
+			renderer.v_formes.push_back(make_unique<Forme>(Forme::CUBE, forme.getVSphere(), forme.getSphereRad()));
+			renderer.okDessiner = true;
+			auto button = make_unique<ofxToggle>();
+			guiScene.add(button->setup("CUBE", false));
+			v_buttons.push_back(move(button));
+      //guiScene.add(cube);
+		}
 }
+
 
 void Application::mouseReleased(int x, int y, int button){
 	if (isRepositioning) { //Si une image est en repositionnement
@@ -720,7 +790,14 @@ void Application::mouseReleased(int x, int y, int button){
 	renderer.interface.mouse_current_x = x;
 	renderer.interface.mouse_current_y = y;
 
+
+	renderer.mouse_current_x = x;
+	renderer.mouse_current_y = y;
+
+	//if (draw_line && drawLine)
+
 	if (draw_line)
+
 	{
 		renderer.interface.is_mouse_button_dragged = true;
 		renderer.ligne.addVertex(x, y);
@@ -739,19 +816,16 @@ void Application::mouseEntered(int x, int y){
 	renderer.interface.mouse_current_y = y;
 }
 
-
 void Application::mouseExited(int x, int y){
 
 	renderer.interface.mouse_current_x = x;
 	renderer.interface.mouse_current_y = y;
 }
 
-
 void Application::windowResized(int w, int h){
 	WIDTH = w;
 	HEIGHT = h;
 }
-
 
 void Application::gotMessage(ofMessage msg){
 	//ofEasyCam cam;
@@ -769,6 +843,19 @@ void Application::dragEvent(ofDragInfo dragInfo) {
 	}
 }
 
+void Application::button_triangle(bool& value) { 
+	if (value) {
+		draw_triangle = !draw_triangle;
+		draw_circle = draw_rectangle = draw_line = draw_ellipse = draw_bezier = draw_sphere = draw_cube = false;
+		//drawCircle = drawRectangle = drawLine = drawEllipse = drawBezier = drawSphere = drawCube = false;
+		if (!renderer.triangleColors.empty()) { // Conserve les parametres de la forme pour la reselection
+			renderer.interface.colorPickerFill = renderer.triangleColors[1];
+			renderer.interface.color_picker_stroke = renderer.triangleColors[0];
+			if (renderer.interface.fillButton != renderer.triangleFill) {
+				renderer.interface.fillButton = renderer.triangleFill;
+			}
+			renderer.interface.slider_stroke_weight = renderer.triangleStroke;
+
 void Application::drawTriangle() {
 	cout << "drawTriangle 2 \n";
 	draw_triangle = !draw_triangle;
@@ -779,10 +866,24 @@ void Application::drawTriangle() {
 		renderer.interface.color_picker_stroke = renderer.triangleColors[0];
 		if (renderer.interface.fillButton != renderer.triangleFill) {
 			renderer.interface.fillButton = renderer.triangleFill;
+
 		}
 		renderer.interface.slider_stroke_weight = renderer.triangleStroke;
 	}
 }
+
+void Application::button_circle(bool& value) {
+	if (value) {
+		draw_circle = !draw_circle;
+		draw_triangle = draw_rectangle = draw_line = draw_ellipse = draw_bezier = draw_sphere = draw_cube = false;
+		//drawTriangle = drawRectangle = drawLine = drawEllipse = drawBezier = drawSphere = drawCube = false;
+		if (!renderer.cercleColors.empty()) {// Conserve les parametres de la forme pour la reselection
+			renderer.interface.colorPickerFill = renderer.cercleColors[1];
+			renderer.interface.color_picker_stroke = renderer.cercleColors[0];
+			if (renderer.interface.fillButton != renderer.cercleFill) {
+				renderer.interface.fillButton = renderer.cercleFill;
+			}
+			renderer.interface.slider_stroke_weight = renderer.cercleStroke;
 
 void Application::drawCircle() {
 	draw_circle = !draw_circle;
@@ -792,10 +893,25 @@ void Application::drawCircle() {
 		renderer.interface.color_picker_stroke = renderer.cercleColors[0];
 		if (renderer.interface.fillButton != renderer.cercleFill) {
 			renderer.interface.fillButton = renderer.cercleFill;
+
 		}
 		renderer.interface.slider_stroke_weight = renderer.cercleStroke;
 	}
 }
+
+
+void Application::button_rectangle(bool& value) {
+	if (value) {
+		draw_rectangle = !draw_rectangle;
+		draw_triangle = draw_circle = draw_line = draw_ellipse = draw_bezier = draw_sphere = draw_cube = false;
+		//drawTriangle = drawCircle = drawLine = drawEllipse = drawBezier = drawSphere = drawCube = false;
+		if (!renderer.rectangleColors.empty()) { // Conserve les parametres de la forme pour la reselection
+			renderer.interface.colorPickerFill = renderer.rectangleColors[1];
+			renderer.interface.color_picker_stroke = renderer.rectangleColors[0];
+			if (renderer.interface.fillButton != renderer.rectangleFill) {
+				renderer.interface.fillButton = renderer.rectangleFill;
+			}
+			renderer.interface.slider_stroke_weight = renderer.rectangleStroke;
 
 void Application::drawRectangle() {
 	draw_rectangle = !draw_rectangle;
@@ -805,10 +921,36 @@ void Application::drawRectangle() {
 		renderer.interface.color_picker_stroke = renderer.rectangleColors[0];
 		if (renderer.interface.fillButton != renderer.rectangleFill) {
 			renderer.interface.fillButton = renderer.rectangleFill;
+
 		}
 		renderer.interface.slider_stroke_weight = renderer.rectangleStroke;
 	}
 }
+
+
+void Application::button_line(bool& value) {
+	if (value) {
+		draw_line = !draw_line;
+		draw_triangle = draw_rectangle = draw_circle = draw_ellipse = draw_bezier = draw_sphere = draw_cube = false;
+		//drawTriangle = drawRectangle = drawCircle = drawEllipse = drawBezier = drawSphere = drawCube = false;
+		renderer.interface.color_picker_stroke = renderer.ligneColor;
+		renderer.interface.slider_stroke_weight = renderer.ligneStroke;
+		
+	}
+}
+
+void Application::button_ellipse(bool& value) {
+	if (value) {
+		draw_ellipse = !draw_ellipse;
+		draw_triangle = draw_rectangle = draw_circle = draw_line = draw_bezier = draw_sphere = draw_cube = false;
+		//drawTriangle = drawRectangle = drawCircle = drawLine = drawBezier = drawSphere = drawCube = false;
+		if (!renderer.ellipseColors.empty()) { // Conserve les parametres de la forme pour la reselection
+			renderer.interface.colorPickerFill = renderer.ellipseColors[1];
+			renderer.interface.color_picker_stroke = renderer.ellipseColors[0];
+			if (renderer.interface.fillButton != renderer.ellipseFill) {
+				renderer.interface.fillButton = renderer.ellipseFill;
+			}
+			renderer.interface.slider_stroke_weight = renderer.ellipseStroke;
 
 void Application::drawLine() {
 	draw_line = !draw_line;
@@ -825,10 +967,25 @@ void Application::drawEllipse() {
 		renderer.interface.color_picker_stroke = renderer.ellipseColors[0];
 		if (renderer.interface.fillButton != renderer.ellipseFill) {
 			renderer.interface.fillButton = renderer.ellipseFill;
+
 		}
 		renderer.interface.slider_stroke_weight = renderer.ellipseStroke;
 	}
 }
+
+
+void Application::button_bezier(bool& value) {
+	if (value) {
+		draw_bezier = !draw_bezier;
+		draw_triangle = draw_rectangle = draw_circle = draw_line = draw_ellipse = draw_cube = false;
+		//drawTriangle = drawRectangle = drawCircle = drawLine = drawEllipse = drawCube = false;
+		if (!renderer.bezierColors.empty()) { // Conserve les parametres de la forme pour la reselection
+			renderer.interface.colorPickerFill = renderer.bezierColors[1];
+			renderer.interface.color_picker_stroke = renderer.bezierColors[0];
+			if (renderer.interface.fillButton != renderer.bezierFill) {
+				renderer.interface.fillButton = renderer.bezierFill;
+			}
+			renderer.interface.slider_stroke_weight = renderer.bezierStroke;
 
 void Application::drawBezier() {
 	draw_bezier = !draw_bezier;
@@ -838,19 +995,36 @@ void Application::drawBezier() {
 		renderer.interface.color_picker_stroke = renderer.bezierColors[0];
 		if (renderer.interface.fillButton != renderer.bezierFill) {
 			renderer.interface.fillButton = renderer.bezierFill;
+
 		}
 		renderer.interface.slider_stroke_weight = renderer.bezierStroke;
 	}
 }
 
+void Application::button_sphere(bool& value) {
+	if (value) {
+		draw_sphere = !draw_sphere; 
+		draw_triangle = draw_rectangle = draw_circle = draw_line = draw_ellipse = draw_bezier = draw_cube = false;
+		//drawTriangle = drawRectangle = drawCircle = drawLine = drawEllipse = drawBezier = drawCube = false;
+	}
+}
+
+void Application::button_cube(bool& value) {
+	if (value) {
+		draw_cube = !draw_cube; 
+		draw_triangle = draw_rectangle = draw_circle = draw_line = draw_ellipse = draw_bezier = draw_sphere = false;
+		//drawTriangle = drawRectangle = drawCircle = drawLine = drawEllipse = drawBezier = drawSphere = false;
+	}
+}
+
 void Application::reset(bool& value) {
 	if (value) {
-		uiPosition.set(ofVec2f(0));
-		uiAmount.set(1);
-		uiStep.set(ofVec2f(0));
-		uiRotate.set(ofVec3f(0));
-		uiShift.set(ofVec2f(0));
-		uiSize.set(ofVec2f(6));
+		renderer.uiPosition.set(ofVec2f(0));
+		renderer.uiAmount.set(1);
+		renderer.uiStep.set(ofVec2f(0));
+		renderer.uiRotate.set(ofVec3f(0));
+		renderer.uiShift.set(ofVec2f(0));
+		renderer.uiSize.set(ofVec2f(6));
 
 		draw_triangle = false;
 		draw_circle = false;
@@ -865,6 +1039,22 @@ void Application::reset(bool& value) {
 		
 	}
 }
+
+
+void Application::button_modeDraw(bool& value) {
+	if (value) {
+		renderer.modeDrawState = !renderer.modeDrawState;
+		renderer.modeTransformState = toggleTransform = false;
+	}
+}
+
+void Application::button_modeTransform(bool& value) {
+	if (value) {
+		renderer.modeTransformState = !renderer.modeTransformState;
+		renderer.modeDrawState = toggleDraw = false;
+	}
+}
+
 
 void Application::reset_cam() {
 	offset_camera = 500.0f * 3.5f * -1.0f;
@@ -893,51 +1083,6 @@ void Application::reset_cam() {
 	camBottom.setVFlip(true);
 
 	camera_active = Camera::front;
-}
-
-void Application::buttons_list(bool& value)
-{
-	if (value) {
-		// Vecteur temporaire pour stocker les indices des boutons Ã¯Â¿Â½ supprimer
-		//vector<int> buttonsToDelete;
-		//// Vecteur pour stocker l'Ã¯Â¿Â½tat de chaque bouton
-		//vector<bool> buttonStates;
-
-		cout << "Je t'ecoute!!" << endl;
-		shapeBool = !shapeBool; 
-		//if (!shapeBool)
-		//{
-		//	for(int i = 0; v_buttons.size(); i++)
-		//	{
-		//		buttonsToDelete.push_back(i);
-
-		//		if (!buttonsToDelete.empty())
-		//		{
-		//			cout << "Deletion is possible! " << endl;
-		//			cout << "Size of the deletion list is " << buttonsToDelete.size() << endl;
-		//		}
-
-				// Parcourir tous les boutons dans la liste
-				//for (int i = 0; i < buttonStates.size(); ++i)
-				//{
-				//	// VÃ¯Â¿Â½rifier si le bouton est en Ã¯Â¿Â½tat TRUE
-				//	if (buttonStates[i] == TRUE)
-				//	{
-				//		// Ajouter l'index du bouton Ã¯Â¿Â½ supprimer dans le vecteur temporaire
-				//		buttonsToDelete.push_back(i);
-				//	}
-				//}
-
-
-				// Supprimer les boutons en parcourant le vecteur temporaire en sens inverse
-				//for (int i = buttonsToDelete.size() - 1; i >= 0; --i)
-				//{
-				//	v_buttons.erase(v_buttons.begin() + buttonsToDelete[i]);
-				//	buttonStates.erase(buttonStates.begin() + buttonsToDelete[i]); // Supprimer Ã¯Â¿Â½galement l'Ã¯Â¿Â½tat correspondant
-				//}
-			//}
-		//}
-	}
 }
 
 void Application::button_rotation(bool& value) {
@@ -1044,3 +1189,4 @@ void Application::setupCamera() {
 		camera->setPosition(camera_position);
 		camera->setOrientation(camera_orientation);
 }
+

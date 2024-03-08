@@ -6,19 +6,21 @@
 #include "Forme.h"
 #include <memory>
 #include "ofxGui.h"
+
 #include "ofxAssimpModelLoader.h"
+
 
 using namespace std;
 
 //enum class MeshRenderMode { fill, wireframe, vertex };
 
 class Renderer {
-	public:
-		Interface interface;
-		ofImage image;
+public:
+    Interface interface;
+    ofImage image;
 
-		list<ofImage> imageList; //Liste d'images import�es
-		list<vector<int>> imgPosList; //Positions x et y des images import�es
+    list<ofImage> imageList; //Liste d'images import�es
+    list<vector<int>> imgPosList; //Positions x et y des images import�es
 
         ofxAssimpModelLoader teapotOrtho;
         ofxAssimpModelLoader teapotMultiple;
@@ -30,16 +32,25 @@ class Renderer {
 
     int mouse_press_x;
     int mouse_press_y;
-    
-        int mouse_current_x;
-        int mouse_current_y;
 
-        void setup();
-        void setup(vector<Forme*>& v_formes);
-        void draw();
-        void newImage(string filePath, int posX, int posY);
 
-        Forme forme; 
+    int mouse_current_x;
+    int mouse_current_y;
+
+    int mouse_drag_x;
+    int mouse_drag_y;
+
+    bool is_mouse_button_pressed;
+    bool is_mouse_button_dragged;
+    bool import_activate;
+
+    void setup();
+    void setup(vector<Forme*>& v_formes);
+    void draw();
+    void newImage(string filePath, int posX, int posY);
+    void draw_cursor(float x, float y) const;
+
+      Forme forme; 
         vector<unique_ptr<Forme>>* v_formes_ptr;
         vector<unique_ptr<Forme>> v_formes;
         void setup(vector<unique_ptr<Forme>>& v_formes);
@@ -68,21 +79,36 @@ class Renderer {
         bool bezierFill = false; // Indique si l'interieur de la forme doit etre colore
         float bezierStroke; // Taille du outline
 
-        vector<unique_ptr<Forme>>* getVecteurFormesPtr() {
-            return &v_formes;
-        }
+    void dessinerSphere();
+    void dessinerCube(); 
 
-        ofPolyline ligne;
-        vector<ofPolyline> vecteur_lignes;
+    vector<unique_ptr<Forme>>* getVecteurFormesPtr() {
+        return &v_formes;
+    }
 
-        //Capture images
-        void update();
-        void captureImage();
-        int frameCounter, captureInterval, compteur;
-        bool isRecording;
+    bool modeDrawState, modeTransformState; // pour indiquer si en mode draw ou transformation
 
-        void toggleExportGUI();
+    ofPolyline ligne;
+    void addPoint(const ofVec3f& point) {
+        // Ajouter le point à une liste de points
+        ligne.addVertex(point);
+    }
+    vector<ofPolyline> vecteur_lignes;
+
+    //Capture images
+    void update();
+    void captureImage();
+    int frameCounter, captureInterval, compteur;
+    bool isRecording;
+  
+      void toggleExportGUI();
         void toggleColorWheelGUI();
+
+    ofParameter<ofVec2f> uiPosition, uiStep, uiShift, uiSize;
+    ofParameter <ofVec3f> uiRotate;
+    ofParameter <int> uiAmount; // Total de la liste formes 
+
+    ofxInputField<int> inputIndex; 
 
     private:
         ofxPanel gui;
@@ -91,4 +117,5 @@ class Renderer {
         ofParameter<bool> exportButton = false;
 
         void image_export(const string name, const string extension) const;
+
 };

@@ -5,6 +5,7 @@
 #include "Renderer.h"
 #include "Forme.h"
 
+
 using namespace std;
 
 enum class Camera { front, back, left, right, top, down };
@@ -54,6 +55,19 @@ class Application : public ofBaseApp{
 		void reset(bool& value);
 		void reset_cam();
 
+
+		ofxPanel gui;
+
+		ofxGuiGroup primitivesGroupe; // Cr�er un groupe pour les boutons
+		ofxToggle drawTriangle; // Bouton pour le triangle 
+		ofxToggle drawCircle; // Bouton pour le cercle
+		ofxToggle drawRectangle; // Bouton pour le rectangle
+		ofxToggle drawLine; // Bouton pour le triangle 
+		ofxToggle drawEllipse; // Bouton pour le cercle
+		ofxToggle drawBezier; // Bouton pour le rectangle
+		ofxToggle drawSphere; 
+		ofxToggle drawCube; 
+
 		ofxPanel drawingGUI;
 		ofParameter <ofVec2f> uiPosition;
 		ofParameter <int> uiAmount;
@@ -70,8 +84,31 @@ class Application : public ofBaseApp{
 		//ofxToggle drawEllipse; // Bouton pour le cercle
 		//ofxToggle drawBezier; // Bouton pour le rectangle
 
+
 		ofxGuiGroup reinitialisationGroupe;
 		ofxToggle resetButton; // Bouton de r�initialisation
+
+
+		ofxGuiGroup primitivesMode;
+		ofxToggle toggleDraw, toggleTransform; //Boutons toggle pour les modes draw & transform
+		ofxIntField indexBox; 
+
+		bool draw_triangle;
+		bool draw_circle;
+		bool draw_rectangle;
+		bool draw_line, draw_ellipse, draw_bezier; 
+		bool draw_sphere, draw_cube; 
+
+		void button_triangle(bool & value);
+		void button_circle(bool& value);
+		void button_rectangle(bool& value);
+		void button_line(bool& value);
+		void button_ellipse(bool& value);
+		void button_bezier(bool& value);
+		void button_modeDraw(bool& value);
+		void button_modeTransform(bool& value);
+		void button_sphere(bool& value); 
+		void button_cube(bool& value);
 
 		ofxGuiGroup animationGroupe;
 		ofxToggle rotationButton; // Bouton pour l'animation de rotation
@@ -91,14 +128,49 @@ class Application : public ofBaseApp{
 
 		float rotate;
 
+
 		float diffX, diffY, newX2, newY2, newX3, newY3;
 
-		void buttons_list(bool& value);
+	
+		void showButtonsList(); 
 		ofColor backgroundPanelSceneColor = ofColor(125);
 
 		vector<unique_ptr<ofxToggle>> v_buttons;
 		vector<unique_ptr<ofxToggle>>* v_buttons_ptr;
 		void deleteShapeSelected();
+
+		bool shapeBool; // peut etre utitlise si selection pour delete
+
+		void addAction(function<void()> undoAction, function<void()> redoAction) {
+			undoStack.push(move(undoAction));
+			// Effacer la pile Redo car les actions précédentes ne sont plus valides
+			while (!redoStack.empty()) {
+				redoStack.pop();
+			}
+		}
+
+		void undo() {
+			if (!undoStack.empty()) {
+				function<void()> undoAction = move(undoStack.top());
+				undoStack.pop();
+				undoAction();
+				redoStack.push(move(undoAction));
+			}
+		}
+
+		void redo() {
+			if (!redoStack.empty()) {
+				function<void()> redoAction = move(redoStack.top());
+				redoStack.pop();
+				redoAction();
+				undoStack.push(move(redoAction));
+			}
+		}
+
+private:
+	stack<function<void()>> undoStack;
+	stack<function<void()>> redoStack;
+
 		bool shapeBool; 
 
 		void camera_setup_perspective(float width, float height, float fov, float n, float f);
@@ -115,9 +187,8 @@ class Application : public ofBaseApp{
 		bool moveCameraDown;
 		bool moveCameraNear;
 		bool moveCameraFar;
-
-	private:
-		Forme::TypeForme lastShape;
+  		
+  Forme::TypeForme lastShape;
 
 		ofxPanel guiScene;
 		ofParameter<string> circle = "CIRCLE";
@@ -137,4 +208,6 @@ class Application : public ofBaseApp{
 		void button_rotation(bool& value);
 		void button_mesh(bool& value);
 		void button_noise(bool& value);
+
+
 };

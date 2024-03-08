@@ -28,10 +28,12 @@ void Renderer::setup() {
 
 	//triangleColors= { interface.color_picker_stroke, interface.colorPickerFill };
 
-	//Pour la capture d�mages
+	//Pour la capture dìmages
 	frameCounter = 0;
 	captureInterval = 60; // changer l'intervalle pour le nombre d'image exportee
 	isRecording = false;
+
+	modeDrawState = modeTransformState = false;
 }
 
 
@@ -75,6 +77,8 @@ void Renderer::draw() {
 		dessinerLigne(); 
 		dessinerEllipse(); 
 		dessinerBezier(); 
+		dessinerSphere(); 
+		dessinerCube();
 	}
 	//////////////////////////////////////////////////////////////////
 	if (interface.getShowModel()) {
@@ -93,158 +97,262 @@ void Renderer::draw() {
 		}
 	}
 
-	// Afficher un message si l'enregistrement est activ�
+	// Afficher un message si l'enregistrement est activé
 	if (isRecording)
 		ofDrawBitmapString("Enregistrement enmouse cours...", 20, 20);
 }
 
-void Renderer::dessinerTriangle() 
-{
-	if (v_formes_ptr) 
-	{ 
-		for (const auto& formeCourante : *v_formes_ptr) 
-		{ 
-			if (formeCourante->getType() == Forme::TRIANGLE) 
-			{
-				if (triangleFill) { // Remplissage
-					ofFill();
+
+
+void Renderer::dessinerSphere(){
+	ofSetColor(255,0,0);
+	if (v_formes_ptr) {
+		for (const auto& formeCourante : *v_formes_ptr)
+		{
+			if(formeCourante->getType() == Forme::SPHERE){
+				ofVec3f viktor = formeCourante->getVSphere();
+				ofDrawSphere(viktor.x, viktor.y, 0, 150);
+
+			}
+		}
+	}
+}
+
+void Renderer::dessinerCube() {
+	ofSetColor(255, 255, 0);
+	if (v_formes_ptr) {
+		for (const auto& formeCourante : *v_formes_ptr)
+		{
+			if (formeCourante->getType() == Forme::CUBE) {
+				ofVec3f viktor = formeCourante->getVSphere();
+				ofDrawBox(viktor.x, viktor.y, 0, 150);
+			}
+		}
+	}
+}
+
+void Renderer::dessinerTriangle() {
+	if (v_formes_ptr) {
+		for (int i = 0; i < v_formes_ptr->size(); ++i) {
+			const auto& formeCourante = (*v_formes_ptr)[i];
+			if (formeCourante->getType() == Forme::TRIANGLE) {
+				//if (triangleFill) {
+					//ofFill();
+					ofSetLineWidth(triangleStroke);
 					ofSetColor(triangleColors[1]);
-					ofDrawTriangle(formeCourante->getX1(), formeCourante->getY1(),
-						formeCourante->getX2(), formeCourante->getY2(),
-						formeCourante->getX3(), formeCourante->getY3());
-				}
-				ofNoFill(); // Outline
-				ofSetLineWidth(triangleStroke);
-				ofSetColor(triangleColors[0]);
-				ofDrawTriangle(formeCourante->getX1(), formeCourante->getY1(),
-					formeCourante->getX2(), formeCourante->getY2(),
-					formeCourante->getX3(), formeCourante->getY3());
+					// Dessin du triangle avec translation si l'index correspond et le mode de transformation est activé
+					if (i == inputIndex && modeTransformState) {
+						ofPushMatrix();
+						ofTranslate(uiPosition->x, uiPosition->y); // positionnement 
+						ofTranslate(uiAmount * uiStep->x, uiAmount * uiStep->y);
+	
+						ofRotateXDeg(uiRotate->x); // pivoter sur x 
+						ofRotateYDeg(uiRotate->y); // pivoter sur y 
+						ofRotateZDeg(uiRotate->z); // pivoter sur z 
+						ofScale(uiSize->x, uiSize->y);
+
+							ofNoFill();
+							ofSetColor(255, 0, 0); // Rouge
+							ofBeginShape();
+							ofDrawTriangle(formeCourante->getX1(), formeCourante->getY1(),
+							formeCourante->getX2(), formeCourante->getY2(),
+							formeCourante->getX3(), formeCourante->getY3());
+
+						ofEndShape();
+						ofPopMatrix();
+					}
+					else {
+						// Dessin du triangle sans translation
+						ofSetColor(triangleColors[0]); // Couleur de contour normale
+						ofDrawTriangle(formeCourante->getX1(), formeCourante->getY1(),
+							formeCourante->getX2(), formeCourante->getY2(),
+							formeCourante->getX3(), formeCourante->getY3());
+					}
 			}
 		}
 	}
-	else {
-		cout << "Le pointeur vers le vecteur de formes n'est pas valide." << endl;
-	}
 }
 
-void Renderer::dessinerCercle()
-{
-	ofSetColor(0);
-	if (v_formes_ptr)
-	{
-		for (const auto& formeCourante : *v_formes_ptr)
-		{
-			if (formeCourante->getType() == Forme::CERCLE)
-			{
-				if (cercleFill) { // Remplissage
-					ofFill();
+
+void Renderer::dessinerCercle() {
+	if (v_formes_ptr) {
+		for (int i = 0; i < v_formes_ptr->size(); ++i) {
+			const auto& formeCourante = (*v_formes_ptr)[i];
+			if (formeCourante->getType() == Forme::CERCLE) {
+				//if (cercleFill) {
+					//ofFill();
+					ofSetLineWidth(cercleStroke);
 					ofSetColor(cercleColors[1]);
-					ofDrawCircle(formeCourante->getXC(), formeCourante->getYC(), formeCourante->getRayon());
-				}
-				ofNoFill(); // Outline
-				ofSetLineWidth(cercleStroke);
-				ofSetColor(cercleColors[0]);
-				ofDrawCircle(formeCourante->getXC(), formeCourante->getYC(), formeCourante->getRayon());
+					// Dessiner le cercle avec transformation si l'index correspond et le mode de transformation est activé
+					if (i == inputIndex && modeTransformState) {
+						ofPushMatrix();
+						ofScale(uiSize->x, uiSize->y);
+						ofTranslate(uiPosition->x, uiPosition->y); // translation 
+						ofRotateXDeg(uiRotate->x); // pivoter sur x 
+						ofRotateYDeg(uiRotate->y); // pivoter sur y 
+						ofRotateZDeg(uiRotate->z); // pivoter sur z 
+						ofTranslate(uiStep->x, uiStep->y);
+						ofTranslate(uiShift->x, uiShift->y);
+						ofNoFill();
+						ofBeginShape();
+						ofSetColor(255, 0, 0); // Rouge
+						ofDrawCircle(formeCourante->getXC(), formeCourante->getYC(), formeCourante->getRayon());
+						ofEndShape();
+						ofPopMatrix();
+					}
+					else {
+						// Dessiner le rectangle sans transformation
+						ofSetColor(cercleColors[0]); // Couleur de contour normale
+						ofDrawCircle(formeCourante->getXC(), formeCourante->getYC(), formeCourante->getRayon());
+					}
+				//}
 			}
+
 		}
 	}
 }
 
-void Renderer::dessinerRectangle()
-{
-	ofSetColor(0);
-	if (v_formes_ptr)
-	{
-		for (const auto& formeCourante : *v_formes_ptr)
-		{
-			if (formeCourante->getType() == Forme::RECTANGLE)
-			{
-				if (rectangleFill) { // Remplissage
-					ofFill();
+
+void Renderer::dessinerRectangle() {
+	if (v_formes_ptr) {
+		for (int i = 0; i < v_formes_ptr->size(); ++i) {
+			const auto& formeCourante = (*v_formes_ptr)[i];
+			if (formeCourante->getType() == Forme::RECTANGLE) {
+				//if (rectangleFill) {
+					//ofFill();
+					ofSetLineWidth(rectangleStroke);
 					ofSetColor(rectangleColors[1]);
-					ofDrawRectangle(formeCourante->getXR(), formeCourante->getYR(),
-						formeCourante->getWidth(), formeCourante->getHeight());
-				}
-				ofNoFill(); // Outline
-				ofSetLineWidth(rectangleStroke);
-				ofSetColor(rectangleColors[0]);
-				ofDrawRectangle(formeCourante->getXR(), formeCourante->getYR(),
-						formeCourante->getWidth(), formeCourante->getHeight());
+					ofPushMatrix();
+					ofTranslate(0, 0, 0); 
+					// Dessiner le rectangle avec transformation si l'index correspond et le mode de transformation est activé
+					if (i == inputIndex && modeTransformState) {
+						ofPushMatrix();
+						ofRotateXDeg(uiRotate->x); // pivoter sur x 
+						ofRotateYDeg(uiRotate->y); // pivoter sur y 
+						ofRotateZDeg(uiRotate->z); // pivoter sur z 
+						ofTranslate(uiPosition->x, uiPosition->y); // translation 
+						ofTranslate(uiStep->x, uiStep->y);
+						ofTranslate(uiShift->x, uiShift->y);
+						ofScale(uiSize->x, uiSize->y,1);
+						
+						ofNoFill();
+						ofBeginShape(); 
+						ofSetColor(255, 0, 0); // Rouge
+						ofDrawRectangle(formeCourante->getXR(), formeCourante->getYR(),
+							formeCourante->getWidth(), formeCourante->getHeight());
+						ofTranslate(formeCourante->getXR(), formeCourante->getYR());
+						ofEndShape(); 
+						ofPopMatrix();
+					}
+					else {
+						// Dessiner le rectangle sans transformation
+						ofSetColor(rectangleColors[0]); // Couleur de contour normale
+						ofDrawRectangle(formeCourante->getXR(), formeCourante->getYR(),
+							formeCourante->getWidth(), formeCourante->getHeight());
+					}
+				//}
+				
 			}
 		}
 	}
-
 }
 
-void Renderer::dessinerLigne()
-{
-	ofSetColor(0);
-
-	if(!vecteur_lignes.empty())
-	{ 
-		// Dessiner sans ptr 
-		for (auto& polyline : vecteur_lignes) 
-		{
-			ofNoFill(); // Outline
+void Renderer::dessinerLigne() {
+	if (!vecteur_lignes.empty()) {
+		for (auto& polyline : vecteur_lignes) {
+			ofPushMatrix(); // Sauvegarde la matrice de transformation actuelle
+			ofNoFill(); // Contour uniquement
 			ofSetLineWidth(ligneStroke);
 			ofSetColor(ligneColor);
-			polyline.draw();
-		
+			polyline.draw(); // Dessine la ligne
+			ofPopMatrix(); // Restaure la matrice de transformation précédente
 		}
 	}
 }
 
-void Renderer::dessinerEllipse()
-{
-	ofSetColor(0);
-	if (v_formes_ptr)
-	{
-		for (const auto& formeCourante : *v_formes_ptr)
-		{
-			if (formeCourante->getType() == Forme::ELLIPSE)
-			{
-				if (ellipseFill) { // Remplissage
-					ofFill();
+
+void Renderer::dessinerEllipse() {
+	if (v_formes_ptr) {
+		for (int i = 0; i < v_formes_ptr->size(); ++i) {
+			const auto& formeCourante = (*v_formes_ptr)[i];
+			if (formeCourante->getType() == Forme::ELLIPSE) {
+				//if (ellipseFill) {
+					//ofFill();
+					ofSetLineWidth(ellipseStroke);
 					ofSetColor(ellipseColors[1]);
-					ofDrawEllipse(formeCourante->getXR(), formeCourante->getYR(),
-						formeCourante->getWidth(), formeCourante->getHeight());
-				}
-				ofNoFill(); // Outline
-				ofSetLineWidth(ellipseStroke);
-				ofSetColor(ellipseColors[0]);
-				ofDrawEllipse(formeCourante->getXR(), formeCourante->getYR(),
-				 formeCourante->getWidth(), formeCourante->getHeight());
+					// Dessiner l'ellipse avec transformation si l'index correspond et le mode de transformation est activé
+					if (i == inputIndex && modeTransformState) {
+						ofPushMatrix();
+						ofScale(uiSize->x, uiSize->y);
+						ofTranslate(uiPosition->x, uiPosition->y); // translation 
+						ofRotateXDeg(uiRotate->x); // pivoter sur x 
+						ofRotateYDeg(uiRotate->y); // pivoter sur y 
+						ofRotateZDeg(uiRotate->z); // pivoter sur z 
+						ofNoFill();
+						ofBeginShape();
+						ofSetColor(255, 0, 0); // Rouge
+						ofDrawEllipse(formeCourante->getXR(), formeCourante->getYR(),
+							formeCourante->getWidth(), formeCourante->getHeight());
+						ofEndShape(); 
+						ofPopMatrix();
+					}
+					else {
+						// Dessiner le ellipse sans transformation
+						ofSetColor(ellipseColors[0]); // Couleur de contour normale
+						ofDrawEllipse(formeCourante->getXR(), formeCourante->getYR(),
+							formeCourante->getWidth(), formeCourante->getHeight());
+					}
+				//}
 			}
 		}
 	}
-
 }
 
-void Renderer::dessinerBezier()
-{
-	ofSetColor(0);
-	if (v_formes_ptr)
-	{
-		for (const auto& formeCourante : *v_formes_ptr)
-		{
-			if (formeCourante->getType() == Forme::BEZIER)
-			{
-				if (bezierFill) { // Remplissage
-					ofFill();
+
+void Renderer::dessinerBezier() {
+	if (v_formes_ptr) {
+		for (int i = 0; i < v_formes_ptr->size(); ++i) {
+			const auto& formeCourante = (*v_formes_ptr)[i];
+			if (formeCourante->getType() == Forme::BEZIER) {
+				//if (bezierFill) {
+					//ofFill();
+					ofSetLineWidth(bezierStroke);
 					ofSetColor(bezierColors[1]);
-					ofDrawBezier(formeCourante->getX1(), formeCourante->getX2(), formeCourante->getXB1(), formeCourante->getYB1(),
-						formeCourante->getXB2(), formeCourante->getYB2(), formeCourante->getX2(), formeCourante->getY2());
-				}
-				ofNoFill(); // Outline
-				ofSetLineWidth(bezierStroke);
-				ofSetColor(bezierColors[0]);
-				ofDrawBezier(formeCourante->getX1(), formeCourante->getX2(), formeCourante->getXB1(), formeCourante->getYB1(),
-				formeCourante->getXB2(), formeCourante->getYB2(), formeCourante->getX2(), formeCourante->getY2());
+					// Dessiner la courbe de Bézier avec transformation si l'index correspond et le mode de transformation est activé
+					if (i == inputIndex && modeTransformState) {
+
+						ofPushMatrix();
+						ofScale(uiSize->x, uiSize->y);
+						ofTranslate(uiPosition->x, uiPosition->y); // translation 
+						ofRotateXDeg(uiRotate->x); // pivoter sur x 
+						ofRotateYDeg(uiRotate->y); // pivoter sur y 
+						ofRotateZDeg(uiRotate->z); // pivoter sur z 
+						ofTranslate(uiStep->x, uiStep->y);
+						ofTranslate(uiShift->x, uiShift->y);
+						ofNoFill();
+						ofBeginShape();
+						ofSetColor(255, 0, 0); // Rouge
+						ofDrawBezier(formeCourante->getX1(), formeCourante->getY1(),
+							formeCourante->getXB1(), formeCourante->getYB1(),
+							formeCourante->getXB2(), formeCourante->getYB2(),
+							formeCourante->getX2(), formeCourante->getY2());
+						ofEndShape();
+						ofPopMatrix();
+					}
+					else {
+						// Dessiner la courbe de Bézier sans transformation
+						ofSetColor(bezierColors[0]); // Couleur de contour normale
+						ofDrawBezier(formeCourante->getX1(), formeCourante->getY1(),
+							formeCourante->getXB1(), formeCourante->getYB1(),
+							formeCourante->getXB2(), formeCourante->getYB2(),
+							formeCourante->getX2(), formeCourante->getY2());
+					}
+				//}
 			}
 		}
 	}
-
 }
+
 
 void Renderer::newImage(string filePath, int posX, int posY) {
 	ofImage newImage;
@@ -281,10 +389,10 @@ void Renderer::toggleExportGUI() {
 void Renderer::image_export(const string name, const string extension) const {
 	ofImage image;
 
-	// extraire des donn�es temporelles format�es
+	// extraire des données temporelles formatées
 	string time_stamp = ofGetTimestampString("-%y%m%d-%H%M%S-%i");
 
-	// g�n�rer un nom de fichier unique et ordonn�
+	// générer un nom de fichier unique et ordonné
 	string file_name = name + time_stamp + "." + extension;
 
 	// capturer le contenu du framebuffer actif
