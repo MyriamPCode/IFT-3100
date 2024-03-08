@@ -120,6 +120,7 @@ class Interface {
 		ofColor backgroundPanelSceneColor = ofColor(125);
 		void setupCameraOptions();
 		void setupOutilsGuiOptions();
+		void setupModelOptions();
 		//Renderer& renderer;
 		void showOutils(bool& value);
 		void enableFill(bool& value);
@@ -133,10 +134,10 @@ class Interface {
 		void rightCamSelect(bool& value);
 		void topCamSelect(bool& value);
 		void bottomCamSelect(bool& value);
-		void Interface::enableModels(bool& value);
-		void Interface::modelFill(bool& value);
-		void Interface::modelWireframe(bool& value);
-		void Interface::modelPoints(bool& value);
+		void enableModels(bool& value);
+		void modelFill(bool& value);
+		void modelWireframe(bool& value);
+		void modelPoints(bool& value);
 };
 
 

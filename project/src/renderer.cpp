@@ -18,18 +18,10 @@ void Renderer::setup() {
 	gui.add(exportButton);
 	gui.setPosition(0, 0);
 
-	teapotMultiple.loadModel("teapot.obj");
+	teapotMultiple.loadModel("models/teapot.obj");
 	teapotMultiple.setPosition(0, 0, 0);
 
-	// chargement du modèle 3D en mémoire
-	model1.loadModel("models/teapot.obj");
-	model2.loadModel("models/bun_zipper.ply");
-	//model3.loadModel("models/knight.obj");
-
-	//typeRender = MeshRenderMode::wireframe;
-
-	mouse_current_x = mouse_current_y = mouse_press_x = mouse_press_y = mouse_drag_x = mouse_drag_y = 0;
-	teapotOrtho.loadModel("teapot.obj");
+	teapotOrtho.loadModel("models/teapot.obj");
 	teapotOrtho.setPosition(800, 700, 0);
 
 	okDessiner = false; 
@@ -69,8 +61,6 @@ void Renderer::draw() {
 
 	}
 
-	teapotMultiple.draw(OF_MESH_WIREFRAME);
-	teapotOrtho.draw(OF_MESH_FILL);
 	
 	model1.setPosition(1410,700, 0);
 	model2.setPosition(-50, 1200, -400);
@@ -89,19 +79,17 @@ void Renderer::draw() {
 	//////////////////////////////////////////////////////////////////
 	if (interface.getShowModel()) {
 		if (interface.getRenderType() == MeshRenderMode::wireframe) {
-			model1.draw(OF_MESH_WIREFRAME);
-			model2.draw(OF_MESH_WIREFRAME);
-			//model3.draw(OF_MESH_WIREFRAME);
+			teapotMultiple.draw(OF_MESH_WIREFRAME);
+			teapotOrtho.draw(OF_MESH_WIREFRAME);
 		}
 		else if (interface.getRenderType() == MeshRenderMode::fill) {
-			model1.draw(OF_MESH_FILL);
-			model2.draw(OF_MESH_FILL);
-			//model3.draw(OF_MESH_FILL);
+
+			teapotMultiple.draw(OF_MESH_FILL);
+			teapotOrtho.draw(OF_MESH_FILL);
 		}
 		else if (interface.getRenderType() == MeshRenderMode::vertex) {
-			model1.draw(OF_MESH_POINTS);
-			model2.draw(OF_MESH_POINTS);
-			//model3.draw(OF_MESH_POINTS);
+			teapotMultiple.draw(OF_MESH_POINTS);
+			teapotOrtho.draw(OF_MESH_POINTS);
 		}
 	}
 
@@ -264,30 +252,6 @@ void Renderer::newImage(string filePath, int posX, int posY) {
 	imageList.back().load(filePath);
 	imgPosList.push_back({posX, posY});
 }
-
-void Renderer::draw_cursor(float x, float y) const {
-	float length = 10.0f;
-	float offset = 5.0f;
-
-	ofSetLineWidth(2);
-
-	if (is_mouse_button_dragged) {
-		ofSetColor(254, 142, 118); // Couleur rouge
-		ofDrawCircle(x, y, 20);
-	}
-	else if (is_mouse_button_pressed) {
-		ofSetColor(249, 220, 40); // Couleur jaune
-		ofDrawRectangle(x - 20, y - 20, 40, 40);
-	}
-	else if (import_activate) {
-		ofSetColor(135, 210, 88); // Couleur verte
-		float tailleTriangle = 20;
-		ofDrawTriangle(x, y - tailleTriangle, x - tailleTriangle, y + tailleTriangle, x + tailleTriangle, y + tailleTriangle);
-	}
-	else
-		ofSetColor(255); // Couleur blanche
-
-
 
 void Renderer::update()
 {

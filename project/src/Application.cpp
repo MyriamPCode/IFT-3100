@@ -670,14 +670,14 @@ void Application::mouseReleased(int x, int y, int button){
 				cout << "animation \n";
 				break;
 			case 3:
-				renderer.interface.toggleModelOptions();
-				cout << "modele \n";
-				break;
-			case 3:
 				//call to mesh
 				cout << "mesh \n";
 				break;
 			case 4:
+				renderer.interface.toggleModelOptions();
+				cout << "modele \n";
+				break;
+			case 5:
 				renderer.interface.toggleCamOptions();
 				break;
 		}
@@ -716,8 +716,6 @@ void Application::mouseReleased(int x, int y, int button){
 			break;
 		}
 	}
-
-
 
 	renderer.interface.mouse_current_x = x;
 	renderer.interface.mouse_current_y = y;
@@ -759,8 +757,6 @@ void Application::gotMessage(ofMessage msg){
 	//ofEasyCam cam;
 
 }
-
-
 
 void Application::dragEvent(ofDragInfo dragInfo) {
 	if (isImportable) {

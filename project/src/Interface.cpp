@@ -14,10 +14,10 @@ void Interface::setup() {
 	iconTopBar.push_back(imgAnimation);
 	imgMesh.load("img/mesh.png");
 	iconTopBar.push_back(imgMesh);
-	imgCamera.load("img/camera.png");
-	iconTopBar.push_back(imgCamera);
 	imgModele.load("img/model.png");
 	iconTopBar.push_back(imgModele);
+	imgCamera.load("img/camera.png");
+	iconTopBar.push_back(imgCamera);
 
 	//same here but for the side bar
 	imgColorWheel.load("img/color-wheel.png");
@@ -35,42 +35,13 @@ void Interface::setup() {
 
 	setupOutilsGuiOptions();
 	setupCameraOptions();
+	setupModelOptions();
 
 	is_mouse_button_pressed = false;
 	is_mouse_button_dragged = false;
 	import_activate = false;
 
-	outilsGui.add(color_picker_background);
-	outilsGui.add(color_picker_stroke);
-	outilsGui.add(fillButton.setup("Remplissage de forme", false));
-	outilsGui.add(colorPickerFill);
-	outilsGui.add(slider_stroke_weight);
-
-	fillButton.addListener(this, &Interface::enableFill);
-
-	outilsGui.setFillColor(backgroundInteractionColor);
-	outilsGui.setTextColor(backgroundInteractionColor);
-	outilsGui.maximizeAll();
-	outilsGui.disableHeader();
-
 	typeRender = MeshRenderMode::wireframe;
-
-	modelsGui.setup("Model options");
-	modelsGui.loadFont("roboto/Roboto-Regular.ttf", 10);
-	modelsGui.setPosition(200, 40);
-	modelsGui.setSize(200,1080);
-
-	modelsGui.add(modelToggle.setup("Show models", false));
-	modelsGui.add(fillRender.setup("Fill render", false));
-	modelsGui.add(wireframeRender.setup("Wireframe render", true));
-	modelsGui.add(pointRender.setup("Vertex render", false));
-
-	modelToggle.addListener(this, &Interface::enableModels);
-	fillRender.addListener(this, &Interface::modelFill);
-	wireframeRender.addListener(this, &Interface::modelWireframe);
-	pointRender.addListener(this, &Interface::modelPoints);
-
-	modelsGui.maximizeAll();
 	mouse_current_x = mouse_current_y = mouse_press_x = mouse_press_y = mouse_drag_x = mouse_drag_y = 0;
 }
 
@@ -86,7 +57,7 @@ void Interface::draw() {
 	if (modelsPressed) {
 		modelsGui.draw();
 	}
-}
+
 	if (camPressed) {
 		cameraGui.draw();
 	}
@@ -365,6 +336,25 @@ void Interface::setupOutilsGuiOptions() {
 	outilsGui.maximizeAll();
 	outilsGui.disableHeader();
 
+}
+
+void Interface::setupModelOptions() {
+	modelsGui.setup("Model options");
+	modelsGui.loadFont("roboto/Roboto-Regular.ttf", 10);
+	modelsGui.setPosition(200, 40);
+	modelsGui.setSize(200, 1080);
+
+	modelsGui.add(modelToggle.setup("Show models", false));
+	modelsGui.add(fillRender.setup("Fill render", false));
+	modelsGui.add(wireframeRender.setup("Wireframe render", true));
+	modelsGui.add(pointRender.setup("Vertex render", false));
+
+	modelToggle.addListener(this, &Interface::enableModels);
+	fillRender.addListener(this, &Interface::modelFill);
+	wireframeRender.addListener(this, &Interface::modelWireframe);
+	pointRender.addListener(this, &Interface::modelPoints);
+
+	modelsGui.maximizeAll();
 }
 
 void Interface::setupCameraOptions() {
