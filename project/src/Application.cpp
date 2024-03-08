@@ -5,7 +5,7 @@
 using namespace std;
 
 void Application::setup(){
-	ofSetWindowTitle("Team 7");
+	ofSetWindowTitle("BIBO");
 	ofBackground(backgroundColor);
 	renderer.setup();
 
@@ -127,7 +127,7 @@ void Application::update()
 void Application::draw(){
 	if (isImportable) {
 		renderer.import_activate = true;
-		ofDrawBitmapString("Please drag an image to import it.", 250, 45);
+		ofDrawBitmapString("Please drag an image to import it.", 250, 55);
 	}
 	
 	// Partie Myriam 
@@ -144,39 +144,38 @@ void Application::draw(){
 	//	ofTranslate(i * uiShift->x, i * uiShift->y);
 	//	ofScale(uiSize->x, uiSize->y);
 	//	ofBeginShape();
-	//	if (draw_triangle) {
-	//     if (rotation_activate == true) {
-	            //ofRotateXDeg(rotate);
-	            //ofRotateYDeg(rotate);
-	            //ofRotateZDeg(rotate);
-            //}
-	//		//ofDrawTriangle(0, 0, -16, 32, 16, 32);
-	//	} 
-	//	if (draw_circle) {
-	//      if (rotation_activate == true) {
-	            //ofRotateXDeg(rotate);
-	            //ofRotateYDeg(rotate);
-	            //ofRotateZDeg(rotate);
-            //}
-	//		//ofDrawCircle(100, 100, 50);
-	//		//ofSetCircleResolution(55);
+	//if (draw_triangle) {
+	//    if (rotation_activate == true) {
+	//        ofRotateXDeg(rotate);
+	//        ofRotateYDeg(rotate);
+	//        ofRotateZDeg(rotate);
+ //       }
+	//	ofDrawTriangle(0, 0, -16, 32, 16, 32);
+	//} 
+	//if (draw_circle) {
+	//    if (rotation_activate == true) {
+	//        ofRotateXDeg(rotate);
+	//        ofRotateYDeg(rotate);
+	//        ofRotateZDeg(rotate);
+ //       }
+	//	ofDrawCircle(100, 100, 50);
+	//	ofSetCircleResolution(55);
+	//}
+	//if (draw_rectangle) {
+	//	if (rotation_activate == true) {
+	//		ofRotateXDeg(rotate);
+	//		ofRotateYDeg(rotate);
+	//		ofRotateZDeg(rotate);
 	//	}
-	//	if (draw_rectangle) {
-	/*
-	if (rotation_activate == true) {
-		ofRotateXDeg(rotate);
-		ofRotateYDeg(rotate);
-		ofRotateZDeg(rotate);
-	}
-	ofDrawRectangle(50, 50, 100, 200);
-    }
-    if (mesh_activate) {
-	    mesh.drawWireframe();
-	    if (noise_activate) {
-		    button_noise(noise_activate);
-	    }
+	//	ofDrawRectangle(50, 50, 100, 200);
+ //   }
+ //   if (mesh_activate) {
+	//    mesh.drawWireframe();
+	//    if (noise_activate) {
+	//	    button_noise(noise_activate);
+	//    }
 
-    }*/
+ //   }
 	//	ofEndShape();
 	//	ofPopMatrix();
 
@@ -312,7 +311,7 @@ void Application::mouseDragged(int x, int y, int button){
 	}
 }
 
-void Application::mousePressed(int x, int y, int button){
+void Application::mousePressed(int x, int y, int button) {
 	if (isImportable && !isRepositioning) { //Si l'importation d'image est active
 		list<vector<int>>::reverse_iterator imgPos = renderer.imgPosList.rbegin();
 		for (list<ofImage>::reverse_iterator iter = renderer.imageList.rbegin(); iter != renderer.imageList.rend(); ++iter) {
@@ -466,10 +465,12 @@ void Application::mouseReleased(int x, int y, int button){
 			case 2:
 				//call to animation method
 				cout << "animation \n";
+
 				break;
 			case 3:
 				//call to mesh
 				cout << "mesh \n";
+
 				break;
 		}
 	}

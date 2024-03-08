@@ -62,7 +62,6 @@ void Renderer::draw() {
 
 	}
 
-	//////////////////////////////////////////////////////////////////
 	if (okDessiner)
 	{
 		dessinerTriangle();
@@ -72,7 +71,6 @@ void Renderer::draw() {
 		dessinerEllipse(); 
 		dessinerBezier(); 
 	}
-	//////////////////////////////////////////////////////////////////
 
 	draw_cursor(mouse_current_x, mouse_current_y);
 
