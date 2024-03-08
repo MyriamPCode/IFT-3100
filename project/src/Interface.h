@@ -22,13 +22,55 @@ class Interface {
 		ofParameter<float> slider_stroke_weight;
 		bool fillEnabled = false;
 
+		string camera_name;
+
+		ofxToggle orthoActivate;
+		ofxToggle angleActivate;
+		bool orthoIsActive = true;
+		bool angleIsActive = false;
+		ofxGuiGroup orthoOptions;
+		ofxToggle renderAsOrtho;
+		ofxToggle renderAsPersp;
+		bool orthoRendering = true;
+		bool perspRendering = false;
+		ofxGuiGroup angleOptions;
+		ofxToggle frontCam;
+		ofxToggle backCam;
+		ofxToggle leftCam;
+		ofxToggle rightCam;
+		ofxToggle topCam;
+		ofxToggle bottomCam;
+		bool frontCamRendering = true;
+		bool backCamRendering = false;
+		bool leftCamRendering = false;
+		bool rightCamRendering = false;
+		bool topCamRendering = false;
+		bool bottomCamRendering = false;
+
+		int mouse_press_x;
+		int mouse_press_y;
+
+		int mouse_current_x;
+		int mouse_current_y;
+
+		int mouse_drag_x;
+		int mouse_drag_y;
+
+		bool is_mouse_button_pressed;
+		bool is_mouse_button_dragged;
+		bool import_activate;
+
 		void setup();
 		void draw();
+		void drawBackground();
 		void toggleColorWheel();
 		void backgroundLine();
+		void Interface::toggleCamOptions();
 
 	private:
 		bool outilsPressed = false;
+		bool camPressed = false;
+		
 		ofTrueTypeFont buttonFont;
 
 		ofImage imgImport;
@@ -41,6 +83,7 @@ class Interface {
 		ofImage imgAnimation;
 		ofImage imgEllipse;
 		ofImage imgMesh;
+		ofImage imgCamera;
 
 		ofColor backgroundLineColor = ofColor(217, 217, 217);
 		ofColor backgroundInteractionColor = ofColor(4, 3, 77);
@@ -49,16 +92,30 @@ class Interface {
 		ofColor textColor = backgroundLineColor;
 
 		ofxPanel outilsGui;
+		ofxPanel cameraGui;
 
 		void backgroundInteraction();
 		void topButtons();
 		void sideButtons();
+		void draw_cursor(float x, float y) const;
 
 		void panelScene(); 
 		ofColor backgroundPanelSceneColor = ofColor(125);
+		void setupCameraOptions();
+		void setupOutilsGuiOptions();
 		//Renderer& renderer;
 		void showOutils(bool& value);
 		void enableFill(bool& value);
+		void enableOrtho(bool& value);
+		void enableAngle(bool& value);
+		void orthoSelect(bool& value);
+		void perspSelect(bool& value);
+		void frontCamSelect(bool& value);
+		void backCamSelect(bool& value);
+		void leftCamSelect(bool& value);
+		void rightCamSelect(bool& value);
+		void topCamSelect(bool& value);
+		void bottomCamSelect(bool& value);
 };
 
 

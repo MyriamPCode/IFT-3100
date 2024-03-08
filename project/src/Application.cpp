@@ -9,7 +9,12 @@ void Application::setup(){
 	ofBackground(backgroundColor);
 	renderer.setup();
 
-	cam.setDistance(100);
+	camera_setup_perspective(WIDTH, HEIGHT, 60.0f, 0.0f, 0.0f);
+	cam.enableOrtho();
+	orthoEnabled = true;
+	reset_cam();
+	setupCamera();
+	is_visible_camera = true;
 	
 	drawingGUI.setup();
 	drawingGUI.setPosition(300, 40);
@@ -60,7 +65,7 @@ void Application::setup(){
 	meshGroupe.setup("Maille geométrique");
 	meshGroupe.add(meshButton.setup("Maille", false));
 	meshButton.addListener(this, &Application::button_mesh);
-	meshGroupe.add(meshAnimationButton.setup("Bruit", false));
+	meshGroupe.add(meshAnimationButton.setup("Animation", false));
 	meshAnimationButton.addListener(this, &Application::button_noise);
 	drawingGUI.add(&meshGroupe);
 
@@ -122,12 +127,90 @@ void Application::update()
 		renderer.update();
 		renderer.captureImage();
 	}
+
+	if (moveCameraLeft) {
+		cam.move(-1, 0, 0); // Déplacer la caméra vers la gauche
+	}
+
+	if (moveCameraRight) {
+		cam.move(1, 0, 0); // Déplacer la caméra vers la droite
+	}
+
+	if (moveCameraUp) {
+		cam.move(0, 1, 0); // Déplacer la caméra vers le haut
+	}
+
+	if (moveCameraDown) {
+		cam.move(0, -1, 0); // Déplacer la caméra vers le bas
+	}
+	if (moveCameraNear) {
+		cam.move(0, 0, 1); // Déplacer la caméra en s'approchant
+	}
+
+	if (moveCameraFar) {
+		cam.move(0, 0, -1); // Déplacer la caméra en s'eloignant
+	}
 }
 
 void Application::draw(){
+	renderer.interface.drawBackground();
 	if (isImportable) {
-		renderer.import_activate = true;
-		ofDrawBitmapString("Please drag an image to import it.", 250, 45);
+		renderer.interface.import_activate = true;
+		ofDrawBitmapString("Please drag an image to import it.", 30, 70);
+	}
+	//cam.begin(); //TODO: ***TROUVER UN MOYEN DE RELIER LES DEUX CAMERA POUR PASSER DU CIRCUIT A CELLE ORTHOGRAPHIQUE***
+	if (renderer.interface.orthoIsActive) {
+		if (renderer.interface.orthoRendering) {
+			cam.enableOrtho();
+		}
+		else if (renderer.interface.perspRendering) {
+			cam.disableOrtho();
+		}
+		cam.begin();
+	}
+	else if (renderer.interface.angleIsActive) {
+		if (renderer.interface.frontCamRendering) {
+			camera_active = Camera::front;
+			setupCamera();
+		}
+		else if (renderer.interface.backCamRendering) {
+			camera_active = Camera::back;
+			setupCamera();
+		}
+		else if (renderer.interface.leftCamRendering) {
+			camera_active = Camera::left;
+			setupCamera();
+		}
+		else if (renderer.interface.rightCamRendering) {
+			camera_active = Camera::right;
+			setupCamera();
+		}
+		else if (renderer.interface.topCamRendering) {
+			camera_active = Camera::top;
+			setupCamera();
+		}
+		else if (renderer.interface.bottomCamRendering) {
+			camera_active = Camera::down;
+			setupCamera();
+		}
+
+		camera->begin();
+
+		if (is_visible_camera)
+		{
+			if (camera_active != Camera::front)
+				camFront.draw();
+			if (camera_active != Camera::back)
+				camBack.draw();
+			if (camera_active != Camera::left)
+				camLeft.draw();
+			if (camera_active != Camera::right)
+				camRight.draw();
+			if (camera_active != Camera::top)
+				camTop.draw();
+			if (camera_active != Camera::down)
+				camBottom.draw();
+		}
 	}
 	
 	// Partie Myriam 
@@ -184,6 +267,17 @@ void Application::draw(){
 	
 	renderer.interface.backgroundLine();
 	renderer.draw();
+	
+	//ofPopMatrix();
+	if (renderer.interface.orthoIsActive) {
+		cam.end();
+	}
+	else if (renderer.interface.angleIsActive) {
+		camera->end();
+	}
+
+	renderer.interface.draw();
+	drawingGUI.draw();
 	//cam.end();
 	ofPopMatrix();
 
@@ -282,33 +376,115 @@ void Application::keyPressed(int key)
 			cout << "Enregistrement arr�t�." << endl;
 		}
 	}
+
+	if (key == OF_KEY_LEFT) {
+		moveCameraLeft = true;
+	}
+	if (key == OF_KEY_RIGHT) {
+		moveCameraRight = true;
+	}
+	if (key == OF_KEY_UP) {
+		moveCameraUp = true;
+	}
+	if (key == OF_KEY_DOWN) {
+		moveCameraDown = true;
+	}
+	if (key == 49) {
+		moveCameraNear = true;
+	}
+	if (key == 50) {
+		moveCameraFar = true;
+	}
 }
 
 void Application::keyReleased(int key){
 	if (key == 105) { // 105 = key "i"
 		isImportable = !isImportable;
-		renderer.import_activate = !renderer.import_activate;
+		renderer.interface.import_activate = !renderer.interface.import_activate;
 	}
+	if (key == OF_KEY_LEFT) {
+		moveCameraLeft = false;
+	}
+	if (key == OF_KEY_RIGHT) {
+		moveCameraRight = false;
+	}
+	if (key == OF_KEY_UP) {
+		moveCameraUp = false;
+	}
+	if (key == OF_KEY_DOWN) {
+		moveCameraDown = false;
+	}
+	if (key == 49) { // 49 = touche 1
+		moveCameraNear = false;
+	}
+	if (key == 50) { // 50 = touche 2
+		moveCameraFar = false;
+	}
+	/*if (key == 'n') {
+		if (orthoEnabled) {
+			cam.disableOrtho();
+			orthoEnabled = false;
+		}
+		else {
+			cam.enableOrtho();
+			orthoEnabled = true;
+		}
+	}
+	switch (key) {
+		case 51: // touche 3
+			camera_active = Camera::front;
+			setupCamera();
+			break;
+
+		case 52: // touche 4
+			camera_active = Camera::back;
+			setupCamera();
+			break;
+
+		case 53: // touche 5
+			camera_active = Camera::left;
+			setupCamera();
+			break;
+
+		case 54: // touche 6
+			camera_active = Camera::right;
+			setupCamera();
+			break;
+
+		case 55: // touche 7
+			camera_active = Camera::top;
+			setupCamera();
+			break;
+
+		case 56: // touche 8
+			camera_active = Camera::down;
+			setupCamera();
+			break;
+
+		default:
+			break;
+
+	}*/
 }
 
 void Application::mouseMoved(int x, int y ){
-	renderer.mouse_current_x = x;
-	renderer.mouse_current_y = y;
+	renderer.interface.mouse_current_x = x;
+	renderer.interface.mouse_current_y = y;
 }
 
 void Application::mouseDragged(int x, int y, int button){
-	renderer.mouse_current_x = x;
-	renderer.mouse_current_y = y;
+	renderer.interface.mouse_current_x = x;
+	renderer.interface.mouse_current_y = y;
 
-	renderer.mouse_drag_x = x;
-	renderer.mouse_drag_y = y;
+	renderer.interface.mouse_drag_x = x;
+	renderer.interface.mouse_drag_y = y;
 
-	renderer.is_mouse_button_dragged = true;
-	renderer.is_mouse_button_pressed = false;
+	renderer.interface.is_mouse_button_dragged = true;
+	renderer.interface.is_mouse_button_pressed = false;
 
 	if (draw_line)
 	{
-		renderer.ligne.addVertex(renderer.mouse_drag_x, renderer.mouse_drag_y);
+		renderer.ligne.addVertex(renderer.interface.mouse_drag_x, renderer.interface.mouse_drag_y);
 	}
 }
 
@@ -326,21 +502,21 @@ void Application::mousePressed(int x, int y, int button){
 		}
 	}
 
-	renderer.is_mouse_button_pressed = true;
-	renderer.is_mouse_button_dragged = false;
+	renderer.interface.is_mouse_button_pressed = true;
+	renderer.interface.is_mouse_button_dragged = false;
 
-	renderer.mouse_current_x = x;
-	renderer.mouse_current_y = y;
+	renderer.interface.mouse_current_x = x;
+	renderer.interface.mouse_current_y = y;
 
-	renderer.mouse_press_x = x;
-	renderer.mouse_press_y = y;
+	renderer.interface.mouse_press_x = x;
+	renderer.interface.mouse_press_y = y;
 
 	if(draw_triangle) {
 		// A partir du mouse click, calcul des 2 autres sommets 
-		newX2 = renderer.mouse_press_x - diffX;
-		newY2 = renderer.mouse_press_y + diffY;
-		newX3 = renderer.mouse_press_x + diffX;
-		newY3 = renderer.mouse_press_y + diffY;
+		newX2 = renderer.interface.mouse_press_x - diffX;
+		newY2 = renderer.interface.mouse_press_y + diffY;
+		newX3 = renderer.interface.mouse_press_x + diffX;
+		newY3 = renderer.interface.mouse_press_y + diffY;
 		forme.setX1(x);
 		forme.setY1(y);
 		forme.setX2(newX2);
@@ -362,8 +538,8 @@ void Application::mousePressed(int x, int y, int button){
 
 	if(draw_circle)
 	{ 
-		forme.setXC(renderer.mouse_press_x); 
-		forme.setYC(renderer.mouse_press_y); 
+		forme.setXC(renderer.interface.mouse_press_x);
+		forme.setYC(renderer.interface.mouse_press_y);
 		renderer.v_formes.push_back(make_unique<Forme>(Forme::CERCLE, forme.getXC(), forme.getYC(), forme.getRayon()));
 		//ofSetCircleResolution(55);
 		renderer.okDessiner = true; 
@@ -376,8 +552,8 @@ void Application::mousePressed(int x, int y, int button){
 
 	if(draw_rectangle)
 	{ 
-		forme.setXR(renderer.mouse_current_x);
-		forme.setYR(renderer.mouse_current_y); 
+		forme.setXR(renderer.interface.mouse_current_x);
+		forme.setYR(renderer.interface.mouse_current_y);
 		renderer.v_formes.push_back(make_unique<Forme>(Forme::RECTANGLE, forme.getXR(), forme.getYR(), forme.getWidth(), forme.getHeight()));
 		renderer.okDessiner = true;
 		renderer.rectangleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
@@ -389,7 +565,11 @@ void Application::mousePressed(int x, int y, int button){
 
 	if (draw_line)
 	{
-		renderer.ligne.addVertex(renderer.mouse_press_x, renderer.mouse_press_y);
+		//renderer.vecteur_lignes_ptr->emplace_back(make_unique<ofPolyline>());
+		//auto& polyline = renderer.vecteur_lignes_ptr->back();
+		//polyline->addVertex(renderer.mouse_press_x, renderer.mouse_press_y);
+
+		renderer.ligne.addVertex(renderer.interface.mouse_press_x, renderer.interface.mouse_press_y);
 		renderer.okDessiner = true;
 		renderer.ligneColor = renderer.interface.color_picker_stroke; // Ajuste les parametres
 		renderer.ligneStroke = renderer.interface.slider_stroke_weight;
@@ -399,8 +579,8 @@ void Application::mousePressed(int x, int y, int button){
 
 	if (draw_ellipse)
 	{
-		forme.setXR(renderer.mouse_press_x);
-		forme.setYR(renderer.mouse_press_y);
+		forme.setXR(renderer.interface.mouse_press_x);
+		forme.setYR(renderer.interface.mouse_press_y);
 		renderer.v_formes.push_back(make_unique<Forme>(Forme::ELLIPSE, forme.getXR(), forme.getYR(), forme.getWidth(), forme.getHeight()));
 		renderer.okDessiner = true;
 		renderer.ellipseColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
@@ -412,8 +592,8 @@ void Application::mousePressed(int x, int y, int button){
 
 	if(draw_bezier)
 	{
-		float x1 = renderer.mouse_press_x; 
-		float y1 = renderer.mouse_press_y; 
+		float x1 = renderer.interface.mouse_press_x;
+		float y1 = renderer.interface.mouse_press_y;
 		float x4 = x1; 
 		float y4 = y1 + 50; 
 		float x2, y2, x3, y3;
@@ -458,6 +638,7 @@ void Application::mouseReleased(int x, int y, int button){
 			case 0:
 				//call to import image method
 				isImportable = !isImportable;
+				renderer.interface.import_activate = !renderer.interface.import_activate;
 				break;
 			case 1:
 				//call to export method
@@ -470,6 +651,9 @@ void Application::mouseReleased(int x, int y, int button){
 			case 3:
 				//call to mesh
 				cout << "mesh \n";
+				break;
+			case 4:
+				renderer.interface.toggleCamOptions();
 				break;
 		}
 	}
@@ -508,33 +692,35 @@ void Application::mouseReleased(int x, int y, int button){
 		}
 	}
 
-	renderer.mouse_current_x = x;
-	renderer.mouse_current_y = y;
+
+
+	renderer.interface.mouse_current_x = x;
+	renderer.interface.mouse_current_y = y;
 
 	if (draw_line)
 	{
-		renderer.is_mouse_button_dragged = true; 
+		renderer.interface.is_mouse_button_dragged = true;
 		renderer.ligne.addVertex(x, y);
 		renderer.vecteur_lignes.push_back(renderer.ligne);
 		renderer.okDessiner = true;
 		renderer.ligne.clear();
 	}
 
-	renderer.is_mouse_button_pressed = false;
-	renderer.is_mouse_button_dragged = false;
+	renderer.interface.is_mouse_button_pressed = false;
+	renderer.interface.is_mouse_button_dragged = false;
 }
 
 
 void Application::mouseEntered(int x, int y){
-	renderer.mouse_current_x = x;
-	renderer.mouse_current_y = y;
+	renderer.interface.mouse_current_x = x;
+	renderer.interface.mouse_current_y = y;
 }
 
 
 void Application::mouseExited(int x, int y){
 
-	renderer.mouse_current_x = x;
-	renderer.mouse_current_y = y;
+	renderer.interface.mouse_current_x = x;
+	renderer.interface.mouse_current_y = y;
 }
 
 
@@ -545,7 +731,7 @@ void Application::windowResized(int w, int h){
 
 
 void Application::gotMessage(ofMessage msg){
-	ofEasyCam cam;
+	//ofEasyCam cam;
 
 }
 
@@ -655,7 +841,37 @@ void Application::reset(bool& value) {
 		meshButton = false;
 		noise_activate = false;
 		meshAnimationButton = false;
+		
 	}
+}
+
+void Application::reset_cam() {
+	offset_camera = 500.0f * 3.5f * -1.0f;
+
+	// position initiale de chaque caméra
+	camFront.setPosition(0, 0, -offset_camera);
+	camBack.setPosition(0, 0, offset_camera);
+	camLeft.setPosition(-offset_camera, 0, 0);
+	camRight.setPosition(offset_camera, 0, 0);
+	camTop.setPosition(0, offset_camera, 0);
+	camBottom.setPosition(0, -offset_camera, 0);
+
+	// orientation de chaque caméra
+	camFront.lookAt(camera_target);
+	camBack.lookAt(camera_target);
+	camLeft.lookAt(camera_target);
+	camRight.lookAt(camera_target);
+	camTop.lookAt(camera_target, ofVec3f(1, 0, 0));
+	camBottom.lookAt(camera_target, ofVec3f(1, 0, 0));
+
+	camFront.setVFlip(true);
+	camBack.setVFlip(true);
+	camLeft.setVFlip(true);
+	camRight.setVFlip(true);
+	camTop.setVFlip(true);
+	camBottom.setVFlip(true);
+
+	camera_active = Camera::front;
 }
 
 void Application::buttons_list(bool& value)
@@ -722,4 +938,88 @@ void Application::button_noise(bool& value) {
 	if (value) {
 		noise_activate = true;
 	}
+}
+
+void Application::camera_setup_perspective(float width, float height, float fov, float n, float f)
+{
+	bool camera_projection_persp_or_ortho = true;
+	bool camera_vertical_flip = true;
+
+	int camera_viewport_x = width;
+	int camera_viewport_y = height;
+	float camera_aspect_ratio = camera_viewport_x / camera_viewport_y;
+
+	float camera_fov = fov;
+	float camera_zoom = compute_zoom_from_fov(camera_fov);
+
+	float minimal_side = std::min(camera_viewport_x, camera_viewport_y);
+	float fov_half = ofDegToRad(camera_fov / 2.0f);
+	float distance = minimal_side / 2.0f / tanf(fov_half);
+
+	glm::vec3 camera_position;
+
+	camera_position.x = camera_viewport_x / 2.0f;
+	camera_position.y = camera_viewport_y / 2.0f;
+	camera_position.z = distance;
+
+	//camera_clip_n = near > 0.0f ? near : distance / 10.0f;
+	//camera_clip_f = far > 0.0f ? far : distance * 10.0f;
+
+	float camera_clip_n = distance / 2.0f;
+	float camera_clip_f = distance * 1.5f;
+
+	float camera_depth_range = camera_clip_f - camera_clip_n;
+
+	// configurer l'instance de caméra de openFrameworks (ofCamera)
+	cam.setupPerspective(camera_vertical_flip, camera_fov, camera_clip_n, camera_clip_f, ofVec2f(0, 0));
+	cam.setPosition(camera_position.x, camera_position.y, camera_position.z);
+
+	bool camera_state_change = false;
+}
+
+float Application::compute_zoom_from_fov(float fov)
+{
+	return 1.0f / tanf(glm::radians(fov) / 2.0f);;
+}
+
+void Application::setupCamera() {
+	switch (camera_active) {
+		case Camera::front:
+			camera = &camFront;
+			renderer.interface.camera_name = "avant";
+			break;
+
+		case Camera::back:
+			camera = &camBack;
+			renderer.interface.camera_name = "arrière";
+			break;
+
+		case Camera::left:
+			camera = &camLeft;
+			renderer.interface.camera_name = "gauche";
+			break;
+
+		case Camera::right:
+			camera = &camRight;
+			renderer.interface.camera_name = "droite";
+			break;
+
+		case Camera::top:
+			camera = &camTop;
+			renderer.interface.camera_name = "haut";
+			break;
+
+		case Camera::down:
+			camera = &camBottom;
+			renderer.interface.camera_name = "bas";
+			break;
+
+		default:
+			break;
+		}
+		camera_position = camera->getPosition();
+		camera_orientation = camera->getOrientationQuat();
+
+		camera->setPosition(camera_position);
+		camera->setOrientation(camera_orientation);
 }
