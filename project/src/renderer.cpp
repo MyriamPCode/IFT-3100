@@ -16,11 +16,10 @@ void Renderer::setup() {
 	gui.add(nameField);
 	exportButton.setName("Export");
 	gui.add(exportButton);
-	gui.setPosition(200, 40);
+	gui.setPosition(0, 0);
 
-	is_mouse_button_pressed = false;
-	is_mouse_button_dragged = false;
-	import_activate = false;
+	teapotMultiple.loadModel("teapot.obj");
+	teapotMultiple.setPosition(0, 0, 0);
 
 	// chargement du modèle 3D en mémoire
 	model1.loadModel("models/teapot.obj");
@@ -30,6 +29,8 @@ void Renderer::setup() {
 	//typeRender = MeshRenderMode::wireframe;
 
 	mouse_current_x = mouse_current_y = mouse_press_x = mouse_press_y = mouse_drag_x = mouse_drag_y = 0;
+	teapotOrtho.loadModel("teapot.obj");
+	teapotOrtho.setPosition(800, 700, 0);
 
 	okDessiner = false; 
 
@@ -49,9 +50,7 @@ void Renderer::setup(vector<unique_ptr<Forme>>& v_formes)
 
 
 void Renderer::draw() {
-	interface.draw();
 	ofSetBackgroundColor(interface.color_picker_background);
-
 	if (visible) {
 		gui.draw();
 
@@ -70,6 +69,9 @@ void Renderer::draw() {
 
 	}
 
+	teapotMultiple.draw(OF_MESH_WIREFRAME);
+	teapotOrtho.draw(OF_MESH_FILL);
+	
 	model1.setPosition(1410,700, 0);
 	model2.setPosition(-50, 1200, -400);
 	//model3.setPosition(800, 1000, -600);
@@ -103,28 +105,10 @@ void Renderer::draw() {
 		}
 	}
 
-	draw_cursor(mouse_current_x, mouse_current_y);
-
-	int gridSize = 50; // Espacement de la grille
-	// Obtenir les coordonnées de la souris
-	int mouseX = ofGetMouseX();
-	int mouseY = ofGetMouseY();
-
-	// Convertir les coordonnées de la souris dans l'espace de la grille
-	int gridX = mouseX / gridSize;
-	int gridY = mouseY / gridSize;
-
-	// Dessiner les coordonnées de la souris sur la grille
-	ofSetColor(255); // Couleur blanc
-	ofDrawBitmapString("Mouse X: " + ofToString(mouseX) + ", Mouse Y: " + ofToString(mouseY), 1630, 65);
-	ofDrawBitmapString("Grid X: " + ofToString(gridX) + ", Grid Y: " + ofToString(gridY), 1630, 85);
-
 	// Afficher un message si l'enregistrement est activé
 	if (isRecording)
 		ofDrawBitmapString("Enregistrement enmouse cours...", 20, 20);
 }
-
-
 
 void Renderer::dessinerTriangle() 
 {
@@ -304,11 +288,6 @@ void Renderer::draw_cursor(float x, float y) const {
 		ofSetColor(255); // Couleur blanche
 
 
-	ofDrawLine(x + offset, y, x + offset + length, y);
-	ofDrawLine(x - offset, y, x - offset - length, y);
-	ofDrawLine(x, y + offset, x, y + offset + length);
-	ofDrawLine(x, y - offset, x, y - offset - length);
-}
 
 void Renderer::update()
 {
@@ -345,7 +324,7 @@ void Renderer::image_export(const string name, const string extension) const {
 	string file_name = name + time_stamp + "." + extension;
 
 	// capturer le contenu du framebuffer actif
-	image.grabScreen(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
+	image.grabScreen(0, INTERACTION_BAR_HEIGHT, ofGetWindowWidth() - INTERACTION_BAR_HEIGHT, ofGetWindowHeight() - INTERACTION_BAR_HEIGHT);
 
 	// sauvegarder le fichier image
 	image.save(file_name);

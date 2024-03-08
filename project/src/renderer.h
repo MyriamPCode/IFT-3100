@@ -6,6 +6,7 @@
 #include "Forme.h"
 #include <memory>
 #include "ofxGui.h"
+#include "ofxAssimpModelLoader.h"
 
 using namespace std;
 
@@ -19,6 +20,8 @@ class Renderer {
 		list<ofImage> imageList; //Liste d'images import�es
 		list<vector<int>> imgPosList; //Positions x et y des images import�es
 
+        ofxAssimpModelLoader teapotOrtho;
+        ofxAssimpModelLoader teapotMultiple;
         ofxAssimpModelLoader model1;
         ofxAssimpModelLoader model2;
         ofxAssimpModelLoader model3;
@@ -31,18 +34,10 @@ class Renderer {
         int mouse_current_x;
         int mouse_current_y;
 
-        int mouse_drag_x;
-        int mouse_drag_y;
-
-        bool is_mouse_button_pressed;
-        bool is_mouse_button_dragged;
-        bool import_activate;
-
         void setup();
         void setup(vector<Forme*>& v_formes);
         void draw();
         void newImage(string filePath, int posX, int posY);
-        void draw_cursor(float x, float y) const;
 
         Forme forme; 
         vector<unique_ptr<Forme>>* v_formes_ptr;
