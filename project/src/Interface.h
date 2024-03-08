@@ -25,6 +25,7 @@ class Interface {
 		void setup();
 		void draw();
 		void toggleColorWheel();
+		void backgroundLine();
 
 	private:
 		bool outilsPressed = false;
@@ -39,6 +40,7 @@ class Interface {
 		ofImage imgTriangle;
 		ofImage imgAnimation;
 		ofImage imgEllipse;
+		ofImage imgMesh;
 
 		ofColor backgroundLineColor = ofColor(217, 217, 217);
 		ofColor backgroundInteractionColor = ofColor(4, 3, 77);
@@ -48,7 +50,6 @@ class Interface {
 
 		ofxPanel outilsGui;
 
-		void backgroundLine();
 		void backgroundInteraction();
 		void topButtons();
 		void sideButtons();

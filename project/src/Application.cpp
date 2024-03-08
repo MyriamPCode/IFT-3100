@@ -182,9 +182,12 @@ void Application::draw(){
 
 	//}
 	
+	renderer.interface.backgroundLine();
 	renderer.draw();
 	//cam.end();
 	ofPopMatrix();
+
+	renderer.interface.draw();
 
 	if (drawingGUIPressed) {
 		drawingGUI.draw();
@@ -193,9 +196,6 @@ void Application::draw(){
 }
 
 void Application::toggleDrawingGUI(Forme::TypeForme drawingShape) {
-	cout << "lastShape " << lastShape << "\n";
-	cout << "drawingShape " << drawingShape << "\n";
-
 	if (lastShape == drawingShape) {
 		drawingGUIPressed = !drawingGUIPressed;
 	}
@@ -389,10 +389,6 @@ void Application::mousePressed(int x, int y, int button){
 
 	if (draw_line)
 	{
-		//renderer.vecteur_lignes_ptr->emplace_back(make_unique<ofPolyline>());
-		//auto& polyline = renderer.vecteur_lignes_ptr->back();
-		//polyline->addVertex(renderer.mouse_press_x, renderer.mouse_press_y);
-
 		renderer.ligne.addVertex(renderer.mouse_press_x, renderer.mouse_press_y);
 		renderer.okDessiner = true;
 		renderer.ligneColor = renderer.interface.color_picker_stroke; // Ajuste les parametres
@@ -461,7 +457,6 @@ void Application::mouseReleased(int x, int y, int button){
 		switch (index) {
 			case 0:
 				//call to import image method
-				cout << "import \n";
 				isImportable = !isImportable;
 				break;
 			case 1:
@@ -471,6 +466,10 @@ void Application::mouseReleased(int x, int y, int button){
 			case 2:
 				//call to animation method
 				cout << "animation \n";
+				break;
+			case 3:
+				//call to mesh
+				cout << "mesh \n";
 				break;
 		}
 	}
@@ -483,31 +482,26 @@ void Application::mouseReleased(int x, int y, int button){
 			break;
 		case 1:
 			//call to pen method
-			cout << "pen \n";
 			toggleDrawingGUI(forme.LIGNE);
 			drawLine();
 			break;
 		case 2:
 			//call to ellipse method
-			cout << "circle \n";
 			toggleDrawingGUI(forme.CERCLE);
 			drawCircle();
 			break;
 		case 3:
 			//call to rectangle method
-			cout << "rectangle \n";
 			toggleDrawingGUI(forme.RECTANGLE);
 			drawRectangle();
 			break;
 		case 4:
 			//call to triangle method
-			cout << "triangle \n";
 			toggleDrawingGUI(forme.TRIANGLE);
 			drawTriangle();
 			break;
 		case 5:
 			//call to ellipse method
-			cout << "ellipse \n";
 			toggleDrawingGUI(forme.ELLIPSE);
 			drawEllipse();
 			break;

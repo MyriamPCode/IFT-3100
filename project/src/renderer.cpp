@@ -42,7 +42,6 @@ void Renderer::setup(vector<unique_ptr<Forme>>& v_formes)
 
 
 void Renderer::draw() {
-	interface.draw();
 	ofSetBackgroundColor(interface.color_picker_background);
 
 	if (visible) {
