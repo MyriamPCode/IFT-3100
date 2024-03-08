@@ -64,6 +64,7 @@ class Interface {
 		void draw();
 		void drawBackground();
 		void toggleColorWheel();
+		void backgroundLine();
 		void Interface::toggleCamOptions();
 
 	private:
@@ -80,6 +81,8 @@ class Interface {
 		ofImage imgRectangle;
 		ofImage imgTriangle;
 		ofImage imgAnimation;
+		ofImage imgEllipse;
+		ofImage imgMesh;
 		ofImage imgCamera;
 
 		ofColor backgroundLineColor = ofColor(217, 217, 217);
@@ -91,7 +94,6 @@ class Interface {
 		ofxPanel outilsGui;
 		ofxPanel cameraGui;
 
-		void backgroundLine();
 		void backgroundInteraction();
 		void topButtons();
 		void sideButtons();
