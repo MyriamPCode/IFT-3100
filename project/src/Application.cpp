@@ -7,20 +7,11 @@ using namespace std;
 void Application::setup(){
 	ofSetWindowTitle("Team 7");
 	ofBackground(backgroundColor);
-	//ofSetOrientation(OF_ORIENTATION_180);
 	renderer.setup();
-	//cam.setPosition(ofVec3f(0, 0, 500));
-	//cam.setPosition(ofPoint(ofGetWidth()/2, ofGetHeight()/2, 700));
-	//gui.setPosition(ofGetWidth() - gui.getWidth(), ofGetHeight() - gui.getHeight());
-	//cam.setDistance(500);
-
-	/*cam.setNearClip(0.1f);
-	cam.setFarClip(3000.0f);
-	cam.setPosition(ofPoint(ofGetWidth() / 2, ofGetHeight() / 2, 700));
-	cam.lookAt(ofPoint(ofGetWidth() / 2, ofGetHeight() / 2, 0));
-	cam.setVFlip(true);*/
 
 	camera_setup_perspective(WIDTH, HEIGHT, 60.0f, 0.0f, 0.0f);
+	cam.enableOrtho();
+	orthoEnabled = true;
 	
 	gui.setup();
 	gui.setPosition(300, 40);
@@ -349,6 +340,16 @@ void Application::keyReleased(int key){
 	}
 	if (key == 50) { // 50 = touche 2
 		moveCameraFar = false;
+	}
+	if (key == 'n') {
+		if (orthoEnabled) {
+			cam.disableOrtho();
+			orthoEnabled = false;
+		}
+		else {
+			cam.enableOrtho();
+			orthoEnabled = true;
+		}
 	}
 }
 
@@ -846,7 +847,7 @@ void Application::camera_setup_perspective(float width, float height, float fov,
 	float camera_depth_range = camera_clip_f - camera_clip_n;
 
 	// configurer l'instance de caméra de openFrameworks (ofCamera)
-	cam.setupPerspective(camera_vertical_flip, camera_fov, camera_clip_n, camera_clip_f);
+	cam.setupPerspective(camera_vertical_flip, camera_fov, camera_clip_n, camera_clip_f, ofVec2f(0, 0));
 	cam.setPosition(camera_position.x, camera_position.y, camera_position.z);
 
 	bool camera_state_change = false;

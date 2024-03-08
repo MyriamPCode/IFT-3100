@@ -98,6 +98,7 @@ class Application : public ofBaseApp{
 
 		void camera_setup_perspective(float width, float height, float fov, float n, float f);
 		float Application::compute_zoom_from_fov(float fov);
+		bool orthoEnabled = false;
 
 		bool moveCameraRight;
 		bool moveCameraLeft;

@@ -37,7 +37,6 @@ void Renderer::setup(vector<unique_ptr<Forme>>& v_formes)
 
 void Renderer::draw() {
 	ofSetBackgroundColor(interface.color_picker_background);
-	//ofSetOrientation(OF_ORIENTATION_180);
 	if (visible) {
 		gui.draw();
 
