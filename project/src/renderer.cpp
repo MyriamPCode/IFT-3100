@@ -99,7 +99,6 @@ void Renderer::dessinerSphere(){
 
 void Renderer::dessinerCube() {
 	ofSetColor(255, 255, 0);
-	cout << "Nombre de cubes dans la liste " << v_formes_ptr->size() << endl;
 	if (v_formes_ptr) {
 		for (const auto& formeCourante : *v_formes_ptr)
 		{
@@ -210,21 +209,26 @@ void Renderer::dessinerRectangle() {
 					//ofFill();
 					ofSetLineWidth(rectangleStroke);
 					ofSetColor(rectangleColors[1]);
+					ofPushMatrix();
+					ofTranslate(0, 0, 0); 
 					// Dessiner le rectangle avec transformation si l'index correspond et le mode de transformation est activé
 					if (i == inputIndex && modeTransformState) {
 						ofPushMatrix();
-						ofScale(uiSize->x, uiSize->y);
-						ofTranslate(uiPosition->x, uiPosition->y); // translation 
 						ofRotateXDeg(uiRotate->x); // pivoter sur x 
 						ofRotateYDeg(uiRotate->y); // pivoter sur y 
 						ofRotateZDeg(uiRotate->z); // pivoter sur z 
+						//ofTranslate(uiPosition->x, uiPosition->y); // translation 
 						//ofTranslate(uiStep->x, uiStep->y);
 						//ofTranslate(uiShift->x, uiShift->y);
+						ofScale(uiSize->x, uiSize->y,1);
+						//ofScale(10, 10);
+						
 						ofNoFill();
 						ofBeginShape(); 
 						ofSetColor(255, 0, 0); // Rouge
 						ofDrawRectangle(formeCourante->getXR(), formeCourante->getYR(),
 							formeCourante->getWidth(), formeCourante->getHeight());
+						ofTranslate(formeCourante->getXR(), formeCourante->getYR());
 						ofEndShape(); 
 						ofPopMatrix();
 					}

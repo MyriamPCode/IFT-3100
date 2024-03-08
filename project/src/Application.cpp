@@ -50,7 +50,7 @@ void Application::setup(){
 	gui.add(renderer.uiStep.set("step", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
 	gui.add(renderer.uiRotate.set("rotate", ofVec3f(0), ofVec3f(-180), ofVec3f(180))); // La rotation des primitives
 	gui.add(renderer.uiShift.set("shift", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
-	gui.add(renderer.uiSize.set("size", ofVec2f(6), ofVec2f(0), ofVec2f(30)));
+	gui.add(renderer.uiSize.set("size", ofVec2f(1), ofVec2f(1), ofVec2f(10)));
 
 	reinitialisationGroupe.setup("Reinitialisation");
 	reinitialisationGroupe.add(resetButton.setup("Reset", false));
@@ -75,6 +75,8 @@ void Application::setup(){
 	v_buttons_ptr = &v_buttons;
 	guiScene.setup();
 	guiScene.setPosition(0, 40);
+
+	addAction([this]() { undo(); }, [this]() { redo(); });
 }
 
 void Application::update()
@@ -86,18 +88,19 @@ void Application::update()
 	}
 }
 
-
 void Application::draw(){
 	if (isImportable) {
 		renderer.import_activate = true;
 		ofDrawBitmapString("Please drag an image to import it.", 30, 30);
 	}
 
+
 	renderer.draw();
 	ofPopMatrix();
 	gui.draw();
 	guiScene.draw();
 }
+
 
 
 // a modifier ou effacer 
@@ -132,46 +135,8 @@ void Application::deleteShapeSelected()
 
 void Application::keyPressed(int key) 
 {
-	if (key == 'd') { // 105 = key "d"
-		//deleteShapeSelected();
-		int index = renderer.inputIndex;
 
-
-		if (index >= 0 && index < v_buttons.size() && index < renderer.v_formes.size()) {
-			v_buttons.erase(v_buttons.begin() + index); // Supprimer l'élément du vecteur v_buttons
-			//renderer.v_formes.erase(renderer.v_formes.begin() + index); // Supprimer l'élément du vecteur renderer.v_formes
-		}
-
-
-		//if (index >= 0 && index < v_buttons_ptr->size() && index < renderer.v_formes_ptr->size()) {
-		//	v_buttons_ptr->at(index).reset(); // Libérer la mémoire associée à l'élément de v_buttons_ptr
-		//	renderer.v_formes_ptr->at(index).reset(); // Libérer la mémoire associée à l'élément de renderer.v_formes_ptr
-
-		//	v_buttons_ptr->erase(v_buttons_ptr->begin() + index); // Supprimer le pointeur du vecteur v_buttons_ptr
-		//	renderer.v_formes_ptr->erase(renderer.v_formes_ptr->begin() + index); // Supprimer le pointeur du vecteur renderer.v_formes_ptr
-		//}
-
-		//if (index >= 0 && index < v_buttons_ptr->size() && index < renderer.v_formes_ptr->size()) {
-		//	v_buttons_ptr->erase(v_buttons_ptr->begin() + index); // Supprimer le pointeur du vecteur v_buttons_ptr
-		//	renderer.v_formes_ptr->erase(renderer.v_formes_ptr->begin() + index); // Supprimer le pointeur du vecteur renderer.v_formes_ptr
-		//}
-
-
-		//if (index >= 0 && index < v_buttons_ptr->size() && index < renderer.v_formes_ptr->size()) {
-		//	// Extraire les pointeurs bruts
-		//	ofxToggle* buttonPtr = v_buttons_ptr->at(index).release();
-		//	Forme* formePtr = renderer.v_formes_ptr->at(index).release();
-
-		//	// Supprimer les pointeurs du vecteur
-		//	v_buttons_ptr->erase(v_buttons_ptr->begin() + index);
-		//	renderer.v_formes_ptr->erase(renderer.v_formes_ptr->begin() + index);
-
-		//	// Libérer manuellement la mémoire
-		//	delete buttonPtr;
-		//	delete formePtr;
-		//}
-
-	}
+	
 	// Pour tester les pointeurs 
 	if (key == 'f') {
 		for (const auto& ptr : *renderer.v_formes_ptr) {
@@ -193,6 +158,21 @@ void Application::keyPressed(int key)
 		}
 		else {
 			cout << "Enregistrement arr�t�." << endl;
+		}
+	}
+
+	if(key == 'z')
+	{ 
+		if(!v_buttons.empty() && !renderer.v_formes.empty())
+		{ 
+			//undo();
+		}
+	}
+	if(key == 'x')
+	{ 
+		if (!v_buttons.empty() && !renderer.v_formes.empty())
+		{
+			//redo(); 
 		}
 	}
 }
@@ -280,6 +260,8 @@ void Application::mousePressed(int x, int y, int button){
 			//button->addListener(this, &Application::buttons_list);
 			guiScene.add(button->setup("TRIANGLE", false)); // Nom du bouton shapeBool
 			v_buttons.push_back(move(button)); // Ajoutez le bouton � la liste des boutons
+
+
 		}
 
 		if (draw_circle && drawCircle)

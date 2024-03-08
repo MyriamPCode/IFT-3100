@@ -5,6 +5,7 @@
 #include "Renderer.h"
 #include "Forme.h"
 
+
 using namespace std;
 
 class Application : public ofBaseApp{
@@ -81,4 +82,34 @@ class Application : public ofBaseApp{
 		vector<unique_ptr<ofxToggle>>* v_buttons_ptr;
 		void deleteShapeSelected();
 		bool shapeBool; // peut etre utitlise si selection pour delete
+
+		void addAction(function<void()> undoAction, function<void()> redoAction) {
+			undoStack.push(move(undoAction));
+			// Effacer la pile Redo car les actions précédentes ne sont plus valides
+			while (!redoStack.empty()) {
+				redoStack.pop();
+			}
+		}
+
+		void undo() {
+			if (!undoStack.empty()) {
+				function<void()> undoAction = move(undoStack.top());
+				undoStack.pop();
+				undoAction();
+				redoStack.push(move(undoAction));
+			}
+		}
+
+		void redo() {
+			if (!redoStack.empty()) {
+				function<void()> redoAction = move(redoStack.top());
+				redoStack.pop();
+				redoAction();
+				undoStack.push(move(redoAction));
+			}
+		}
+
+private:
+	stack<function<void()>> undoStack;
+	stack<function<void()>> redoStack;
 };
