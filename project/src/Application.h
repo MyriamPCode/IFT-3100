@@ -96,6 +96,9 @@ class Application : public ofBaseApp{
 		void deleteShapeSelected();
 		bool shapeBool; 
 
+		void camera_setup_perspective(float width, float height, float fov, float n, float f);
+		float Application::compute_zoom_from_fov(float fov);
+
 		bool moveCameraRight;
 		bool moveCameraLeft;
 		bool moveCameraUp;

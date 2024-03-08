@@ -67,6 +67,20 @@ void Interface::draw() {
 	if (outilsPressed) {
 		outilsGui.draw();
 	}
+	int gridSize = 50; // Espacement de la grille
+	// Obtenir les coordonnées de la souris
+	int mouseX = ofGetMouseX();
+	int mouseY = ofGetMouseY();
+
+	// Convertir les coordonnées de la souris dans l'espace de la grille
+	int gridX = mouseX / gridSize;
+	int gridY = mouseY / gridSize;
+
+	// Dessiner les coordonnées de la souris sur la grille
+	ofSetColor(255); // Couleur blanc
+	ofDrawBitmapString("Mouse X: " + ofToString(mouseX) + ", Mouse Y: " + ofToString(mouseY), 1630, 65);
+	ofDrawBitmapString("Grid X: " + ofToString(gridX) + ", Grid Y: " + ofToString(gridY), 1630, 85);
+
 }
 
 void Interface::draw_cursor(float x, float y) const {

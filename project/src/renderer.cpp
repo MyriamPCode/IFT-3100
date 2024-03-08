@@ -36,9 +36,8 @@ void Renderer::setup(vector<unique_ptr<Forme>>& v_formes)
 
 
 void Renderer::draw() {
-	//interface.draw();
 	ofSetBackgroundColor(interface.color_picker_background);
-
+	//ofSetOrientation(OF_ORIENTATION_180);
 	if (visible) {
 		gui.draw();
 
@@ -69,26 +68,10 @@ void Renderer::draw() {
 	}
 	//////////////////////////////////////////////////////////////////
 
-	int gridSize = 50; // Espacement de la grille
-	// Obtenir les coordonnées de la souris
-	int mouseX = ofGetMouseX();
-	int mouseY = ofGetMouseY();
-
-	// Convertir les coordonnées de la souris dans l'espace de la grille
-	int gridX = mouseX / gridSize;
-	int gridY = mouseY / gridSize;
-
-	// Dessiner les coordonnées de la souris sur la grille
-	ofSetColor(255); // Couleur blanc
-	ofDrawBitmapString("Mouse X: " + ofToString(mouseX) + ", Mouse Y: " + ofToString(mouseY), 1630, 65);
-	ofDrawBitmapString("Grid X: " + ofToString(gridX) + ", Grid Y: " + ofToString(gridY), 1630, 85);
-
 	// Afficher un message si l'enregistrement est activé
 	if (isRecording)
 		ofDrawBitmapString("Enregistrement enmouse cours...", 20, 20);
 }
-
-
 
 void Renderer::dessinerTriangle() 
 {

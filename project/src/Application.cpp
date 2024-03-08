@@ -14,10 +14,13 @@ void Application::setup(){
 	//gui.setPosition(ofGetWidth() - gui.getWidth(), ofGetHeight() - gui.getHeight());
 	//cam.setDistance(500);
 
-	cam.setNearClip(0.1f);
+	/*cam.setNearClip(0.1f);
 	cam.setFarClip(3000.0f);
 	cam.setPosition(ofPoint(ofGetWidth() / 2, ofGetHeight() / 2, 700));
 	cam.lookAt(ofPoint(ofGetWidth() / 2, ofGetHeight() / 2, 0));
+	cam.setVFlip(true);*/
+
+	camera_setup_perspective(WIDTH, HEIGHT, 60.0f, 0.0f, 0.0f);
 	
 	gui.setup();
 	gui.setPosition(300, 40);
@@ -156,13 +159,14 @@ void Application::update()
 }
 
 void Application::draw(){
-	gui.draw();
 	renderer.interface.draw();
-	cam.begin();
+	gui.draw();
+
 	if (isImportable) {
 		renderer.interface.import_activate = true;
 		ofDrawBitmapString("Please drag an image to import it.", 30, 30);
 	}
+	cam.begin();
 	
 	// Partie Myriam 
 	//************** 
@@ -809,4 +813,46 @@ void Application::button_noise(bool& value) {
 	if (value) {
 		noise_activate = true;
 	}
+}
+
+void Application::camera_setup_perspective(float width, float height, float fov, float n, float f)
+{
+	bool camera_projection_persp_or_ortho = true;
+	bool camera_vertical_flip = true;
+
+	int camera_viewport_x = width;
+	int camera_viewport_y = height;
+	float camera_aspect_ratio = camera_viewport_x / camera_viewport_y;
+
+	float camera_fov = fov;
+	float camera_zoom = compute_zoom_from_fov(camera_fov);
+
+	float minimal_side = std::min(camera_viewport_x, camera_viewport_y);
+	float fov_half = ofDegToRad(camera_fov / 2.0f);
+	float distance = minimal_side / 2.0f / tanf(fov_half);
+
+	glm::vec3 camera_position;
+
+	camera_position.x = camera_viewport_x / 2.0f;
+	camera_position.y = camera_viewport_y / 2.0f;
+	camera_position.z = distance;
+
+	//camera_clip_n = near > 0.0f ? near : distance / 10.0f;
+	//camera_clip_f = far > 0.0f ? far : distance * 10.0f;
+
+	float camera_clip_n = distance / 2.0f;
+	float camera_clip_f = distance * 1.5f;
+
+	float camera_depth_range = camera_clip_f - camera_clip_n;
+
+	// configurer l'instance de caméra de openFrameworks (ofCamera)
+	cam.setupPerspective(camera_vertical_flip, camera_fov, camera_clip_n, camera_clip_f);
+	cam.setPosition(camera_position.x, camera_position.y, camera_position.z);
+
+	bool camera_state_change = false;
+}
+
+float Application::compute_zoom_from_fov(float fov)
+{
+	return 1.0f / tanf(glm::radians(fov) / 2.0f);;
 }
