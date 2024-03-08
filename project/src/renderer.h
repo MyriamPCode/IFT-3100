@@ -2,12 +2,15 @@
 
 #include "ofMain.h"
 #include "Interface.h"
+#include "ofxAssimpModelLoader.h"
 #include "Forme.h"
 #include <memory>
 #include "ofxGui.h"
 #include "ofxAssimpModelLoader.h"
 
 using namespace std;
+
+//enum class MeshRenderMode { fill, wireframe, vertex };
 
 class Renderer {
 	public:
@@ -19,6 +22,17 @@ class Renderer {
 
         ofxAssimpModelLoader teapotOrtho;
         ofxAssimpModelLoader teapotMultiple;
+        ofxAssimpModelLoader model1;
+        ofxAssimpModelLoader model2;
+        ofxAssimpModelLoader model3;
+        //MeshRenderMode typeRender;
+
+
+    int mouse_press_x;
+    int mouse_press_y;
+    
+        int mouse_current_x;
+        int mouse_current_y;
 
         void setup();
         void setup(vector<Forme*>& v_formes);

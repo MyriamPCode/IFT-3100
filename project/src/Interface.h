@@ -10,6 +10,8 @@
 
 using namespace std;
 
+enum class MeshRenderMode { fill, wireframe, vertex };
+
 class Interface {
 	public:
 		vector<ofImage> iconTopBar;
@@ -60,10 +62,19 @@ class Interface {
 		bool is_mouse_button_dragged;
 		bool import_activate;
 
+		ofxToggle modelToggle;
+		ofxToggle fillRender;
+		ofxToggle wireframeRender;
+		ofxToggle pointRender;
+
 		void setup();
 		void draw();
 		void drawBackground();
 		void toggleColorWheel();
+		void toggleModelOptions();
+		void setRenderType(MeshRenderMode renderMode) { typeRender = renderMode; }
+		MeshRenderMode getRenderType() { return typeRender; }
+		bool getShowModel() { return showModels; }
 		void backgroundLine();
 		void Interface::toggleCamOptions();
 
@@ -71,6 +82,10 @@ class Interface {
 		bool outilsPressed = false;
 		bool camPressed = false;
 		
+		bool modelsPressed = false;
+		bool showModels = false;
+		MeshRenderMode typeRender;
+
 		ofTrueTypeFont buttonFont;
 
 		ofImage imgImport;
@@ -81,6 +96,7 @@ class Interface {
 		ofImage imgRectangle;
 		ofImage imgTriangle;
 		ofImage imgAnimation;
+		ofImage imgModele;
 		ofImage imgEllipse;
 		ofImage imgMesh;
 		ofImage imgCamera;
@@ -92,6 +108,7 @@ class Interface {
 		ofColor textColor = backgroundLineColor;
 
 		ofxPanel outilsGui;
+		ofxPanel modelsGui;
 		ofxPanel cameraGui;
 
 		void backgroundInteraction();
@@ -103,6 +120,7 @@ class Interface {
 		ofColor backgroundPanelSceneColor = ofColor(125);
 		void setupCameraOptions();
 		void setupOutilsGuiOptions();
+		void setupModelOptions();
 		//Renderer& renderer;
 		void showOutils(bool& value);
 		void enableFill(bool& value);
@@ -116,6 +134,10 @@ class Interface {
 		void rightCamSelect(bool& value);
 		void topCamSelect(bool& value);
 		void bottomCamSelect(bool& value);
+		void enableModels(bool& value);
+		void modelFill(bool& value);
+		void modelWireframe(bool& value);
+		void modelPoints(bool& value);
 };
 
 

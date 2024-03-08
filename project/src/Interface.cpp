@@ -14,6 +14,8 @@ void Interface::setup() {
 	iconTopBar.push_back(imgAnimation);
 	imgMesh.load("img/mesh.png");
 	iconTopBar.push_back(imgMesh);
+	imgModele.load("img/model.png");
+	iconTopBar.push_back(imgModele);
 	imgCamera.load("img/camera.png");
 	iconTopBar.push_back(imgCamera);
 
@@ -33,11 +35,13 @@ void Interface::setup() {
 
 	setupOutilsGuiOptions();
 	setupCameraOptions();
+	setupModelOptions();
 
 	is_mouse_button_pressed = false;
 	is_mouse_button_dragged = false;
 	import_activate = false;
 
+	typeRender = MeshRenderMode::wireframe;
 	mouse_current_x = mouse_current_y = mouse_press_x = mouse_press_y = mouse_drag_x = mouse_drag_y = 0;
 }
 
@@ -50,6 +54,10 @@ void Interface::draw() {
 	if (outilsPressed) {
 		outilsGui.draw();
 	}
+	if (modelsPressed) {
+		modelsGui.draw();
+	}
+
 	if (camPressed) {
 		cameraGui.draw();
 	}
@@ -132,6 +140,31 @@ void Interface::showOutils(bool& value) {
 
 void Interface::toggleColorWheel() {
 	outilsPressed = !outilsPressed;
+}
+
+void Interface::toggleModelOptions() {
+	modelsPressed = !modelsPressed;
+}
+
+void Interface::modelFill(bool& value) {
+	if (value) {
+		setRenderType(MeshRenderMode::fill);
+		wireframeRender = pointRender = false;
+	}
+}
+
+void Interface::modelWireframe(bool& value) {
+	if (value) {
+		setRenderType(MeshRenderMode::wireframe);
+		fillRender = pointRender = false;
+	}
+}
+
+void Interface::modelPoints(bool& value) {
+	if (value) {
+		setRenderType(MeshRenderMode::vertex);
+		fillRender = wireframeRender = false;
+	}
 }
 
 void Interface::enableFill(bool& value) {
@@ -222,6 +255,10 @@ void Interface::bottomCamSelect(bool& value) {
 	}
 }
 
+void Interface::enableModels(bool& value) {
+	showModels = !showModels;
+}
+
 void Interface::backgroundLine() {
 	ofSetLineWidth(1);
 	ofSetColor(backgroundLineColor);
@@ -299,6 +336,25 @@ void Interface::setupOutilsGuiOptions() {
 	outilsGui.maximizeAll();
 	outilsGui.disableHeader();
 
+}
+
+void Interface::setupModelOptions() {
+	modelsGui.setup("Model options");
+	modelsGui.loadFont("roboto/Roboto-Regular.ttf", 10);
+	modelsGui.setPosition(200, 40);
+	modelsGui.setSize(200, 1080);
+
+	modelsGui.add(modelToggle.setup("Show models", false));
+	modelsGui.add(fillRender.setup("Fill render", false));
+	modelsGui.add(wireframeRender.setup("Wireframe render", true));
+	modelsGui.add(pointRender.setup("Vertex render", false));
+
+	modelToggle.addListener(this, &Interface::enableModels);
+	fillRender.addListener(this, &Interface::modelFill);
+	wireframeRender.addListener(this, &Interface::modelWireframe);
+	pointRender.addListener(this, &Interface::modelPoints);
+
+	modelsGui.maximizeAll();
 }
 
 void Interface::setupCameraOptions() {

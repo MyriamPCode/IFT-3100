@@ -1,4 +1,4 @@
-#include "Application.h"
+﻿#include "Application.h"
 #include "Constants.h"
 #include <cmath>
 
@@ -62,14 +62,14 @@ void Application::setup(){
 	rotationButton.addListener(this, &Application::button_rotation);
 	drawingGUI.add(&animationGroupe);
 
-	meshGroupe.setup("Maille geométrique");
+	meshGroupe.setup("Maille geomÃƒÂ©trique");
 	meshGroupe.add(meshButton.setup("Maille", false));
 	meshButton.addListener(this, &Application::button_mesh);
 	meshGroupe.add(meshAnimationButton.setup("Animation", false));
 	meshAnimationButton.addListener(this, &Application::button_noise);
 	drawingGUI.add(&meshGroupe);
 
-	// Création de la maille
+	// CrÃƒÂ©ation de la maille
 	for (int x = 0; x < size; x++) {
 		for (int y = 0; y < size; y++) {
 			mesh.addVertex(ofPoint(x - size / 2, y - size / 2));
@@ -123,32 +123,32 @@ void Application::update()
 		}
 	}
 	if (renderer.isRecording) {
-		// Mettez � jour et capturez l'image � intervalles r�guliers
+		// Mettez Ã¯Â¿Â½ jour et capturez l'image Ã¯Â¿Â½ intervalles rÃ¯Â¿Â½guliers
 		renderer.update();
 		renderer.captureImage();
 	}
 
 	if (moveCameraLeft) {
-		cam.move(-1, 0, 0); // Déplacer la caméra vers la gauche
+		cam.move(-1, 0, 0); // DÃ©placer la camÃ©ra vers la gauche
 	}
 
 	if (moveCameraRight) {
-		cam.move(1, 0, 0); // Déplacer la caméra vers la droite
+		cam.move(1, 0, 0); // DÃ©placer la camÃ©ra vers la droite
 	}
 
 	if (moveCameraUp) {
-		cam.move(0, 1, 0); // Déplacer la caméra vers le haut
+		cam.move(0, 1, 0); // DÃ©placer la camÃ©ra vers le haut
 	}
 
 	if (moveCameraDown) {
-		cam.move(0, -1, 0); // Déplacer la caméra vers le bas
+		cam.move(0, -1, 0); // DÃ©placer la camÃ©ra vers le bas
 	}
 	if (moveCameraNear) {
-		cam.move(0, 0, 1); // Déplacer la caméra en s'approchant
+		cam.move(0, 0, 1); // DÃ©placer la camÃ©ra en s'approchant
 	}
 
 	if (moveCameraFar) {
-		cam.move(0, 0, -1); // Déplacer la caméra en s'eloignant
+		cam.move(0, 0, -1); // DÃ©placer la camÃ©ra en s'eloignant
 	}
 }
 
@@ -262,7 +262,6 @@ void Application::draw(){
     }*/
 	//	ofEndShape();
 	//	ofPopMatrix();
-
 	//}
 	
 	renderer.interface.backgroundLine();
@@ -301,20 +300,20 @@ void Application::toggleDrawingGUI(Forme::TypeForme drawingShape) {
 
 void Application::deleteShapeSelected()
 {
-	// Vecteur temporaire pour stocker les indices des boutons � supprimer
+	// Vecteur temporaire pour stocker les indices des boutons Ã¯Â¿Â½ supprimer
 	vector<int> buttonsToDelete;
-	// Vecteur pour stocker l'�tat de chaque bouton
+	// Vecteur pour stocker l'Ã¯Â¿Â½tat de chaque bouton
 	vector<bool> buttonStates;
 
 	for (const auto& b : *v_buttons_ptr)
 	{
 		for (int i = 0; i < v_buttons.size(); ++i)
 		{
-			// V�rifier si le bouton est en �tat TRUE
-			if (i == shapeBool) // v_buttons[i] Acc�der � l'�tat bool�en du bouton
+			// VÃ¯Â¿Â½rifier si le bouton est en Ã¯Â¿Â½tat TRUE
+			if (i == shapeBool) // v_buttons[i] AccÃ¯Â¿Â½der Ã¯Â¿Â½ l'Ã¯Â¿Â½tat boolÃ¯Â¿Â½en du bouton
 			{
 				cout << "Il est cense avoir " << i << " forme a effacer" << endl;
-				// Ajouter l'index du bouton � supprimer dans le vecteur temporaire
+				// Ajouter l'index du bouton Ã¯Â¿Â½ supprimer dans le vecteur temporaire
 				buttonsToDelete.push_back(i);
 			}
 		}
@@ -322,11 +321,11 @@ void Application::deleteShapeSelected()
 	}
 	//for (int i = 0; i < v_buttons.size(); ++i)
 	//{
-	//	// V�rifier si le bouton est en �tat TRUE
-	//	if (i == shapeBool) // v_buttons[i] Acc�der � l'�tat bool�en du bouton
+	//	// VÃ¯Â¿Â½rifier si le bouton est en Ã¯Â¿Â½tat TRUE
+	//	if (i == shapeBool) // v_buttons[i] AccÃ¯Â¿Â½der Ã¯Â¿Â½ l'Ã¯Â¿Â½tat boolÃ¯Â¿Â½en du bouton
 	//	{
 	//		cout << "Il est cense avoir " << i << " forme a effacer" << endl;
-	//		// Ajouter l'index du bouton � supprimer dans le vecteur temporaire
+	//		// Ajouter l'index du bouton Ã¯Â¿Â½ supprimer dans le vecteur temporaire
 	//		buttonsToDelete.push_back(i);
 	//	}
 	//}
@@ -340,10 +339,10 @@ void Application::deleteShapeSelected()
 	// Parcourir tous les boutons dans la liste
 	//for (int i = 0; i < buttonStates.size(); ++i)
 	//{
-	//	// V�rifier si le bouton est en �tat TRUE
+	//	// VÃ¯Â¿Â½rifier si le bouton est en Ã¯Â¿Â½tat TRUE
 	//	if (buttonStates[i] == TRUE)
 	//	{
-	//		// Ajouter l'index du bouton � supprimer dans le vecteur temporaire
+	//		// Ajouter l'index du bouton Ã¯Â¿Â½ supprimer dans le vecteur temporaire
 	//		buttonsToDelete.push_back(i);
 	//	}
 	//}
@@ -353,7 +352,7 @@ void Application::deleteShapeSelected()
 	//for (int i = buttonsToDelete.size() - 1; i >= 0; --i)
 	//{
 	//	v_buttons.erase(v_buttons.begin() + buttonsToDelete[i]);
-	//	buttonStates.erase(buttonStates.begin() + buttonsToDelete[i]); // Supprimer �galement l'�tat correspondant
+	//	buttonStates.erase(buttonStates.begin() + buttonsToDelete[i]); // Supprimer Ã¯Â¿Â½galement l'Ã¯Â¿Â½tat correspondant
 	//}
 }
 
@@ -363,17 +362,17 @@ void Application::keyPressed(int key)
 		deleteShapeSelected();
 	}
 
-	// D�marrer/arr�ter l'enregistrement lors de l'appui sur la touche 'r'
+	// DÃ¯Â¿Â½marrer/arrÃ¯Â¿Â½ter l'enregistrement lors de l'appui sur la touche 'r'
 	if (key == 'r') {
 		renderer.isRecording = !renderer.isRecording;
 		if (renderer.isRecording) {
-			renderer.frameCounter = 0; // R�initialiser le compteur de frames lors du d�marrage de l'enregistrement
-			cout << "Enregistrement d�marr�." << endl;
+			renderer.frameCounter = 0; // RÃ¯Â¿Â½initialiser le compteur de frames lors du dÃ¯Â¿Â½marrage de l'enregistrement
+			cout << "Enregistrement dÃ¯Â¿Â½marrÃ¯Â¿Â½." << endl;
 			//renderer.update();
 			//renderer.captureImage();
 		}
 		else {
-			cout << "Enregistrement arr�t�." << endl;
+			cout << "Enregistrement arrÃ¯Â¿Â½tÃ¯Â¿Â½." << endl;
 		}
 	}
 
@@ -532,6 +531,11 @@ void Application::mousePressed(int x, int y, int button){
 		renderer.triangleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
 		renderer.triangleFill = renderer.interface.fillEnabled;
 		renderer.triangleStroke = renderer.interface.slider_stroke_weight;
+		//ofxToggle button;
+		auto button = make_unique<ofxToggle>();
+		button->addListener(this, &Application::buttons_list);
+		guiScene.add(button->setup("TRIANGLE", shapeBool)); // Nom du bouton
+		v_buttons.push_back(move(button)); // Ajoutez le bouton ï¿½ la liste des boutons
 
 		guiScene.add(triangle);
 	}
@@ -546,6 +550,10 @@ void Application::mousePressed(int x, int y, int button){
 		renderer.cercleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
 		renderer.cercleFill = renderer.interface.fillEnabled;
 		renderer.cercleStroke = renderer.interface.slider_stroke_weight;
+		//ofxToggle button;
+		auto button = make_unique<ofxToggle>();
+		guiScene.add(button->setup("CERCLE", false)); // Nom du bouton
+		v_buttons.push_back(move(button)); // Ajoutez le bouton ï¿½ la liste des boutons
 
 		guiScene.add(circle);
 	}
@@ -559,6 +567,10 @@ void Application::mousePressed(int x, int y, int button){
 		renderer.rectangleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
 		renderer.rectangleFill = renderer.interface.fillEnabled;
 		renderer.rectangleStroke = renderer.interface.slider_stroke_weight;
+		//ofxToggle button;
+		auto button = make_unique<ofxToggle>();
+		guiScene.add(button->setup("RECTANGLE", false)); // Nom du bouton
+		v_buttons.push_back(move(button)); // Ajoutez le bouton ï¿½ la liste des boutons
 
 		guiScene.add(rectangle);
 	}
@@ -573,6 +585,9 @@ void Application::mousePressed(int x, int y, int button){
 		renderer.okDessiner = true;
 		renderer.ligneColor = renderer.interface.color_picker_stroke; // Ajuste les parametres
 		renderer.ligneStroke = renderer.interface.slider_stroke_weight;
+		auto button = make_unique<ofxToggle>();
+		guiScene.add(button->setup("LIGNE", false)); // Nom du bouton
+		v_buttons.push_back(move(button)); // Ajoutez le bouton ï¿½ la liste des boutons
 
 		guiScene.add(line);
 	}
@@ -586,6 +601,9 @@ void Application::mousePressed(int x, int y, int button){
 		renderer.ellipseColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
 		renderer.ellipseFill = renderer.interface.fillEnabled;
 		renderer.ellipseStroke = renderer.interface.slider_stroke_weight;
+		auto button = make_unique<ofxToggle>();
+		guiScene.add(button->setup("ELLIPSE", false)); // Nom du bouton
+		v_buttons.push_back(move(button)); // Ajoutez le bouton ï¿½ la liste des boutons
 
 		guiScene.add(ellipse);
 	}
@@ -616,6 +634,9 @@ void Application::mousePressed(int x, int y, int button){
 		renderer.bezierColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
 		renderer.bezierFill = renderer.interface.fillEnabled;
 		renderer.bezierStroke = renderer.interface.slider_stroke_weight;
+		auto button = make_unique<ofxToggle>();
+		guiScene.add(button->setup("BEZIER", false)); // Nom du bouton
+		v_buttons.push_back(move(button)); // Ajoutez le bouton ï¿½ la liste des boutons
 		
 		guiScene.add(bezier);
 	}
@@ -653,6 +674,10 @@ void Application::mouseReleased(int x, int y, int button){
 				cout << "mesh \n";
 				break;
 			case 4:
+				renderer.interface.toggleModelOptions();
+				cout << "modele \n";
+				break;
+			case 5:
 				renderer.interface.toggleCamOptions();
 				break;
 		}
@@ -691,8 +716,6 @@ void Application::mouseReleased(int x, int y, int button){
 			break;
 		}
 	}
-
-
 
 	renderer.interface.mouse_current_x = x;
 	renderer.interface.mouse_current_y = y;
@@ -734,8 +757,6 @@ void Application::gotMessage(ofMessage msg){
 	//ofEasyCam cam;
 
 }
-
-
 
 void Application::dragEvent(ofDragInfo dragInfo) {
 	if (isImportable) {
@@ -848,7 +869,7 @@ void Application::reset(bool& value) {
 void Application::reset_cam() {
 	offset_camera = 500.0f * 3.5f * -1.0f;
 
-	// position initiale de chaque caméra
+	// position initiale de chaque camÃ©ra
 	camFront.setPosition(0, 0, -offset_camera);
 	camBack.setPosition(0, 0, offset_camera);
 	camLeft.setPosition(-offset_camera, 0, 0);
@@ -856,7 +877,7 @@ void Application::reset_cam() {
 	camTop.setPosition(0, offset_camera, 0);
 	camBottom.setPosition(0, -offset_camera, 0);
 
-	// orientation de chaque caméra
+	// orientation de chaque camÃ©ra
 	camFront.lookAt(camera_target);
 	camBack.lookAt(camera_target);
 	camLeft.lookAt(camera_target);
@@ -877,9 +898,9 @@ void Application::reset_cam() {
 void Application::buttons_list(bool& value)
 {
 	if (value) {
-		// Vecteur temporaire pour stocker les indices des boutons � supprimer
+		// Vecteur temporaire pour stocker les indices des boutons Ã¯Â¿Â½ supprimer
 		//vector<int> buttonsToDelete;
-		//// Vecteur pour stocker l'�tat de chaque bouton
+		//// Vecteur pour stocker l'Ã¯Â¿Â½tat de chaque bouton
 		//vector<bool> buttonStates;
 
 		cout << "Je t'ecoute!!" << endl;
@@ -899,10 +920,10 @@ void Application::buttons_list(bool& value)
 				// Parcourir tous les boutons dans la liste
 				//for (int i = 0; i < buttonStates.size(); ++i)
 				//{
-				//	// V�rifier si le bouton est en �tat TRUE
+				//	// VÃ¯Â¿Â½rifier si le bouton est en Ã¯Â¿Â½tat TRUE
 				//	if (buttonStates[i] == TRUE)
 				//	{
-				//		// Ajouter l'index du bouton � supprimer dans le vecteur temporaire
+				//		// Ajouter l'index du bouton Ã¯Â¿Â½ supprimer dans le vecteur temporaire
 				//		buttonsToDelete.push_back(i);
 				//	}
 				//}
@@ -912,7 +933,7 @@ void Application::buttons_list(bool& value)
 				//for (int i = buttonsToDelete.size() - 1; i >= 0; --i)
 				//{
 				//	v_buttons.erase(v_buttons.begin() + buttonsToDelete[i]);
-				//	buttonStates.erase(buttonStates.begin() + buttonsToDelete[i]); // Supprimer �galement l'�tat correspondant
+				//	buttonStates.erase(buttonStates.begin() + buttonsToDelete[i]); // Supprimer Ã¯Â¿Â½galement l'Ã¯Â¿Â½tat correspondant
 				//}
 			//}
 		//}
@@ -970,7 +991,7 @@ void Application::camera_setup_perspective(float width, float height, float fov,
 
 	float camera_depth_range = camera_clip_f - camera_clip_n;
 
-	// configurer l'instance de caméra de openFrameworks (ofCamera)
+	// configurer l'instance de camÃ©ra de openFrameworks (ofCamera)
 	cam.setupPerspective(camera_vertical_flip, camera_fov, camera_clip_n, camera_clip_f, ofVec2f(0, 0));
 	cam.setPosition(camera_position.x, camera_position.y, camera_position.z);
 
@@ -991,7 +1012,7 @@ void Application::setupCamera() {
 
 		case Camera::back:
 			camera = &camBack;
-			renderer.interface.camera_name = "arrière";
+			renderer.interface.camera_name = "arriÃ¨re";
 			break;
 
 		case Camera::left:

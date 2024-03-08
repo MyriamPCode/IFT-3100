@@ -18,10 +18,10 @@ void Renderer::setup() {
 	gui.add(exportButton);
 	gui.setPosition(0, 0);
 
-	teapotMultiple.loadModel("teapot.obj");
+	teapotMultiple.loadModel("models/teapot.obj");
 	teapotMultiple.setPosition(0, 0, 0);
 
-	teapotOrtho.loadModel("teapot.obj");
+	teapotOrtho.loadModel("models/teapot.obj");
 	teapotOrtho.setPosition(800, 700, 0);
 
 	okDessiner = false; 
@@ -61,9 +61,11 @@ void Renderer::draw() {
 
 	}
 
-	teapotMultiple.draw(OF_MESH_WIREFRAME);
-	teapotOrtho.draw(OF_MESH_FILL);
 	
+	model1.setPosition(1410,700, 0);
+	model2.setPosition(-50, 1200, -400);
+	//model3.setPosition(800, 1000, -600);
+
 	//////////////////////////////////////////////////////////////////
 	if (okDessiner)
 	{
@@ -75,6 +77,21 @@ void Renderer::draw() {
 		dessinerBezier(); 
 	}
 	//////////////////////////////////////////////////////////////////
+	if (interface.getShowModel()) {
+		if (interface.getRenderType() == MeshRenderMode::wireframe) {
+			teapotMultiple.draw(OF_MESH_WIREFRAME);
+			teapotOrtho.draw(OF_MESH_WIREFRAME);
+		}
+		else if (interface.getRenderType() == MeshRenderMode::fill) {
+
+			teapotMultiple.draw(OF_MESH_FILL);
+			teapotOrtho.draw(OF_MESH_FILL);
+		}
+		else if (interface.getRenderType() == MeshRenderMode::vertex) {
+			teapotMultiple.draw(OF_MESH_POINTS);
+			teapotOrtho.draw(OF_MESH_POINTS);
+		}
+	}
 
 	// Afficher un message si l'enregistrement est activé
 	if (isRecording)
@@ -235,8 +252,6 @@ void Renderer::newImage(string filePath, int posX, int posY) {
 	imageList.back().load(filePath);
 	imgPosList.push_back({posX, posY});
 }
-
-
 
 void Renderer::update()
 {
