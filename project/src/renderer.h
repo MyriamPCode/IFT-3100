@@ -12,6 +12,8 @@ class Renderer {
 	public:
 		Interface interface;
 		ofImage image;
+        ofMesh mesh;
+        int size = 96; // Taille de la maille
 
 		list<ofImage> imageList; //Liste d'images import�es
 		list<vector<int>> imgPosList; //Positions x et y des images import�es
@@ -78,8 +80,11 @@ class Renderer {
         int frameCounter, captureInterval, compteur;
         bool isRecording;
 
+        float rotate;
+
         void toggleExportGUI();
         void toggleColorWheelGUI();
+        void toggleMailleGUI();
         void rotation(float rotate);
 
     private:

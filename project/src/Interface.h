@@ -25,7 +25,10 @@ class Interface {
 		void setup();
 		void draw();
 		void toggleColorWheel();
+		void showMaille();
 		void backgroundLine();
+
+		bool mesh_activate;
 
 	private:
 		bool outilsPressed = false;
@@ -49,6 +52,11 @@ class Interface {
 		ofColor textColor = backgroundLineColor;
 
 		ofxPanel outilsGui;
+
+		ofxPanel mailleGui;
+		bool mailleVisible = false;
+		ofParameter<bool> meshButton = false;
+		
 
 		void backgroundInteraction();
 		void topButtons();

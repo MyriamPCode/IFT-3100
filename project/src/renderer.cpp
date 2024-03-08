@@ -33,6 +33,24 @@ void Renderer::setup() {
 	frameCounter = 0;
 	captureInterval = 60; // changer l'intervalle pour le nombre d'image exportee
 	isRecording = false;
+
+	// Création de la maille
+	for (int x = 0; x < size; x++) {
+		for (int y = 0; y < size; y++) {
+			mesh.addVertex(ofPoint(x - size / 2, y - size / 2));
+		}
+	}
+
+	for (int y = 0; y < size - 1; y++) {
+		for (int x = 0; x < size - 1; x++) {
+			mesh.addIndex(x + y * size);
+			mesh.addIndex((x + 1) + y * size);
+			mesh.addIndex(x + (y + 1) * size);
+			mesh.addIndex((x + 1) + y * size);
+			mesh.addIndex((x + 1) + (y + 1) * size);
+			mesh.addIndex(x + (y + 1) * size);
+		}
+	}
 }
 
 
@@ -54,6 +72,14 @@ void Renderer::draw() {
 			exportButton = false;
 			visible = false;
 		}
+	}
+
+	if (interface.mesh_activate) {
+		mesh.drawWireframe();
+		//if (noise_activate) {
+			//button_noise(noise_activate);
+		//}
+
 	}
 
 	auto currImg = imgPosList.begin();
@@ -276,7 +302,7 @@ void Renderer::draw_cursor(float x, float y) const {
 		ofDrawTriangle(x, y - tailleTriangle, x - tailleTriangle, y + tailleTriangle, x + tailleTriangle, y + tailleTriangle);
 	}
 	else if (export_activate) {
-		ofSetColor(0, 0, 255); // Couleur bleue par exemple
+		ofSetColor(0, 0, 255); // Couleur bleue
 		ofPushMatrix();
 		ofTranslate(x, y); // Translation au position du curseur
 		ofBeginShape();
@@ -302,6 +328,9 @@ void Renderer::draw_cursor(float x, float y) const {
 
 void Renderer::update()
 {
+	// Rotations des primitives vectorielles
+	rotate++;
+
 	if (isRecording)
 	{
 		frameCounter++;
@@ -324,6 +353,10 @@ void Renderer::toggleColorWheelGUI() {
 void Renderer::toggleExportGUI() {
 	visible = !visible;
 	export_activate = true;
+}
+
+void Renderer::toggleMailleGUI() {
+	interface.showMaille();
 }
 
 
@@ -352,12 +385,15 @@ void Renderer::captureImage() {
 }
 
 void Renderer::rotation(float rotate) {
-	for (auto& forme : v_formes) {
-		ofPushMatrix();
-		ofRotateXDeg(rotate);
-		ofRotateYDeg(rotate);
-		ofRotateZDeg(rotate);
+	/*for (auto& forme : *v_formes_ptr) {
+		if (forme->getType() == Forme::CERCLE) {
+			ofPushMatrix();
+			ofRotateXDeg(rotate);
+			ofRotateYDeg(rotate);
+			ofRotateZDeg(rotate);
+		    forme->draw();
 
+		
 		// Dessiner toutes les formes
 		if (v_formes_ptr) {
 			for (const auto& forme : *v_formes_ptr) {
@@ -366,8 +402,14 @@ void Renderer::rotation(float rotate) {
 		}
 		else {
 			cout << "Le pointeur vers le vecteur de formes n'est pas valide." << endl;
-		}
+		}*/
 
-		ofPopMatrix();
-	}
+	ofPushMatrix();
+	ofRotateXDeg(rotate);
+	ofRotateYDeg(rotate);
+	ofRotateZDeg(rotate);
+	
+	ofPopMatrix();
+		
+	
 }

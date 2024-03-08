@@ -51,6 +51,11 @@ void Interface::setup() {
 	outilsGui.setTextColor(backgroundInteractionColor);
 	outilsGui.maximizeAll();
 	outilsGui.disableHeader();
+
+	mailleGui.setup("Mesh");
+	meshButton.setName("Mesh");
+	mailleGui.add(meshButton);
+
 }
 
 void Interface::draw() {
@@ -60,6 +65,13 @@ void Interface::draw() {
 
 	if (outilsPressed) {
 		outilsGui.draw();
+	}
+
+	if (mailleVisible) {
+		mailleGui.draw();
+		if (meshButton) {
+			mesh_activate = true;
+		}
 	}
 }
 
@@ -87,6 +99,10 @@ void Interface::sideButtons() {
 
 void Interface::showOutils(bool& value) {
 	outilsPressed = !outilsPressed;
+}
+
+void Interface::showMaille() {
+	mailleVisible = !mailleVisible;
 }
 
 void Interface::toggleColorWheel() {

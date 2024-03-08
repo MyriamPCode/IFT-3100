@@ -24,7 +24,6 @@ void Application::setup(){
 	draw_circle = false;
 	draw_rectangle = false;
 	rotation_activate = false;
-	mesh_activate = false;
 	noise_activate = false;
 
 	//primitivesGroupe.setup("Primitives");
@@ -52,6 +51,7 @@ void Application::setup(){
 	resetButton.addListener(this, &Application::reset);
 	drawingGUI.add(&reinitialisationGroupe);
 
+	/*
 	animationGroupe.setup("Animations");
 	animationGroupe.add(rotationButton.setup("Rotation", false));
 	rotationButton.addListener(this, &Application::button_rotation);
@@ -63,24 +63,7 @@ void Application::setup(){
 	meshGroupe.add(meshAnimationButton.setup("Bruit", false));
 	meshAnimationButton.addListener(this, &Application::button_noise);
 	drawingGUI.add(&meshGroupe);
-
-	// Création de la maille
-	for (int x = 0; x < size; x++) {
-		for (int y = 0; y < size; y++) {
-			mesh.addVertex(ofPoint(x - size / 2, y - size / 2));
-		}
-	}
-
-	for (int y = 0; y < size - 1; y++) {
-		for (int x = 0; x < size - 1; x++) {
-			mesh.addIndex(x + y * size);
-			mesh.addIndex((x + 1) + y * size);
-			mesh.addIndex(x + (y + 1) * size);
-			mesh.addIndex((x + 1) + y * size);
-			mesh.addIndex((x + 1) + (y + 1) * size);
-			mesh.addIndex(x + (y + 1) * size);
-		}
-	}
+	*/
 
 	//renderer.setup(forme.v_formes);
 	renderer.setup(renderer.v_formes);
@@ -102,10 +85,9 @@ void Application::setup(){
 
 void Application::update()
 {
-	// Rotations des primitives vectorielles
-	rotate++;
-
+	renderer.update();
 	// Animation sur la maille 
+	/*
 	if (noise_activate) {
 		int count = 0;
 		for (int x = 0; x < size; x++) {
@@ -116,7 +98,8 @@ void Application::update()
 				count++;
 			}
 		}
-	}
+	}*/
+
 	if (renderer.isRecording) {
 		// Mettez � jour et capturez l'image � intervalles r�guliers
 		renderer.update();
@@ -171,13 +154,7 @@ void Application::draw(){
 	ofDrawRectangle(50, 50, 100, 200);
     }
 	*/
-    if (mesh_activate) {
-	    mesh.drawWireframe();
-	    //if (noise_activate) {
-		    //button_noise(noise_activate);
-	    //}
-
-    }
+    
 	//	ofEndShape();
 	//	ofPopMatrix();
 
@@ -468,13 +445,17 @@ void Application::mouseReleased(int x, int y, int button){
 				//call to animation method
 				cout << "animation \n";
 				rotation_activate = true;
-				renderer.rotation(rotate);
+				for (auto& forme : renderer.v_formes) {
+					ofPushMatrix();
+				    renderer.rotation(renderer.rotate);
+				    forme->draw();
+					ofPopMatrix();
+				}
 				break;
 			case 3:
 				//call to mesh
 				cout << "mesh \n";
-				mesh_activate = true;
-				mesh.drawWireframe();
+				renderer.toggleMailleGUI();
 				break;
 		}
 	}
@@ -658,7 +639,6 @@ void Application::reset(bool& value) {
 		resetButton = false;
 		rotationButton = false;
 		rotation_activate = false;
-		mesh_activate = false;
 		meshButton = false;
 		noise_activate = false;
 		meshAnimationButton = false;
@@ -717,12 +697,14 @@ void Application::button_rotation(bool& value) {
 	}
 }
 
+/*
 void Application::button_mesh(bool& value) {
 	mesh_activate = value;
 	if (value) {
 		mesh_activate = true;
 	}
 }
+*/
 
 void Application::button_noise(bool& value) {
 	noise_activate = value;

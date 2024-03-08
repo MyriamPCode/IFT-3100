@@ -12,8 +12,6 @@ class Application : public ofBaseApp{
 		Renderer renderer;
 		Forme forme;
 		ofColor backgroundColor = ofColor(178, 184, 194);
-		ofMesh mesh;
-		int size = 96; // Taille de la maille
 
 		ofEasyCam cam;
 
@@ -70,10 +68,7 @@ class Application : public ofBaseApp{
 		bool draw_rectangle;
 		bool draw_line, draw_ellipse, draw_bezier;
 		bool rotation_activate;
-		bool mesh_activate;
 		bool noise_activate;
-
-		float rotate;
 
 		float diffX, diffY, newX2, newY2, newX3, newY3;
 
