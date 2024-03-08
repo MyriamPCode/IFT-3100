@@ -130,14 +130,6 @@ void Renderer::dessinerTriangle() {
 						ofRotateZDeg(uiRotate->z); // pivoter sur z 
 						ofScale(uiSize->x, uiSize->y);
 
-						//for (int j = 0; j < uiAmount; j++)
-						//{
-						//	//ofPushMatrix();
-								//ofTranslate(j * uiStep->x, j * uiStep->y);
-						//ofTranslate(j * uiShift->x, j * uiShift->y);
-						//	//ofPopMatrix();
-						//}
-
 							ofNoFill();
 							ofSetColor(255, 0, 0); // Rouge
 							ofBeginShape();
@@ -178,8 +170,8 @@ void Renderer::dessinerCercle() {
 						ofRotateXDeg(uiRotate->x); // pivoter sur x 
 						ofRotateYDeg(uiRotate->y); // pivoter sur y 
 						ofRotateZDeg(uiRotate->z); // pivoter sur z 
-						//ofTranslate(uiStep->x, uiStep->y);
-						//ofTranslate(uiShift->x, uiShift->y);
+						ofTranslate(uiStep->x, uiStep->y);
+						ofTranslate(uiShift->x, uiShift->y);
 						ofNoFill();
 						ofBeginShape();
 						ofSetColor(255, 0, 0); // Rouge
@@ -217,11 +209,10 @@ void Renderer::dessinerRectangle() {
 						ofRotateXDeg(uiRotate->x); // pivoter sur x 
 						ofRotateYDeg(uiRotate->y); // pivoter sur y 
 						ofRotateZDeg(uiRotate->z); // pivoter sur z 
-						//ofTranslate(uiPosition->x, uiPosition->y); // translation 
-						//ofTranslate(uiStep->x, uiStep->y);
-						//ofTranslate(uiShift->x, uiShift->y);
+						ofTranslate(uiPosition->x, uiPosition->y); // translation 
+						ofTranslate(uiStep->x, uiStep->y);
+						ofTranslate(uiShift->x, uiShift->y);
 						ofScale(uiSize->x, uiSize->y,1);
-						//ofScale(10, 10);
 						
 						ofNoFill();
 						ofBeginShape(); 
@@ -276,8 +267,6 @@ void Renderer::dessinerEllipse() {
 						ofRotateXDeg(uiRotate->x); // pivoter sur x 
 						ofRotateYDeg(uiRotate->y); // pivoter sur y 
 						ofRotateZDeg(uiRotate->z); // pivoter sur z 
-						//ofTranslate(uiStep->x, uiStep->y);
-						//ofTranslate(uiShift->x, uiShift->y);
 						ofNoFill();
 						ofBeginShape();
 						ofSetColor(255, 0, 0); // Rouge
