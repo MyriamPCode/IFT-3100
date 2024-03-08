@@ -11,14 +11,14 @@ void Application::setup(){
 
 	cam.setDistance(100);
 	
-	gui.setup();
-	gui.setPosition(300, 40);
-	gui.add(uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
-	gui.add(uiAmount.set("amount", 1, 0, 64)); // La quantit� de primitives. Nombre maximal est 64 et nombre minimum est 1
-	gui.add(uiStep.set("step", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
-	gui.add(uiRotate.set("rotate", ofVec3f(0), ofVec3f(-180), ofVec3f(180))); // La rotation des primitives
-	gui.add(uiShift.set("shift", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
-	gui.add(uiSize.set("size", ofVec2f(6), ofVec2f(0), ofVec2f(30)));
+	drawingGUI.setup();
+	drawingGUI.setPosition(300, 40);
+	drawingGUI.add(uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
+	drawingGUI.add(uiAmount.set("amount", 1, 0, 64)); // La quantit� de primitives. Nombre maximal est 64 et nombre minimum est 1
+	drawingGUI.add(uiStep.set("step", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
+	drawingGUI.add(uiRotate.set("rotate", ofVec3f(0), ofVec3f(-180), ofVec3f(180))); // La rotation des primitives
+	drawingGUI.add(uiShift.set("shift", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
+	drawingGUI.add(uiSize.set("size", ofVec2f(6), ofVec2f(0), ofVec2f(30)));
 
 	draw_triangle = false;
 	draw_circle = false;
@@ -45,24 +45,24 @@ void Application::setup(){
 	drawEllipse.addListener(this, &Application::button_ellipse);
 	drawBezier.addListener(this, &Application::button_bezier);
 
-	gui.add(&primitivesGroupe);
+	drawingGUI.add(&primitivesGroupe);
 
 	reinitialisationGroupe.setup("Reinitialisation");
 	reinitialisationGroupe.add(resetButton.setup("Reset", false));
 	resetButton.addListener(this, &Application::reset);
-	gui.add(&reinitialisationGroupe);
+	drawingGUI.add(&reinitialisationGroupe);
 
 	animationGroupe.setup("Animations");
 	animationGroupe.add(rotationButton.setup("Rotation", false));
 	rotationButton.addListener(this, &Application::button_rotation);
-	gui.add(&animationGroupe);
+	drawingGUI.add(&animationGroupe);
 
 	meshGroupe.setup("Maille geométrique");
 	meshGroupe.add(meshButton.setup("Maille", false));
 	meshButton.addListener(this, &Application::button_mesh);
 	meshGroupe.add(meshAnimationButton.setup("Bruit", false));
 	meshAnimationButton.addListener(this, &Application::button_noise);
-	gui.add(&meshGroupe);
+	drawingGUI.add(&meshGroupe);
 
 	// Création de la maille
 	for (int x = 0; x < size; x++) {
@@ -185,8 +185,24 @@ void Application::draw(){
 	renderer.draw();
 	//cam.end();
 	ofPopMatrix();
-	gui.draw();
+
+	if (drawingGUIPressed) {
+		drawingGUI.draw();
+	}
 	guiScene.draw();
+}
+
+void Application::toggleDrawingGUI(Forme::TypeForme drawingShape) {
+	cout << "lastShape " << lastShape << "\n";
+	cout << "drawingShape " << drawingShape << "\n";
+
+	if (lastShape == drawingShape) {
+		drawingGUIPressed = !drawingGUIPressed;
+	}
+	else {
+		lastShape = drawingShape;
+		drawingGUIPressed = true;
+	}
 }
 
 void Application::deleteShapeSelected()
@@ -444,7 +460,6 @@ void Application::mousePressed(int x, int y, int button){
 
 }
 
-
 void Application::mouseReleased(int x, int y, int button){
 	if (isRepositioning) { //Si une image est en repositionnement
 		isRepositioning = false;
@@ -484,23 +499,25 @@ void Application::mouseReleased(int x, int y, int button){
 		case 1:
 			//call to pen method
 			cout << "pen \n";
+			toggleDrawingGUI(forme.LIGNE);
 			break;
 		case 2:
 			//call to ellipse method
 			cout << "ellipse \n";
+			toggleDrawingGUI(forme.ELLIPSE);
 			break;
 		case 3:
 			//call to rectangle method
 			cout << "rectangle \n";
+			toggleDrawingGUI(forme.CERCLE);
 			break;
 		case 4:
 			//call to triangle method
 			cout << "triangle \n";
+			toggleDrawingGUI(forme.TRIANGLE);
 			break;
 		}
 	}
-
-
 
 	renderer.mouse_current_x = x;
 	renderer.mouse_current_y = y;

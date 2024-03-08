@@ -8,7 +8,6 @@
 using namespace std;
 
 class Application : public ofBaseApp{
-
 	public:
 		Renderer renderer;
 		Forme forme;
@@ -39,7 +38,7 @@ class Application : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 		void reset(bool& value);
 
-		ofxPanel gui;
+		ofxPanel drawingGUI;
 		ofParameter <ofVec2f> uiPosition;
 		ofParameter <int> uiAmount;
 		ofParameter <ofVec2f> uiStep;
@@ -65,6 +64,7 @@ class Application : public ofBaseApp{
 		ofxToggle meshButton;
 		ofxToggle meshAnimationButton; // Bouton pour l'animation sur la maille géométrique 
 
+		bool drawingGUIPressed;
 		bool draw_triangle;
 		bool draw_circle;
 		bool draw_rectangle;
@@ -85,7 +85,6 @@ class Application : public ofBaseApp{
 
 		float rotate;
 
-
 		float diffX, diffY, newX2, newY2, newX3, newY3;
 
 		void buttons_list(bool& value);
@@ -95,4 +94,9 @@ class Application : public ofBaseApp{
 		vector<unique_ptr<ofxToggle>>* v_buttons_ptr;
 		void deleteShapeSelected();
 		bool shapeBool; 
+
+	private:
+		Forme::TypeForme lastShape;
+
+		void toggleDrawingGUI(Forme::TypeForme drawingShape);
 };
