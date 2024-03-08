@@ -10,18 +10,25 @@ using namespace std;
 void Renderer::setup() {
 	ofSetFrameRate(60);
 	interface.setup();
+	
+	gui.setup("Exportation");
+	nameField.set("Image name", "name");
+	gui.add(nameField);
+	exportButton.setName("Export");
+	gui.add(exportButton);
+	gui.setPosition(0, 0);
 
-	is_mouse_button_pressed = false;
-	is_mouse_button_dragged = false;
-	import_activate = false;
+	teapotMultiple.loadModel("models/teapot.obj");
+	teapotMultiple.setPosition(0, 0, 0);
 
-	mouse_current_x = mouse_current_y = mouse_press_x = mouse_press_y = mouse_drag_x = mouse_drag_y = 0;
+	teapotOrtho.loadModel("models/teapot.obj");
+	teapotOrtho.setPosition(800, 700, 0);
 
 	okDessiner = false; 
 
 	//triangleColors= { interface.color_picker_stroke, interface.colorPickerFill };
 
-	//Pour la capture dìmages
+	//Pour la capture dÃ¬mages
 	frameCounter = 0;
 	captureInterval = 60; // changer l'intervalle pour le nombre d'image exportee
 	isRecording = false;
@@ -37,8 +44,16 @@ void Renderer::setup(vector<unique_ptr<Forme>>& v_formes)
 
 
 void Renderer::draw() {
-	interface.draw();
 	ofSetBackgroundColor(interface.color_picker_background);
+	if (visible) {
+		gui.draw();
+
+		if (exportButton) {
+			image_export(nameField, "png");
+			exportButton = false;
+			visible = false;
+		}
+	}
 
 	auto currImg = imgPosList.begin();
 	for (list<ofImage>::iterator iter = imageList.begin(); iter != imageList.end(); ++iter) {
@@ -47,6 +62,11 @@ void Renderer::draw() {
 		++currImg;
 
 	}
+
+	
+	model1.setPosition(1410,700, 0);
+	model2.setPosition(-50, 1200, -400);
+	//model3.setPosition(800, 1000, -600);
 
 	//////////////////////////////////////////////////////////////////
 	if (okDessiner)
@@ -61,27 +81,27 @@ void Renderer::draw() {
 		dessinerCube();
 	}
 	//////////////////////////////////////////////////////////////////
+	if (interface.getShowModel()) {
+		if (interface.getRenderType() == MeshRenderMode::wireframe) {
+			teapotMultiple.draw(OF_MESH_WIREFRAME);
+			teapotOrtho.draw(OF_MESH_WIREFRAME);
+		}
+		else if (interface.getRenderType() == MeshRenderMode::fill) {
 
-	draw_cursor(mouse_current_x, mouse_current_y);
+			teapotMultiple.draw(OF_MESH_FILL);
+			teapotOrtho.draw(OF_MESH_FILL);
+		}
+		else if (interface.getRenderType() == MeshRenderMode::vertex) {
+			teapotMultiple.draw(OF_MESH_POINTS);
+			teapotOrtho.draw(OF_MESH_POINTS);
+		}
+	}
 
-	int gridSize = 50; // Espacement de la grille
-	// Obtenir les coordonnées de la souris
-	int mouseX = ofGetMouseX();
-	int mouseY = ofGetMouseY();
-
-	// Convertir les coordonnées de la souris dans l'espace de la grille
-	int gridX = mouseX / gridSize;
-	int gridY = mouseY / gridSize;
-
-	// Dessiner les coordonnées de la souris sur la grille
-	ofSetColor(255); // Couleur blanc
-	ofDrawBitmapString("Mouse X: " + ofToString(mouseX) + ", Mouse Y: " + ofToString(mouseY), 1630, 65);
-	ofDrawBitmapString("Grid X: " + ofToString(gridX) + ", Grid Y: " + ofToString(gridY), 1630, 85);
-
-	// Afficher un message si l'enregistrement est activé
+	// Afficher un message si l'enregistrement est activÃ©
 	if (isRecording)
 		ofDrawBitmapString("Enregistrement enmouse cours...", 20, 20);
 }
+
 
 
 void Renderer::dessinerSphere(){
@@ -92,6 +112,7 @@ void Renderer::dessinerSphere(){
 			if(formeCourante->getType() == Forme::SPHERE){
 				ofVec3f viktor = formeCourante->getVSphere();
 				ofDrawSphere(viktor.x, viktor.y, 0, 150);
+
 			}
 		}
 	}
@@ -119,7 +140,7 @@ void Renderer::dessinerTriangle() {
 					//ofFill();
 					ofSetLineWidth(triangleStroke);
 					ofSetColor(triangleColors[1]);
-					// Dessin du triangle avec translation si l'index correspond et le mode de transformation est activé
+					// Dessin du triangle avec translation si l'index correspond et le mode de transformation est activÃ©
 					if (i == inputIndex && modeTransformState) {
 						ofPushMatrix();
 						ofTranslate(uiPosition->x, uiPosition->y); // positionnement 
@@ -162,7 +183,7 @@ void Renderer::dessinerCercle() {
 					//ofFill();
 					ofSetLineWidth(cercleStroke);
 					ofSetColor(cercleColors[1]);
-					// Dessiner le cercle avec transformation si l'index correspond et le mode de transformation est activé
+					// Dessiner le cercle avec transformation si l'index correspond et le mode de transformation est activÃ©
 					if (i == inputIndex && modeTransformState) {
 						ofPushMatrix();
 						ofScale(uiSize->x, uiSize->y);
@@ -203,7 +224,7 @@ void Renderer::dessinerRectangle() {
 					ofSetColor(rectangleColors[1]);
 					ofPushMatrix();
 					ofTranslate(0, 0, 0); 
-					// Dessiner le rectangle avec transformation si l'index correspond et le mode de transformation est activé
+					// Dessiner le rectangle avec transformation si l'index correspond et le mode de transformation est activÃ©
 					if (i == inputIndex && modeTransformState) {
 						ofPushMatrix();
 						ofRotateXDeg(uiRotate->x); // pivoter sur x 
@@ -244,7 +265,7 @@ void Renderer::dessinerLigne() {
 			ofSetLineWidth(ligneStroke);
 			ofSetColor(ligneColor);
 			polyline.draw(); // Dessine la ligne
-			ofPopMatrix(); // Restaure la matrice de transformation précédente
+			ofPopMatrix(); // Restaure la matrice de transformation prÃ©cÃ©dente
 		}
 	}
 }
@@ -259,7 +280,7 @@ void Renderer::dessinerEllipse() {
 					//ofFill();
 					ofSetLineWidth(ellipseStroke);
 					ofSetColor(ellipseColors[1]);
-					// Dessiner l'ellipse avec transformation si l'index correspond et le mode de transformation est activé
+					// Dessiner l'ellipse avec transformation si l'index correspond et le mode de transformation est activÃ©
 					if (i == inputIndex && modeTransformState) {
 						ofPushMatrix();
 						ofScale(uiSize->x, uiSize->y);
@@ -297,7 +318,7 @@ void Renderer::dessinerBezier() {
 					//ofFill();
 					ofSetLineWidth(bezierStroke);
 					ofSetColor(bezierColors[1]);
-					// Dessiner la courbe de Bézier avec transformation si l'index correspond et le mode de transformation est activé
+					// Dessiner la courbe de BÃ©zier avec transformation si l'index correspond et le mode de transformation est activÃ©
 					if (i == inputIndex && modeTransformState) {
 
 						ofPushMatrix();
@@ -319,7 +340,7 @@ void Renderer::dessinerBezier() {
 						ofPopMatrix();
 					}
 					else {
-						// Dessiner la courbe de Bézier sans transformation
+						// Dessiner la courbe de BÃ©zier sans transformation
 						ofSetColor(bezierColors[0]); // Couleur de contour normale
 						ofDrawBezier(formeCourante->getX1(), formeCourante->getY1(),
 							formeCourante->getXB1(), formeCourante->getYB1(),
@@ -340,35 +361,8 @@ void Renderer::newImage(string filePath, int posX, int posY) {
 	imgPosList.push_back({posX, posY});
 }
 
-void Renderer::draw_cursor(float x, float y) const {
-	float length = 10.0f;
-	float offset = 5.0f;
-
-	ofSetLineWidth(2);
-
-	if (is_mouse_button_dragged) {
-		ofSetColor(254, 142, 118); // Couleur rouge
-	}
-
-	else if (is_mouse_button_pressed) {
-		ofSetColor(249, 220, 40); // Couleur jaune
-	}
-	else if (import_activate) {
-		ofSetColor(135, 210, 88); // Couleur verte
-	}
-
-	else
-		ofSetColor(255); // Couleur blanche
-
-	ofDrawLine(x + offset, y, x + offset + length, y);
-	ofDrawLine(x - offset, y, x - offset - length, y);
-	ofDrawLine(x, y + offset, x, y + offset + length);
-	ofDrawLine(x, y - offset, x, y - offset - length);
-}
-
 void Renderer::update()
 {
-
 	if (isRecording)
 	{
 		frameCounter++;
@@ -383,24 +377,33 @@ void Renderer::update()
 		}
 	}
 }
-void Renderer::image_export(const string name, const string extension)const
-{
+
+void Renderer::toggleColorWheelGUI() {
+	interface.toggleColorWheel();
+}
+
+void Renderer::toggleExportGUI() {
+	visible = !visible;
+}
+
+void Renderer::image_export(const string name, const string extension) const {
 	ofImage image;
 
-	// extraire des données temporelles formatées
+	// extraire des donnÃ©es temporelles formatÃ©es
 	string time_stamp = ofGetTimestampString("-%y%m%d-%H%M%S-%i");
 
-	// générer un nom de fichier unique et ordonné
+	// gÃ©nÃ©rer un nom de fichier unique et ordonnÃ©
 	string file_name = name + time_stamp + "." + extension;
 
 	// capturer le contenu du framebuffer actif
-	image.grabScreen(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
+	image.grabScreen(0, INTERACTION_BAR_HEIGHT, ofGetWindowWidth() - INTERACTION_BAR_HEIGHT, ofGetWindowHeight() - INTERACTION_BAR_HEIGHT);
 
 	// sauvegarder le fichier image
 	image.save(file_name);
 
 	ofLog() << "<export image: " << file_name << ">";
 }
+
 void Renderer::captureImage() {
 	// Exporter l'image
 	ofSaveScreen(ofToString(frameCounter) + ".png");
