@@ -21,6 +21,7 @@ void Renderer::setup() {
 	is_mouse_button_pressed = false;
 	is_mouse_button_dragged = false;
 	import_activate = false;
+	export_activate = false;
 
 	mouse_current_x = mouse_current_y = mouse_press_x = mouse_press_y = mouse_drag_x = mouse_drag_y = 0;
 
@@ -48,6 +49,7 @@ void Renderer::draw() {
 		gui.draw();
 
 		if (exportButton) {
+			export_activate = true;
 			image_export(nameField, "png");
 			exportButton = false;
 			visible = false;
@@ -255,6 +257,7 @@ void Renderer::newImage(string filePath, int posX, int posY) {
 void Renderer::draw_cursor(float x, float y) const {
 	float length = 10.0f;
 	float offset = 5.0f;
+	float hexagoneSize = 20.0f; // Taille de l'hexagone
 
 	ofSetLineWidth(2);
 
@@ -271,6 +274,20 @@ void Renderer::draw_cursor(float x, float y) const {
 		ofSetColor(135, 210, 88); // Couleur verte
 		float tailleTriangle = 20;
 		ofDrawTriangle(x, y - tailleTriangle, x - tailleTriangle, y + tailleTriangle, x + tailleTriangle, y + tailleTriangle);
+	}
+	else if (export_activate) {
+		ofSetColor(0, 0, 255); // Couleur bleue par exemple
+		ofPushMatrix();
+		ofTranslate(x, y); // Translation au position du curseur
+		ofBeginShape();
+		for (int i = 0; i < 6; ++i) {
+			float angle = i * TWO_PI / 6;
+			float px = hexagoneSize * cos(angle);
+			float py = hexagoneSize * sin(angle);
+			ofVertex(px, py);
+		}
+		ofEndShape(true);
+		ofPopMatrix();
 	}
 
 	else
@@ -306,7 +323,10 @@ void Renderer::toggleColorWheelGUI() {
 
 void Renderer::toggleExportGUI() {
 	visible = !visible;
+	export_activate = true;
 }
+
+
 
 void Renderer::image_export(const string name, const string extension) const {
 	ofImage image;
@@ -329,4 +349,25 @@ void Renderer::image_export(const string name, const string extension) const {
 void Renderer::captureImage() {
 	// Exporter l'image
 	ofSaveScreen(ofToString(frameCounter) + ".png");
+}
+
+void Renderer::rotation(float rotate) {
+	for (auto& forme : v_formes) {
+		ofPushMatrix();
+		ofRotateXDeg(rotate);
+		ofRotateYDeg(rotate);
+		ofRotateZDeg(rotate);
+
+		// Dessiner toutes les formes
+		if (v_formes_ptr) {
+			for (const auto& forme : *v_formes_ptr) {
+				forme->draw();
+			}
+		}
+		else {
+			cout << "Le pointeur vers le vecteur de formes n'est pas valide." << endl;
+		}
+
+		ofPopMatrix();
+	}
 }

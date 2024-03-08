@@ -28,6 +28,7 @@ class Renderer {
         bool is_mouse_button_pressed;
         bool is_mouse_button_dragged;
         bool import_activate;
+        bool export_activate;
 
         void setup();
         void setup(vector<Forme*>& v_formes);
@@ -79,6 +80,7 @@ class Renderer {
 
         void toggleExportGUI();
         void toggleColorWheelGUI();
+        void rotation(float rotate);
 
     private:
         ofxPanel gui;

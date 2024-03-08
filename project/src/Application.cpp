@@ -170,13 +170,14 @@ void Application::draw(){
 	}
 	ofDrawRectangle(50, 50, 100, 200);
     }
+	*/
     if (mesh_activate) {
 	    mesh.drawWireframe();
-	    if (noise_activate) {
-		    button_noise(noise_activate);
-	    }
+	    //if (noise_activate) {
+		    //button_noise(noise_activate);
+	    //}
 
-    }*/
+    }
 	//	ofEndShape();
 	//	ofPopMatrix();
 
@@ -466,10 +467,14 @@ void Application::mouseReleased(int x, int y, int button){
 			case 2:
 				//call to animation method
 				cout << "animation \n";
+				rotation_activate = true;
+				renderer.rotation(rotate);
 				break;
 			case 3:
 				//call to mesh
 				cout << "mesh \n";
+				mesh_activate = true;
+				mesh.drawWireframe();
 				break;
 		}
 	}
@@ -648,6 +653,8 @@ void Application::reset(bool& value) {
 		draw_triangle = false;
 		draw_circle = false;
 		draw_rectangle = false;
+		renderer.import_activate = false;
+		renderer.export_activate = false;
 		resetButton = false;
 		rotationButton = false;
 		rotation_activate = false;
