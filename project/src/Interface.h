@@ -22,6 +22,19 @@ class Interface {
 		ofParameter<float> slider_stroke_weight;
 		bool fillEnabled = false;
 
+		int mouse_press_x;
+		int mouse_press_y;
+
+		int mouse_current_x;
+		int mouse_current_y;
+
+		int mouse_drag_x;
+		int mouse_drag_y;
+
+		bool is_mouse_button_pressed;
+		bool is_mouse_button_dragged;
+		bool import_activate;
+
 		void setup();
 		void draw();
 		void toggleColorWheel();
@@ -51,6 +64,7 @@ class Interface {
 		void backgroundInteraction();
 		void topButtons();
 		void sideButtons();
+		void draw_cursor(float x, float y) const;
 
 		void panelScene(); 
 		ofColor backgroundPanelSceneColor = ofColor(125);

@@ -18,12 +18,6 @@ void Renderer::setup() {
 	gui.add(exportButton);
 	gui.setPosition(0, 0);
 
-	is_mouse_button_pressed = false;
-	is_mouse_button_dragged = false;
-	import_activate = false;
-
-	mouse_current_x = mouse_current_y = mouse_press_x = mouse_press_y = mouse_drag_x = mouse_drag_y = 0;
-
 	okDessiner = false; 
 
 	//triangleColors= { interface.color_picker_stroke, interface.colorPickerFill };
@@ -42,7 +36,7 @@ void Renderer::setup(vector<unique_ptr<Forme>>& v_formes)
 
 
 void Renderer::draw() {
-	interface.draw();
+	//interface.draw();
 	ofSetBackgroundColor(interface.color_picker_background);
 
 	if (visible) {
@@ -74,8 +68,6 @@ void Renderer::draw() {
 		dessinerBezier(); 
 	}
 	//////////////////////////////////////////////////////////////////
-
-	draw_cursor(mouse_current_x, mouse_current_y);
 
 	int gridSize = 50; // Espacement de la grille
 	// Obtenir les coordonnées de la souris
@@ -253,36 +245,7 @@ void Renderer::newImage(string filePath, int posX, int posY) {
 	imgPosList.push_back({posX, posY});
 }
 
-void Renderer::draw_cursor(float x, float y) const {
-	float length = 10.0f;
-	float offset = 5.0f;
 
-	ofSetLineWidth(2);
-
-	if (is_mouse_button_dragged) {
-		ofSetColor(254, 142, 118); // Couleur rouge
-		ofDrawCircle(x, y, 20);
-	}
-
-	else if (is_mouse_button_pressed) {
-		ofSetColor(249, 220, 40); // Couleur jaune
-		ofDrawRectangle(x - 20, y - 20, 40, 40);
-	}
-	else if (import_activate) {
-		ofSetColor(135, 210, 88); // Couleur verte
-		float tailleTriangle = 20;
-		ofDrawTriangle(x, y - tailleTriangle, x - tailleTriangle, y + tailleTriangle, x + tailleTriangle, y + tailleTriangle);
-	}
-
-	else
-		ofSetColor(255); // Couleur blanche
-
-
-	ofDrawLine(x + offset, y, x + offset + length, y);
-	ofDrawLine(x - offset, y, x - offset - length, y);
-	ofDrawLine(x, y + offset, x, y + offset + length);
-	ofDrawLine(x, y - offset, x, y - offset - length);
-}
 
 void Renderer::update()
 {

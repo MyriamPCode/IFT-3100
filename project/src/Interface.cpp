@@ -49,6 +49,12 @@ void Interface::setup() {
 	outilsGui.setTextColor(backgroundInteractionColor);
 	outilsGui.maximizeAll();
 	outilsGui.disableHeader();
+
+	is_mouse_button_pressed = false;
+	is_mouse_button_dragged = false;
+	import_activate = false;
+
+	mouse_current_x = mouse_current_y = mouse_press_x = mouse_press_y = mouse_drag_x = mouse_drag_y = 0;
 }
 
 void Interface::draw() {
@@ -56,10 +62,42 @@ void Interface::draw() {
 	backgroundInteraction();
 	topButtons();
 	sideButtons();
+	draw_cursor(mouse_current_x, mouse_current_y);
 
 	if (outilsPressed) {
 		outilsGui.draw();
 	}
+}
+
+void Interface::draw_cursor(float x, float y) const {
+	float length = 10.0f;
+	float offset = 5.0f;
+
+	ofSetLineWidth(2);
+
+	if (is_mouse_button_dragged) {
+		ofSetColor(254, 142, 118); // Couleur rouge
+		ofDrawCircle(x, y, 20);
+	}
+
+	else if (is_mouse_button_pressed) {
+		ofSetColor(249, 220, 40); // Couleur jaune
+		ofDrawRectangle(x - 20, y - 20, 40, 40);
+	}
+	else if (import_activate) {
+		ofSetColor(135, 210, 88); // Couleur verte
+		float tailleTriangle = 20;
+		ofDrawTriangle(x, y - tailleTriangle, x - tailleTriangle, y + tailleTriangle, x + tailleTriangle, y + tailleTriangle);
+	}
+
+	else
+		ofSetColor(255); // Couleur blanche
+
+
+	ofDrawLine(x + offset, y, x + offset + length, y);
+	ofDrawLine(x - offset, y, x - offset - length, y);
+	ofDrawLine(x, y + offset, x, y + offset + length);
+	ofDrawLine(x, y - offset, x, y - offset - length);
 }
 
 void Interface::topButtons() {

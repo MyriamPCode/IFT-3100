@@ -7,9 +7,8 @@ using namespace std;
 void Application::setup(){
 	ofSetWindowTitle("Team 7");
 	ofBackground(backgroundColor);
-	ofSetOrientation(OF_ORIENTATION_180);
-	renderer.setup();
 	//ofSetOrientation(OF_ORIENTATION_180);
+	renderer.setup();
 	//cam.setPosition(ofVec3f(0, 0, 500));
 	//cam.setPosition(ofPoint(ofGetWidth()/2, ofGetHeight()/2, 700));
 	//gui.setPosition(ofGetWidth() - gui.getWidth(), ofGetHeight() - gui.getHeight());
@@ -158,9 +157,10 @@ void Application::update()
 
 void Application::draw(){
 	gui.draw();
+	renderer.interface.draw();
 	cam.begin();
 	if (isImportable) {
-		renderer.import_activate = true;
+		renderer.interface.import_activate = true;
 		ofDrawBitmapString("Please drag an image to import it.", 30, 30);
 	}
 	
@@ -315,12 +315,18 @@ void Application::keyPressed(int key)
 	if (key == OF_KEY_DOWN) {
 		moveCameraDown = true;
 	}
+	if (key == 49) {
+		moveCameraNear = true;
+	}
+	if (key == 50) {
+		moveCameraFar = true;
+	}
 }
 
 void Application::keyReleased(int key){
 	if (key == 105) { // 105 = key "i"
 		isImportable = !isImportable;
-		renderer.import_activate = !renderer.import_activate;
+		renderer.interface.import_activate = !renderer.interface.import_activate;
 	}
 	if (key == OF_KEY_LEFT) {
 		moveCameraLeft = false;
@@ -343,23 +349,23 @@ void Application::keyReleased(int key){
 }
 
 void Application::mouseMoved(int x, int y ){
-	renderer.mouse_current_x = x;
-	renderer.mouse_current_y = y;
+	renderer.interface.mouse_current_x = x;
+	renderer.interface.mouse_current_y = y;
 }
 
 void Application::mouseDragged(int x, int y, int button){
-	renderer.mouse_current_x = x;
-	renderer.mouse_current_y = y;
+	renderer.interface.mouse_current_x = x;
+	renderer.interface.mouse_current_y = y;
 
-	renderer.mouse_drag_x = x;
-	renderer.mouse_drag_y = y;
+	renderer.interface.mouse_drag_x = x;
+	renderer.interface.mouse_drag_y = y;
 
-	renderer.is_mouse_button_dragged = true;
-	renderer.is_mouse_button_pressed = false;
+	renderer.interface.is_mouse_button_dragged = true;
+	renderer.interface.is_mouse_button_pressed = false;
 
 	if (draw_line && drawLine)
 	{
-		renderer.ligne.addVertex(renderer.mouse_drag_x, renderer.mouse_drag_y);
+		renderer.ligne.addVertex(renderer.interface.mouse_drag_x, renderer.interface.mouse_drag_y);
 	}
 }
 
@@ -377,22 +383,22 @@ void Application::mousePressed(int x, int y, int button){
 		}
 	}
 
-	renderer.is_mouse_button_pressed = true;
-	renderer.is_mouse_button_dragged = false;
+	renderer.interface.is_mouse_button_pressed = true;
+	renderer.interface.is_mouse_button_dragged = false;
 
-	renderer.mouse_current_x = x;
-	renderer.mouse_current_y = y;
+	renderer.interface.mouse_current_x = x;
+	renderer.interface.mouse_current_y = y;
 
-	renderer.mouse_press_x = x;
-	renderer.mouse_press_y = y;
+	renderer.interface.mouse_press_x = x;
+	renderer.interface.mouse_press_y = y;
 
 	if(draw_triangle && drawTriangle)
 	{
 		// A partir du mouse click, calcul des 2 autres sommets 
-		newX2 = renderer.mouse_press_x - diffX;
-		newY2 = renderer.mouse_press_y + diffY;
-		newX3 = renderer.mouse_press_x + diffX;
-		newY3 = renderer.mouse_press_y + diffY;
+		newX2 = renderer.interface.mouse_press_x - diffX;
+		newY2 = renderer.interface.mouse_press_y + diffY;
+		newX3 = renderer.interface.mouse_press_x + diffX;
+		newY3 = renderer.interface.mouse_press_y + diffY;
 		forme.setX1(x);
 		forme.setY1(y);
 		forme.setX2(newX2);
@@ -417,8 +423,8 @@ void Application::mousePressed(int x, int y, int button){
 
 	if(draw_circle && drawCircle)
 	{ 
-		forme.setXC(renderer.mouse_press_x); 
-		forme.setYC(renderer.mouse_press_y); 
+		forme.setXC(renderer.interface.mouse_press_x);
+		forme.setYC(renderer.interface.mouse_press_y);
 		renderer.v_formes.push_back(make_unique<Forme>(Forme::CERCLE, forme.getXC(), forme.getYC(), forme.getRayon()));
 		//ofSetCircleResolution(55);
 		renderer.okDessiner = true; 
@@ -433,8 +439,8 @@ void Application::mousePressed(int x, int y, int button){
 
 	if(draw_rectangle && drawRectangle)
 	{ 
-		forme.setXR(renderer.mouse_current_x);
-		forme.setYR(renderer.mouse_current_y); 
+		forme.setXR(renderer.interface.mouse_current_x);
+		forme.setYR(renderer.interface.mouse_current_y);
 		renderer.v_formes.push_back(make_unique<Forme>(Forme::RECTANGLE, forme.getXR(), forme.getYR(), forme.getWidth(), forme.getHeight()));
 		renderer.okDessiner = true;
 		renderer.rectangleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
@@ -454,7 +460,7 @@ void Application::mousePressed(int x, int y, int button){
 		//auto& polyline = renderer.vecteur_lignes_ptr->back();
 		//polyline->addVertex(renderer.mouse_press_x, renderer.mouse_press_y);
 
-		renderer.ligne.addVertex(renderer.mouse_press_x, renderer.mouse_press_y);
+		renderer.ligne.addVertex(renderer.interface.mouse_press_x, renderer.interface.mouse_press_y);
 		renderer.okDessiner = true;
 		renderer.ligneColor = renderer.interface.color_picker_stroke; // Ajuste les parametres
 		renderer.ligneStroke = renderer.interface.slider_stroke_weight;
@@ -466,8 +472,8 @@ void Application::mousePressed(int x, int y, int button){
 
 	if (draw_ellipse && drawEllipse)
 	{
-		forme.setXR(renderer.mouse_press_x);
-		forme.setYR(renderer.mouse_press_y);
+		forme.setXR(renderer.interface.mouse_press_x);
+		forme.setYR(renderer.interface.mouse_press_y);
 		renderer.v_formes.push_back(make_unique<Forme>(Forme::ELLIPSE, forme.getXR(), forme.getYR(), forme.getWidth(), forme.getHeight()));
 		renderer.okDessiner = true;
 		renderer.ellipseColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
@@ -480,8 +486,8 @@ void Application::mousePressed(int x, int y, int button){
 
 	if(draw_bezier && drawBezier)
 	{
-		float x1 = renderer.mouse_press_x; 
-		float y1 = renderer.mouse_press_y; 
+		float x1 = renderer.interface.mouse_press_x;
+		float y1 = renderer.interface.mouse_press_y;
 		float x4 = x1; 
 		float y4 = y1 + 50; 
 		float x2, y2, x3, y3;
@@ -569,33 +575,33 @@ void Application::mouseReleased(int x, int y, int button){
 
 
 
-	renderer.mouse_current_x = x;
-	renderer.mouse_current_y = y;
+	renderer.interface.mouse_current_x = x;
+	renderer.interface.mouse_current_y = y;
 
 	if (draw_line && drawLine)
 	{
-		renderer.is_mouse_button_dragged = true; 
+		renderer.interface.is_mouse_button_dragged = true;
 		renderer.ligne.addVertex(x, y);
 		renderer.vecteur_lignes.push_back(renderer.ligne);
 		renderer.okDessiner = true;
 		renderer.ligne.clear();
 	}
 
-	renderer.is_mouse_button_pressed = false;
-	renderer.is_mouse_button_dragged = false;
+	renderer.interface.is_mouse_button_pressed = false;
+	renderer.interface.is_mouse_button_dragged = false;
 }
 
 
 void Application::mouseEntered(int x, int y){
-	renderer.mouse_current_x = x;
-	renderer.mouse_current_y = y;
+	renderer.interface.mouse_current_x = x;
+	renderer.interface.mouse_current_y = y;
 }
 
 
 void Application::mouseExited(int x, int y){
 
-	renderer.mouse_current_x = x;
-	renderer.mouse_current_y = y;
+	renderer.interface.mouse_current_x = x;
+	renderer.interface.mouse_current_y = y;
 }
 
 
