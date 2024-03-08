@@ -6,6 +6,7 @@
 #include <memory>
 #include "ofxGui.h"
 
+
 using namespace std;
 
 class Renderer {
@@ -65,6 +66,8 @@ public:
     bool bezierFill = false; // Indique si l'interieur de la forme doit etre colore
     float bezierStroke; // Taille du outline
 
+    void dessinerSphere(); 
+
     vector<unique_ptr<Forme>>* getVecteurFormesPtr() {
         return &v_formes;
     }
@@ -87,8 +90,22 @@ public:
 
     ofParameter<ofVec2f> uiPosition, uiStep, uiShift, uiSize;
     ofParameter <ofVec3f> uiRotate;
+    ofParameter <int> uiAmount; // Total de la liste formes 
 
     ofxInputField<int> inputIndex; 
     void updateCoordinates(int x, int y);
-    void transformation();
+
+    float vertex1_x;
+    float vertex1_y;
+    float vertex2_x;
+    float vertex2_y;
+    float vertex3_x;
+    float vertex3_y;
+
+    float color_r;
+    float color_g;
+    float color_b;
+
+    float point_radius;
+
 };

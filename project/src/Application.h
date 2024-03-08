@@ -37,8 +37,6 @@ class Application : public ofBaseApp{
 
 		ofxPanel gui;
 
-		ofParameter <int> uiAmount; // Total de la liste formes 
-
 		ofxGuiGroup primitivesGroupe; // Cr�er un groupe pour les boutons
 		ofxToggle drawTriangle; // Bouton pour le triangle 
 		ofxToggle drawCircle; // Bouton pour le cercle
@@ -46,6 +44,7 @@ class Application : public ofBaseApp{
 		ofxToggle drawLine; // Bouton pour le triangle 
 		ofxToggle drawEllipse; // Bouton pour le cercle
 		ofxToggle drawBezier; // Bouton pour le rectangle
+		ofxToggle drawSphere; 
 
 		ofxGuiGroup reinitialisationGroupe;
 		ofxToggle resetButton; // Bouton de r�initialisation
@@ -58,6 +57,7 @@ class Application : public ofBaseApp{
 		bool draw_circle;
 		bool draw_rectangle;
 		bool draw_line, draw_ellipse, draw_bezier; 
+		bool draw_sphere; 
 
 		void button_triangle(bool & value);
 		void button_circle(bool& value);
@@ -67,6 +67,7 @@ class Application : public ofBaseApp{
 		void button_bezier(bool& value);
 		void button_modeDraw(bool& value);
 		void button_modeTransform(bool& value);
+		void button_sphere(bool& value); 
 
 		float diffX, diffY, newX2, newY2, newX3, newY3;
 

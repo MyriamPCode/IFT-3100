@@ -9,7 +9,7 @@ class Forme {
 public:
     enum TypeForme
     {
-        TRIANGLE, CERCLE, RECTANGLE, LIGNE, ELLIPSE, BEZIER
+        TRIANGLE, CERCLE, RECTANGLE, LIGNE, ELLIPSE, BEZIER, SPHERE
     };
 
     Forme(TypeForme type, float x1, float y1, float x2, float y2, float x3, float y3); // Triangle
@@ -18,7 +18,9 @@ public:
     Forme(TypeForme type, float x1, float y1, float xB1, float yB1, float xB2, float yB2, float x2, float y2); // Bezier 
     Forme(TypeForme type, ofVec3f p); // Lignes
     Forme(TypeForme type, ofVec3f point1, ofVec3f point2, ofVec3f point3); // Triangle avec pts 3d 
-    
+   // Forme(TypeForme type, float x, float y, float z, float radius); 
+    Forme(TypeForme type, ofVec3f v, float rad);
+
 
     ofVec3f getPoint1() const { return point1; }
     ofVec3f getPoint2() const { return point2; }
@@ -57,7 +59,12 @@ public:
     //float getYE() const { return yE; }
     //float getWidthEllipse() const { return wE; }
     //float getHeightEllipse() const { return hE; }
-
+    float getXS() const { return xS; }
+    float getYS() const { return yS; }
+    float getZS() const { return zS; }
+    float getSphereRad() const{ return sphereRad; }
+    ofVec3f getVSphere() const { return v; }
+ 
     void setX1(float x) { this->x1 = x; }
     void setY1(float y) { this->y1 = y; }
     void setX2(float x) { this->x2 = x; }
@@ -79,6 +86,11 @@ public:
     //void setYE(float y)  { this->yE = y; }
     //void setWidthEllipse(float w)  { this->wE = w; }
     //void setHeightEllipse(float h) { this->hE = h; }
+    void setXS(float x) { this->xS = x; }
+    void setYS(float x) { this->yS = x; }
+    void setZS(float x) { this->zS = x; }
+    void setSphereRad(float x) { this->sphereRad = x; }
+    void setVSphere(ofVec3f v) { this->v = v; }
 
     TypeForme getType() const { return type; }
 
@@ -91,7 +103,7 @@ private:
     float xL, yL; // Pour les lignes
     float xE, yE, wE, hE; // Pour les ellipses
     float xB1, xB2, yB1, yB2; // Pour les beziers 
-
-    ofVec3f point1, point2, point3, p;
+    float xS, yS, zS, sphereRad; // sphere 3d 
+    ofVec3f point1, point2, point3, p, v;
 };
 

@@ -57,11 +57,29 @@ void Renderer::draw() {
 		dessinerLigne(); 
 		dessinerEllipse(); 
 		dessinerBezier(); 
+		dessinerSphere(); 
 		//if (modeTransformState)
 		//{
 		//	transformation();
 		//}
+
+		ofSetColor(0);
+		if (v_formes_ptr) {
+			for (const auto& formeCourante : *v_formes_ptr)
+			{
+				if (formeCourante->getType() == Forme::SPHERE) {
+					ofDrawSphere(formeCourante->getXS(), formeCourante->getYS(), formeCourante->getZS(), formeCourante->getSphereRad());
+					//ofDrawSphere(ofGetWidth()/2.00, ofGetHeight() / 2.00, 0, 150);
+				}
+			}
+		}
 	}
+	//////////////////////////////////////////////////////////////////
+
+
+	//////////////////////////////////////////////////////////////////
+	/* DESSIN PRIMITIVES GEO */
+
 	//////////////////////////////////////////////////////////////////
 
 	draw_cursor(mouse_current_x, mouse_current_y);
@@ -113,6 +131,24 @@ void Renderer::draw() {
 
 //}
 
+void Renderer::dessinerSphere(){
+	ofSetColor(255,0,0);
+	cout << "Nombre de spheres dans la liste " << v_formes_ptr->size() << endl;
+	if (v_formes_ptr) {
+		for (const auto& formeCourante : *v_formes_ptr)
+		{
+			if(formeCourante->getType() == Forme::SPHERE){
+				ofVec3f viktor = formeCourante->getVSphere();
+				ofDrawSphere(viktor.x, viktor.y, 0, 150);
+				//ofDrawEllipse(formeCourante->getXS(), formeCourante->getYS(), formeCourante->getSphereRad(), formeCourante->getSphereRad());
+				//cout << "X : " << forme.getVSphere().x << endl;
+				//cout << "Y : " << forme.getVSphere().y << endl;
+				//cout << "Z : " << forme.getVSphere().z << endl;
+				//cout << "Radius : " << forme.getSphereRad() << endl;
+			}
+		}
+	}
+}
 
 void Renderer::dessinerTriangle() {
 	if (v_formes_ptr) {
@@ -126,20 +162,37 @@ void Renderer::dessinerTriangle() {
 					// Dessin du triangle avec translation si l'index correspond et le mode de transformation est activé
 					if (i == inputIndex && modeTransformState) {
 						ofPushMatrix();
-						ofScale(uiSize->x, uiSize->y);
-						ofTranslate(uiPosition->x, uiPosition->y); // translation 
+						ofTranslate(uiPosition->x, uiPosition->y); // positionnement 
+						ofTranslate(uiAmount * uiStep->x, uiAmount * uiStep->y);
+	
 						ofRotateXDeg(uiRotate->x); // pivoter sur x 
 						ofRotateYDeg(uiRotate->y); // pivoter sur y 
 						ofRotateZDeg(uiRotate->z); // pivoter sur z 
-						//ofTranslate(uiStep->x, uiStep->y);
-						//ofTranslate(uiShift->x, uiShift->y);
+						ofScale(uiSize->x, uiSize->y);
 
-						ofNoFill();
-						ofSetColor(255, 0, 0); // Rouge
-						ofBeginShape();
-						ofDrawTriangle(formeCourante->getX1(), formeCourante->getY1(),
+						//for (int j = 0; j < uiAmount; j++)
+						//{
+						//	//ofPushMatrix();
+								//ofTranslate(j * uiStep->x, j * uiStep->y);
+						//ofTranslate(j * uiShift->x, j * uiShift->y);
+						//	//ofPopMatrix();
+						//}
+
+							ofNoFill();
+							ofSetColor(255, 0, 0); // Rouge
+							ofBeginShape();
+							ofDrawTriangle(formeCourante->getX1(), formeCourante->getY1(),
 							formeCourante->getX2(), formeCourante->getY2(),
 							formeCourante->getX3(), formeCourante->getY3());
+
+						// Mettre à jour les coordonnées de la forme avec les nouvelles valeurs après les transformations
+						//formeCourante->setX1(formeCourante->getX1());
+						//formeCourante->setY1(formeCourante->getY1());
+						//formeCourante->setX2(formeCourante->getX2());
+						//formeCourante->setY2(formeCourante->getY2());
+						//formeCourante->setX3(formeCourante->getX3());
+						//formeCourante->setY3(formeCourante->getY3());
+
 						ofEndShape();
 						ofPopMatrix();
 					}
@@ -155,71 +208,6 @@ void Renderer::dessinerTriangle() {
 	}
 }
 
-
-// Ne fonctionne pas pour le moment 
-void Renderer::updateCoordinates(int x, int y) {
-	if (v_formes_ptr && inputIndex >= 0 && inputIndex < v_formes_ptr->size()) {
-		auto& formeCourante = (*v_formes_ptr)[inputIndex];
-		int diffX, diffY;
-		if (formeCourante->getType() == Forme::TRIANGLE) {
-			// Nouvelles coordonnées pour le triangle
-			int newX1 = formeCourante->getX1() + x;
-			int newY1 = formeCourante->getY1() + y;
-			int newX2 = formeCourante->getX2() + x;
-			int newY2 = formeCourante->getY2() + y;
-			int newX3 = formeCourante->getX3() + x;
-			int newY3 = formeCourante->getY3() + y;
-
-			// Mettre à jour les coordonnées de l'objet
-			formeCourante->setX1(newX1);
-			formeCourante->setY1(newY1);
-			formeCourante->setX2(newX2);
-			formeCourante->setY2(newY2);
-			formeCourante->setX3(newX3);
-			formeCourante->setY3(newY3);
-		}
-	}
-}
-
-void Renderer::transformation(){
-	if (v_formes_ptr) {
-		for (int i = 0; i < v_formes_ptr->size(); ++i) {
-			const auto& formeCourante = (*v_formes_ptr)[i];
-			if (formeCourante->getType() == Forme::CERCLE) {
-				//if (cercleFill) {
-					ofFill();
-					ofSetColor(cercleColors[255,0,0]);
-					
-					// Dessiner le cercle avec translation si l'index correspond et le mode de transformation est activé
-					if (i == inputIndex) {
-						ofPushMatrix();
-						//ofTranslate(uiPosition->x, uiPosition->y);
-						ofRotateXDeg(uiRotate->x);
-						ofRotateYDeg(uiRotate->y);
-						ofRotateZDeg(uiRotate->z);
-						ofNoFill();
-						ofSetLineWidth(cercleStroke);
-						ofSetColor(255, 0, 0); // Rouge
-						ofDrawCircle(formeCourante->getXC(), formeCourante->getYC(), formeCourante->getRayon());
-
-						ofPopMatrix();
-					}
-
-				}
-				 //Dessin du contour du cercle
-				/*ofNoFill();
-				ofSetLineWidth(cercleStroke);*/
-				// Si l'index correspond et le mode de transformation est activé, dessinez le contour en rouge
-				//if (i == inputIndex && modeTransformState) {
-					//ofSetColor(255, 0, 0); // Rouge
-					//ofDrawCircle(formeCourante->getXC(), formeCourante->getYC(), formeCourante->getRayon());
-					//ofDrawCircle(p1.x, p1.y, p1.z);
-				//}
-			//}
-				
-		}
-	}
-}
 
 void Renderer::dessinerCercle() {
 	if (v_formes_ptr) {
@@ -312,24 +300,6 @@ void Renderer::dessinerLigne() {
 		}
 	}
 }
-//void Renderer::dessinerLigne() {
-//	int x = uiPosition->x;
-//	int y = uiPosition->y;
-//
-//	if (!v_formes.empty()) {
-//		for (auto& forme : v_formes) {
-//			if (forme->getType() == Forme::LIGNE) { // Vérifiez si la forme est une ligne
-//				ofPushMatrix(); // Sauvegarde la matrice de transformation actuelle
-//				ofTranslate(x, y); // Applique la translation
-//				ofNoFill(); // Contour uniquement
-//				ofSetLineWidth(ligneStroke); // Définir l'épaisseur du trait
-//				ofSetColor(ligneColor); // Définir la couleur
-//				forme.draw(); // Dessine la ligne
-//				ofPopMatrix(); // Restaure la matrice de transformation précédente
-//			}
-//		}
-//	}
-//}
 
 
 void Renderer::dessinerEllipse() {

@@ -18,6 +18,10 @@ void Forme::setup() {
     width = 100;
     height = 200;
     rayon = 50;
+    xS = 2560.00 / 2.00;
+    yS = 1440.00 / 2.00;
+    zS = 0.00; 
+    sphereRad = 150.00; 
 };
 
 
@@ -49,3 +53,8 @@ Forme::Forme(TypeForme type, float x1, float y1, float xB1, float yB1, float xB2
 Forme::Forme(TypeForme type, ofVec3f p)
     : type(type), p(p) {}
 
+Forme::Forme(TypeForme type, ofVec3f v, float rad)
+    : type(type), v(v), sphereRad(rad) {}
+
+//Forme::Forme(TypeForme type, float x, float y, float z, float radius)
+//    : type(type), xS(x), yS(y), zS(z), sphereRad(radius) {}
