@@ -39,17 +39,17 @@ Forme::~Forme() {
     // Libération de la mémoire ou nettoyage des ressources si nécessaire
 }
 
-Forme::Forme(TypeForme type, float x1, float y1, float x2, float y2, float x3, float y3)
-    : type(type), x1(x1), y1(y1), x2(x2), y2(y2), x3(x3), y3(y3) {}
+Forme::Forme(TypeForme type, float x1, float y1, float x2, float y2, float x3, float y3, vector<ofColor> colors, bool fill, float stroke)
+    : type(type), x1(x1), y1(y1), x2(x2), y2(y2), x3(x3), y3(y3), formeColors(colors), formeFill(fill), formeStroke(stroke) {}
 
-Forme::Forme(TypeForme type, float x, float y, float rayon)
-    : type(type), xC(x), yC(y), rayon(rayon) {}
+Forme::Forme(TypeForme type, float x, float y, float rayon, vector<ofColor> colors, bool fill, float stroke)
+    : type(type), xC(x), yC(y), rayon(rayon), formeColors(colors), formeFill(fill), formeStroke(stroke) {}
 
-Forme::Forme(TypeForme type, float x, float y, float width, float height)
-    : type(type), xR(x), yR(y), width(width), height(height) {}
+Forme::Forme(TypeForme type, float x, float y, float width, float height, vector<ofColor> colors, bool fill, float stroke)
+    : type(type), xR(x), yR(y), width(width), height(height), formeColors(colors), formeFill(fill), formeStroke(stroke) {}
 
-Forme::Forme(TypeForme type, float x1, float y1, float xB1, float yB1, float xB2, float yB2, float x2, float y2)
-    : type(type), x1(x1), y1(y1), xB1(xB1), yB1(yB1), xB2(xB2), yB2(yB2), x2(x2), y2(y2) {}
+Forme::Forme(TypeForme type, float x1, float y1, float xB1, float yB1, float xB2, float yB2, float x2, float y2, vector<ofColor> colors, bool fill, float stroke)
+    : type(type), x1(x1), y1(y1), xB1(xB1), yB1(yB1), xB2(xB2), yB2(yB2), x2(x2), y2(y2), formeColors(colors), formeFill(fill), formeStroke(stroke) {}
 
 Forme::Forme(TypeForme type, ofVec3f p)
     : type(type), p(p) {}
