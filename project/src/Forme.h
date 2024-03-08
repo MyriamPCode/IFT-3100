@@ -12,10 +12,10 @@ public:
         TRIANGLE, CERCLE, RECTANGLE, LIGNE, ELLIPSE, BEZIER, SPHERE, CUBE
     };
 
-    Forme(TypeForme type, float x1, float y1, float x2, float y2, float x3, float y3); // Triangle
-    Forme(TypeForme type, float x, float y, float rayon); // Cercle
-    Forme(TypeForme type, float x, float y, float width, float height); // Rectangle et Ellipse
-    Forme(TypeForme type, float x1, float y1, float xB1, float yB1, float xB2, float yB2, float x2, float y2); // Bezier 
+    Forme(TypeForme type, float x1, float y1, float x2, float y2, float x3, float y3, vector<ofColor> colors, bool fill, float stroke); // Triangle
+    Forme(TypeForme type, float x, float y, float rayon, vector<ofColor> colors, bool fill, float stroke); // Cercle
+    Forme(TypeForme type, float x, float y, float width, float height, vector<ofColor> colors, bool fill, float stroke); // Rectangle et Ellipse
+    Forme(TypeForme type, float x1, float y1, float xB1, float yB1, float xB2, float yB2, float x2, float y2, vector<ofColor> colors, bool fill, float stroke); // Bezier 
     Forme(TypeForme type, ofVec3f p); // Lignes
     Forme(TypeForme type, ofVec3f point1, ofVec3f point2, ofVec3f point3); // Triangle avec pts 3d 
    // Forme(TypeForme type, float x, float y, float z, float radius); 
@@ -65,6 +65,9 @@ public:
     float getSphereRad() const{ return sphereRad; }
     ofVec3f getVSphere() const { return v; }
     float getSizeCube() const { return sizeCube; }
+    vector<ofColor> getColors() const { return formeColors; }
+    bool getIsFilled() const { return formeFill; }
+    float getOutlineWeight() const { return formeStroke; }
  
     void setX1(float x) { this->x1 = x; }
     void setY1(float y) { this->y1 = y; }
@@ -93,6 +96,9 @@ public:
     void setSphereRad(float x) { this->sphereRad = x; }
     void setVSphere(ofVec3f v) { this->v = v; }
     void setSizeCube(float size) { this->sizeCube = size; }
+    void setColors(ofColor outline, ofColor fill) { this->formeColors = { outline, fill }; }
+    void setIsFilled(bool fill) { this->formeFill = fill; }
+    void setOutlineWeight(float stroke) { this->formeStroke = stroke; }
 
     TypeForme getType() const { return type; }
 
@@ -108,5 +114,8 @@ private:
     float xS, yS, zS, sphereRad; // sphere 3d 
     float sizeCube; // cube 3D 
     ofVec3f point1, point2, point3, p, v;
+    vector<ofColor> formeColors = {}; // Contient les couleurs du dessin
+    bool formeFill = false; // Indique si l'interieur de la forme doit etre colore
+    float formeStroke; // Taille du outline
 };
 

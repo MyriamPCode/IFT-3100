@@ -139,7 +139,7 @@ void Renderer::dessinerTriangle() {
 				//if (triangleFill) {
 					//ofFill();
 					ofSetLineWidth(triangleStroke);
-					ofSetColor(triangleColors[1]);
+					ofSetColor(formeCourante->getColors()[1]);
 					// Dessin du triangle avec translation si l'index correspond et le mode de transformation est activé
 					if (i == inputIndex && modeTransformState) {
 						ofPushMatrix();
@@ -150,7 +150,15 @@ void Renderer::dessinerTriangle() {
 						ofRotateYDeg(uiRotate->y); // pivoter sur y 
 						ofRotateZDeg(uiRotate->z); // pivoter sur z 
 						ofScale(uiSize->x, uiSize->y);
-
+							if (triangleFill) { // Remplissage
+								ofFill();
+								ofSetColor(formeCourante->getColors()[1]);
+								ofBeginShape();
+								ofDrawTriangle(formeCourante->getX1(), formeCourante->getY1(),
+									formeCourante->getX2(), formeCourante->getY2(),
+									formeCourante->getX3(), formeCourante->getY3());
+								ofEndShape();
+							}
 							ofNoFill();
 							ofSetColor(255, 0, 0); // Rouge
 							ofBeginShape();
@@ -162,8 +170,16 @@ void Renderer::dessinerTriangle() {
 						ofPopMatrix();
 					}
 					else {
+						if (triangleFill) { // Remplissage
+							ofFill();
+							ofSetColor(formeCourante->getColors()[1]);
+							ofDrawTriangle(formeCourante->getX1(), formeCourante->getY1(),
+								formeCourante->getX2(), formeCourante->getY2(),
+								formeCourante->getX3(), formeCourante->getY3());
+						}
 						// Dessin du triangle sans translation
-						ofSetColor(triangleColors[0]); // Couleur de contour normale
+						ofNoFill();
+						ofSetColor(formeCourante->getColors()[0]); // Couleur de contour normale
 						ofDrawTriangle(formeCourante->getX1(), formeCourante->getY1(),
 							formeCourante->getX2(), formeCourante->getY2(),
 							formeCourante->getX3(), formeCourante->getY3());
@@ -193,6 +209,13 @@ void Renderer::dessinerCercle() {
 						ofRotateZDeg(uiRotate->z); // pivoter sur z 
 						ofTranslate(uiStep->x, uiStep->y);
 						ofTranslate(uiShift->x, uiShift->y);
+						if (cercleFill) { // Remplissage
+							ofFill();
+							ofSetColor(formeCourante->getColors()[1]);
+							ofBeginShape();
+							ofDrawCircle(formeCourante->getXC(), formeCourante->getYC(), formeCourante->getRayon());
+							ofEndShape();
+						}
 						ofNoFill();
 						ofBeginShape();
 						ofSetColor(255, 0, 0); // Rouge
@@ -202,7 +225,14 @@ void Renderer::dessinerCercle() {
 					}
 					else {
 						// Dessiner le rectangle sans transformation
-						ofSetColor(cercleColors[0]); // Couleur de contour normale
+						if (cercleFill) { // Remplissage
+							ofFill();
+							ofSetColor(formeCourante->getColors()[1]);
+							ofDrawCircle(formeCourante->getXC(), formeCourante->getYC(), formeCourante->getRayon());
+						}
+						ofNoFill(); // Outline
+						ofSetLineWidth(cercleStroke);
+						ofSetColor(formeCourante->getColors()[0]);
 						ofDrawCircle(formeCourante->getXC(), formeCourante->getYC(), formeCourante->getRayon());
 					}
 				//}
@@ -234,7 +264,14 @@ void Renderer::dessinerRectangle() {
 						ofTranslate(uiStep->x, uiStep->y);
 						ofTranslate(uiShift->x, uiShift->y);
 						ofScale(uiSize->x, uiSize->y,1);
-						
+						if (rectangleFill) { // Remplissage
+							ofFill();
+							ofSetColor(formeCourante->getColors()[1]);
+							ofBeginShape();
+							ofDrawRectangle(formeCourante->getXR(), formeCourante->getYR(),
+								formeCourante->getWidth(), formeCourante->getHeight());
+							ofEndShape();
+						}
 						ofNoFill();
 						ofBeginShape(); 
 						ofSetColor(255, 0, 0); // Rouge
@@ -246,7 +283,15 @@ void Renderer::dessinerRectangle() {
 					}
 					else {
 						// Dessiner le rectangle sans transformation
-						ofSetColor(rectangleColors[0]); // Couleur de contour normale
+						if (rectangleFill) { // Remplissage
+							ofFill();
+							ofSetColor(formeCourante->getColors()[1]);
+							ofDrawRectangle(formeCourante->getXR(), formeCourante->getYR(),
+								formeCourante->getWidth(), formeCourante->getHeight());
+						}
+						ofNoFill(); // Outline
+						ofSetLineWidth(rectangleStroke);
+						ofSetColor(formeCourante->getColors()[0]);
 						ofDrawRectangle(formeCourante->getXR(), formeCourante->getYR(),
 							formeCourante->getWidth(), formeCourante->getHeight());
 					}
@@ -287,7 +332,15 @@ void Renderer::dessinerEllipse() {
 						ofTranslate(uiPosition->x, uiPosition->y); // translation 
 						ofRotateXDeg(uiRotate->x); // pivoter sur x 
 						ofRotateYDeg(uiRotate->y); // pivoter sur y 
-						ofRotateZDeg(uiRotate->z); // pivoter sur z 
+						ofRotateZDeg(uiRotate->z); // pivoter sur z
+						if (ellipseFill) { // Remplissage
+							ofFill();
+							ofSetColor(formeCourante->getColors()[1]);
+							ofBeginShape();
+							ofDrawEllipse(formeCourante->getXR(), formeCourante->getYR(),
+								formeCourante->getWidth(), formeCourante->getHeight());
+							ofEndShape();
+						}
 						ofNoFill();
 						ofBeginShape();
 						ofSetColor(255, 0, 0); // Rouge
@@ -298,7 +351,15 @@ void Renderer::dessinerEllipse() {
 					}
 					else {
 						// Dessiner le ellipse sans transformation
-						ofSetColor(ellipseColors[0]); // Couleur de contour normale
+						if (ellipseFill) { // Remplissage
+							ofFill();
+							ofSetColor(formeCourante->getColors()[1]);
+							ofDrawEllipse(formeCourante->getXR(), formeCourante->getYR(),
+								formeCourante->getWidth(), formeCourante->getHeight());
+						}
+						ofNoFill(); // Outline
+						ofSetLineWidth(ellipseStroke);
+						ofSetColor(formeCourante->getColors()[0]);
 						ofDrawEllipse(formeCourante->getXR(), formeCourante->getYR(),
 							formeCourante->getWidth(), formeCourante->getHeight());
 					}
@@ -329,6 +390,14 @@ void Renderer::dessinerBezier() {
 						ofRotateZDeg(uiRotate->z); // pivoter sur z 
 						ofTranslate(uiStep->x, uiStep->y);
 						ofTranslate(uiShift->x, uiShift->y);
+						if (bezierFill) { // Remplissage
+							ofFill();
+							ofSetColor(formeCourante->getColors()[1]);
+							ofBeginShape();
+							ofDrawBezier(formeCourante->getX1(), formeCourante->getX2(), formeCourante->getXB1(), formeCourante->getYB1(),
+								formeCourante->getXB2(), formeCourante->getYB2(), formeCourante->getX2(), formeCourante->getY2());
+							ofEndShape();
+						}
 						ofNoFill();
 						ofBeginShape();
 						ofSetColor(255, 0, 0); // Rouge
@@ -341,11 +410,17 @@ void Renderer::dessinerBezier() {
 					}
 					else {
 						// Dessiner la courbe de Bézier sans transformation
-						ofSetColor(bezierColors[0]); // Couleur de contour normale
-						ofDrawBezier(formeCourante->getX1(), formeCourante->getY1(),
-							formeCourante->getXB1(), formeCourante->getYB1(),
-							formeCourante->getXB2(), formeCourante->getYB2(),
-							formeCourante->getX2(), formeCourante->getY2());
+						if (bezierFill) { // Remplissage
+							ofFill();
+							ofSetColor(formeCourante->getColors()[1]);
+							ofDrawBezier(formeCourante->getX1(), formeCourante->getX2(), formeCourante->getXB1(), formeCourante->getYB1(),
+								formeCourante->getXB2(), formeCourante->getYB2(), formeCourante->getX2(), formeCourante->getY2());
+						}
+						ofNoFill(); // Outline
+						ofSetLineWidth(bezierStroke);
+						ofSetColor(formeCourante->getColors()[0]);
+						ofDrawBezier(formeCourante->getX1(), formeCourante->getX2(), formeCourante->getXB1(), formeCourante->getYB1(),
+							formeCourante->getXB2(), formeCourante->getYB2(), formeCourante->getX2(), formeCourante->getY2());
 					}
 				//}
 			}
