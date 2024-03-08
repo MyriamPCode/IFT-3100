@@ -58,28 +58,8 @@ void Renderer::draw() {
 		dessinerEllipse(); 
 		dessinerBezier(); 
 		dessinerSphere(); 
-		//if (modeTransformState)
-		//{
-		//	transformation();
-		//}
-
-		ofSetColor(0);
-		if (v_formes_ptr) {
-			for (const auto& formeCourante : *v_formes_ptr)
-			{
-				if (formeCourante->getType() == Forme::SPHERE) {
-					ofDrawSphere(formeCourante->getXS(), formeCourante->getYS(), formeCourante->getZS(), formeCourante->getSphereRad());
-					//ofDrawSphere(ofGetWidth()/2.00, ofGetHeight() / 2.00, 0, 150);
-				}
-			}
-		}
+		dessinerCube();
 	}
-	//////////////////////////////////////////////////////////////////
-
-
-	//////////////////////////////////////////////////////////////////
-	/* DESSIN PRIMITIVES GEO */
-
 	//////////////////////////////////////////////////////////////////
 
 	draw_cursor(mouse_current_x, mouse_current_y);
@@ -103,48 +83,29 @@ void Renderer::draw() {
 		ofDrawBitmapString("Enregistrement enmouse cours...", 20, 20);
 }
 
-// Partie Myriam 
-//** 
-//ofPushMatrix();
-//ofTranslate(uiPosition->x, uiPosition->y);
-//for (int i = 0; i < uiAmount; i++) {
-//    ofPushMatrix();
-//    ofTranslate(i * uiStep->x, i * uiStep->y);
-//    ofRotateXDeg(i * uiRotate->x);
-//    ofRotateYDeg(i * uiRotate->y);
-//    ofRotateZDeg(i * uiRotate->z);
-//    ofTranslate(i * uiShift->x, i * uiShift->y);
-//    ofScale(uiSize->x, uiSize->y);
-//    ofBeginShape();
-//    if (draw_triangle) {
-//        //ofDrawTriangle(0, 0, -16, 32, 16, 32);
-//    } 
-//    if (draw_circle) {
-//        //ofDrawCircle(100, 100, 50);
-//        //ofSetCircleResolution(55);
-//    }
-//    if (draw_rectangle) {
-//        /ofDrawRectangle(50, 50, 100, 200);/
-//    }
-//    ofEndShape();
-//    ofPopMatrix();
-
-//}
 
 void Renderer::dessinerSphere(){
 	ofSetColor(255,0,0);
-	cout << "Nombre de spheres dans la liste " << v_formes_ptr->size() << endl;
 	if (v_formes_ptr) {
 		for (const auto& formeCourante : *v_formes_ptr)
 		{
 			if(formeCourante->getType() == Forme::SPHERE){
 				ofVec3f viktor = formeCourante->getVSphere();
 				ofDrawSphere(viktor.x, viktor.y, 0, 150);
-				//ofDrawEllipse(formeCourante->getXS(), formeCourante->getYS(), formeCourante->getSphereRad(), formeCourante->getSphereRad());
-				//cout << "X : " << forme.getVSphere().x << endl;
-				//cout << "Y : " << forme.getVSphere().y << endl;
-				//cout << "Z : " << forme.getVSphere().z << endl;
-				//cout << "Radius : " << forme.getSphereRad() << endl;
+			}
+		}
+	}
+}
+
+void Renderer::dessinerCube() {
+	ofSetColor(255, 255, 0);
+	cout << "Nombre de cubes dans la liste " << v_formes_ptr->size() << endl;
+	if (v_formes_ptr) {
+		for (const auto& formeCourante : *v_formes_ptr)
+		{
+			if (formeCourante->getType() == Forme::CUBE) {
+				ofVec3f viktor = formeCourante->getVSphere();
+				ofDrawBox(viktor.x, viktor.y, 0, 150);
 			}
 		}
 	}
@@ -184,14 +145,6 @@ void Renderer::dessinerTriangle() {
 							ofDrawTriangle(formeCourante->getX1(), formeCourante->getY1(),
 							formeCourante->getX2(), formeCourante->getY2(),
 							formeCourante->getX3(), formeCourante->getY3());
-
-						// Mettre à jour les coordonnées de la forme avec les nouvelles valeurs après les transformations
-						//formeCourante->setX1(formeCourante->getX1());
-						//formeCourante->setY1(formeCourante->getY1());
-						//formeCourante->setX2(formeCourante->getX2());
-						//formeCourante->setY2(formeCourante->getY2());
-						//formeCourante->setX3(formeCourante->getX3());
-						//formeCourante->setY3(formeCourante->getY3());
 
 						ofEndShape();
 						ofPopMatrix();

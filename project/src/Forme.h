@@ -9,7 +9,7 @@ class Forme {
 public:
     enum TypeForme
     {
-        TRIANGLE, CERCLE, RECTANGLE, LIGNE, ELLIPSE, BEZIER, SPHERE
+        TRIANGLE, CERCLE, RECTANGLE, LIGNE, ELLIPSE, BEZIER, SPHERE, CUBE
     };
 
     Forme(TypeForme type, float x1, float y1, float x2, float y2, float x3, float y3); // Triangle

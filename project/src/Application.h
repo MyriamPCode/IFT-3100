@@ -45,6 +45,7 @@ class Application : public ofBaseApp{
 		ofxToggle drawEllipse; // Bouton pour le cercle
 		ofxToggle drawBezier; // Bouton pour le rectangle
 		ofxToggle drawSphere; 
+		ofxToggle drawCube; 
 
 		ofxGuiGroup reinitialisationGroupe;
 		ofxToggle resetButton; // Bouton de r�initialisation
@@ -57,7 +58,7 @@ class Application : public ofBaseApp{
 		bool draw_circle;
 		bool draw_rectangle;
 		bool draw_line, draw_ellipse, draw_bezier; 
-		bool draw_sphere; 
+		bool draw_sphere, draw_cube; 
 
 		void button_triangle(bool & value);
 		void button_circle(bool& value);
@@ -68,6 +69,7 @@ class Application : public ofBaseApp{
 		void button_modeDraw(bool& value);
 		void button_modeTransform(bool& value);
 		void button_sphere(bool& value); 
+		void button_cube(bool& value);
 
 		float diffX, diffY, newX2, newY2, newX3, newY3;
 
@@ -78,5 +80,5 @@ class Application : public ofBaseApp{
 		vector<unique_ptr<ofxToggle>> v_buttons;
 		vector<unique_ptr<ofxToggle>>* v_buttons_ptr;
 		void deleteShapeSelected();
-		bool shapeBool;
+		bool shapeBool; // peut etre utitlise si selection pour delete
 };

@@ -32,6 +32,7 @@ void Application::setup(){
 	primitivesGroupe.add(drawEllipse.setup("Ellipse", false));
 	primitivesGroupe.add(drawBezier.setup("Bezier", false));
 	primitivesGroupe.add(drawSphere.setup("Sphere", false)); 
+	primitivesGroupe.add(drawCube.setup("Cube", false));
 	
 	// Associer des fonctions de rappel aux boutons
 	drawTriangle.addListener(this, &Application::button_triangle);
@@ -41,6 +42,7 @@ void Application::setup(){
 	drawEllipse.addListener(this, &Application::button_ellipse);
 	drawBezier.addListener(this, &Application::button_bezier);
 	drawSphere.addListener(this, &Application::button_sphere); 
+	drawCube.addListener(this, &Application::button_cube);
 
 	gui.add(&primitivesGroupe);
 	gui.add(renderer.uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
@@ -381,24 +383,24 @@ void Application::mousePressed(int x, int y, int button){
 			float y = renderer.mouse_press_y / 1.00;
 			ofVec3f viktor(x, y, 0);
 			forme.setVSphere(viktor); 
-			//forme.setXC(x); 
-			//forme.setYC(y); 
-			//forme.setZS(0.00);
-			//cout << "Voici viktor : " << viktor << endl; 
-
-			//renderer.v_formes.push_back(make_unique<Forme>(Forme::SPHERE, forme.getXS(), forme.getYS(), forme.getZS(), forme.getSphereRad()));
 			renderer.v_formes.push_back(make_unique<Forme>(Forme::SPHERE, forme.getVSphere(), forme.getSphereRad()));
 			renderer.okDessiner = true; 
 			auto button = make_unique<ofxToggle>(); 
 			guiScene.add(button->setup("SPHERE", false)); 
 			v_buttons.push_back(move(button)); 
+		}
 
-			//cout << "X : " << forme.getXS() << endl;
-			//cout << "Y : " << forme.getYS() << endl;
-			//cout << "Z : " << forme.getZS() << endl;
-			//cout << "Radius : " << forme.getSphereRad() << endl; 
-
-			//cout << "Nombre de spheres dans la liste " << renderer.v_formes_ptr->size() << endl; 
+		if (draw_cube && drawCube)
+		{
+			float x = renderer.mouse_press_x;
+			float y = renderer.mouse_press_y;
+			ofVec3f viktor(x, y, 0);
+			forme.setVSphere(viktor);
+			renderer.v_formes.push_back(make_unique<Forme>(Forme::CUBE, forme.getVSphere(), forme.getSphereRad()));
+			renderer.okDessiner = true;
+			auto button = make_unique<ofxToggle>();
+			guiScene.add(button->setup("CUBE", false));
+			v_buttons.push_back(move(button));
 		}
 	}
 
@@ -555,8 +557,8 @@ void Application::dragEvent(ofDragInfo dragInfo) {
 void Application::button_triangle(bool& value) { 
 	if (value) {
 		draw_triangle = !draw_triangle;
-		draw_circle = draw_rectangle = draw_line = draw_ellipse = draw_bezier = draw_sphere = false;
-		drawCircle = drawRectangle = drawLine = drawEllipse = drawBezier = drawSphere = false;
+		draw_circle = draw_rectangle = draw_line = draw_ellipse = draw_bezier = draw_sphere = draw_cube = false;
+		drawCircle = drawRectangle = drawLine = drawEllipse = drawBezier = drawSphere = drawCube = false;
 		if (!renderer.triangleColors.empty()) { // Conserve les parametres de la forme pour la reselection
 			renderer.interface.colorPickerFill = renderer.triangleColors[1];
 			renderer.interface.color_picker_stroke = renderer.triangleColors[0];
@@ -571,8 +573,8 @@ void Application::button_triangle(bool& value) {
 void Application::button_circle(bool& value) {
 	if (value) {
 		draw_circle = !draw_circle;
-		draw_triangle = draw_rectangle = draw_line = draw_ellipse = draw_bezier = draw_sphere = false;
-		drawTriangle = drawRectangle = drawLine = drawEllipse = drawBezier = drawSphere = false;
+		draw_triangle = draw_rectangle = draw_line = draw_ellipse = draw_bezier = draw_sphere = draw_cube = false;
+		drawTriangle = drawRectangle = drawLine = drawEllipse = drawBezier = drawSphere = drawCube = false;
 		if (!renderer.cercleColors.empty()) {// Conserve les parametres de la forme pour la reselection
 			renderer.interface.colorPickerFill = renderer.cercleColors[1];
 			renderer.interface.color_picker_stroke = renderer.cercleColors[0];
@@ -587,8 +589,8 @@ void Application::button_circle(bool& value) {
 void Application::button_rectangle(bool& value) {
 	if (value) {
 		draw_rectangle = !draw_rectangle;
-		draw_triangle = draw_circle = draw_line = draw_ellipse = draw_bezier = draw_sphere = false;
-		drawTriangle = drawCircle = drawLine = drawEllipse = drawBezier = drawSphere = false;
+		draw_triangle = draw_circle = draw_line = draw_ellipse = draw_bezier = draw_sphere = draw_cube = false;
+		drawTriangle = drawCircle = drawLine = drawEllipse = drawBezier = drawSphere = drawCube = false;
 		if (!renderer.rectangleColors.empty()) { // Conserve les parametres de la forme pour la reselection
 			renderer.interface.colorPickerFill = renderer.rectangleColors[1];
 			renderer.interface.color_picker_stroke = renderer.rectangleColors[0];
@@ -603,8 +605,8 @@ void Application::button_rectangle(bool& value) {
 void Application::button_line(bool& value) {
 	if (value) {
 		draw_line = !draw_line;
-		draw_triangle = draw_rectangle = draw_circle = draw_ellipse = draw_bezier = draw_sphere = false;
-		drawTriangle = drawRectangle = drawCircle = drawEllipse = drawBezier = drawSphere = false;
+		draw_triangle = draw_rectangle = draw_circle = draw_ellipse = draw_bezier = draw_sphere = draw_cube = false;
+		drawTriangle = drawRectangle = drawCircle = drawEllipse = drawBezier = drawSphere = drawCube = false;
 		renderer.interface.color_picker_stroke = renderer.ligneColor;
 		renderer.interface.slider_stroke_weight = renderer.ligneStroke;
 		
@@ -614,8 +616,8 @@ void Application::button_line(bool& value) {
 void Application::button_ellipse(bool& value) {
 	if (value) {
 		draw_ellipse = !draw_ellipse;
-		draw_triangle = draw_rectangle = draw_circle = draw_line = draw_bezier = draw_sphere =false;
-		drawTriangle = drawRectangle = drawCircle = drawLine = drawBezier = drawSphere = false;
+		draw_triangle = draw_rectangle = draw_circle = draw_line = draw_bezier = draw_sphere = draw_cube = false;
+		drawTriangle = drawRectangle = drawCircle = drawLine = drawBezier = drawSphere = drawCube = false;
 		if (!renderer.ellipseColors.empty()) { // Conserve les parametres de la forme pour la reselection
 			renderer.interface.colorPickerFill = renderer.ellipseColors[1];
 			renderer.interface.color_picker_stroke = renderer.ellipseColors[0];
@@ -630,8 +632,8 @@ void Application::button_ellipse(bool& value) {
 void Application::button_bezier(bool& value) {
 	if (value) {
 		draw_bezier = !draw_bezier;
-		draw_triangle = draw_rectangle = draw_circle = draw_line = draw_ellipse = false;
-		drawTriangle = drawRectangle = drawCircle = drawLine = drawEllipse = false;
+		draw_triangle = draw_rectangle = draw_circle = draw_line = draw_ellipse = draw_cube = false;
+		drawTriangle = drawRectangle = drawCircle = drawLine = drawEllipse = drawCube = false;
 		if (!renderer.bezierColors.empty()) { // Conserve les parametres de la forme pour la reselection
 			renderer.interface.colorPickerFill = renderer.bezierColors[1];
 			renderer.interface.color_picker_stroke = renderer.bezierColors[0];
@@ -646,8 +648,16 @@ void Application::button_bezier(bool& value) {
 void Application::button_sphere(bool& value) {
 	if (value) {
 		draw_sphere = !draw_sphere; 
-		draw_triangle = draw_rectangle = draw_circle = draw_line = draw_ellipse = draw_bezier = false;
-		drawTriangle = drawRectangle = drawCircle = drawLine = drawEllipse = drawBezier = false;
+		draw_triangle = draw_rectangle = draw_circle = draw_line = draw_ellipse = draw_bezier = draw_cube = false;
+		drawTriangle = drawRectangle = drawCircle = drawLine = drawEllipse = drawBezier = drawCube = false;
+	}
+}
+
+void Application::button_cube(bool& value) {
+	if (value) {
+		draw_cube = !draw_cube; 
+		draw_triangle = draw_rectangle = draw_circle = draw_line = draw_ellipse = draw_bezier = draw_sphere = false;
+		drawTriangle = drawRectangle = drawCircle = drawLine = drawEllipse = drawBezier = drawSphere = false;
 	}
 }
 
