@@ -80,6 +80,7 @@ void Interface::draw() {
 	ofSetColor(255); // Couleur blanc
 	ofDrawBitmapString("Mouse X: " + ofToString(mouseX) + ", Mouse Y: " + ofToString(mouseY), 1630, 65);
 	ofDrawBitmapString("Grid X: " + ofToString(gridX) + ", Grid Y: " + ofToString(gridY), 1630, 85);
+	ofDrawBitmapString("Current camera: " + camera_name, 1630, 105);
 
 }
 

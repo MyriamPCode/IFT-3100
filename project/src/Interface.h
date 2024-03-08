@@ -22,6 +22,8 @@ class Interface {
 		ofParameter<float> slider_stroke_weight;
 		bool fillEnabled = false;
 
+		string camera_name;
+
 		int mouse_press_x;
 		int mouse_press_y;
 
@@ -59,6 +61,7 @@ class Interface {
 		ofColor textColor = backgroundLineColor;
 
 		ofxPanel outilsGui;
+
 
 		void backgroundLine();
 		void backgroundInteraction();

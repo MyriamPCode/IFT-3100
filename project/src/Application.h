@@ -7,6 +7,8 @@
 
 using namespace std;
 
+enum class Camera { front, back, left, right, top, down };
+
 class Application : public ofBaseApp{
 
 	public:
@@ -16,7 +18,20 @@ class Application : public ofBaseApp{
 		ofMesh mesh;
 		int size = 96; // Taille de la maille
 
+		Camera camera_active;
+
 		ofCamera cam;
+
+		ofCamera camFront;
+		ofCamera camBack;
+		ofCamera camLeft;
+		ofCamera camRight;
+		ofCamera camTop;
+		ofCamera camBottom;
+		ofCamera* camera;
+
+		ofQuaternion camera_orientation;
+		ofVec3f camera_position;
 
 		bool isImportable = false; //Indique si le mode d'importation est actif ou non
 		int imgDistFromMax = 0; //Indicateur de la position de l'image par rapport � la taille maximale de la liste
@@ -38,6 +53,7 @@ class Application : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 		void reset(bool& value);
+		void reset_cam();
 
 		ofxPanel gui;
 		ofParameter <ofVec2f> uiPosition;
@@ -97,8 +113,12 @@ class Application : public ofBaseApp{
 		bool shapeBool; 
 
 		void camera_setup_perspective(float width, float height, float fov, float n, float f);
-		float Application::compute_zoom_from_fov(float fov);
+		float compute_zoom_from_fov(float fov);
+		void setupCamera();
 		bool orthoEnabled = false;
+		ofVec3f camera_target = { 0.0f, 0.0f, 0.0f };
+		float offset_camera;
+		bool is_visible_camera;
 
 		bool moveCameraRight;
 		bool moveCameraLeft;

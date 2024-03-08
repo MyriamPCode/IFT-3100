@@ -18,6 +18,9 @@ void Renderer::setup() {
 	gui.add(exportButton);
 	gui.setPosition(0, 0);
 
+	teapot.loadModel("teapot.obj");
+	teapot.setPosition(0, 0, 0);
+
 	okDessiner = false; 
 
 	//triangleColors= { interface.color_picker_stroke, interface.colorPickerFill };
@@ -55,6 +58,8 @@ void Renderer::draw() {
 
 	}
 
+	teapot.draw(OF_MESH_WIREFRAME);
+	
 	//////////////////////////////////////////////////////////////////
 	if (okDessiner)
 	{

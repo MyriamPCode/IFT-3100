@@ -12,7 +12,10 @@ void Application::setup(){
 	camera_setup_perspective(WIDTH, HEIGHT, 60.0f, 0.0f, 0.0f);
 	cam.enableOrtho();
 	orthoEnabled = true;
-	
+	reset_cam();
+	setupCamera();
+	is_visible_camera = true;
+
 	gui.setup();
 	gui.setPosition(300, 40);
 	gui.add(uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
@@ -157,8 +160,23 @@ void Application::draw(){
 		renderer.interface.import_activate = true;
 		ofDrawBitmapString("Please drag an image to import it.", 30, 30);
 	}
-	cam.begin();
-	
+	//cam.begin();
+	camera->begin();
+	if (is_visible_camera)
+	{
+		if (camera_active != Camera::front)
+			camFront.draw();
+		if (camera_active != Camera::back)
+			camBack.draw();
+		if (camera_active != Camera::left)
+			camLeft.draw();
+		if (camera_active != Camera::right)
+			camRight.draw();
+		if (camera_active != Camera::top)
+			camTop.draw();
+		if (camera_active != Camera::down)
+			camBottom.draw();
+	}
 	// Partie Myriam 
 	//************** 
 	//ofPushMatrix();
@@ -215,7 +233,8 @@ void Application::draw(){
 	
 	//ofPopMatrix();
 	
-	cam.end();
+	//cam.end();
+	camera->end();
 
 	guiScene.draw();
 }
@@ -350,6 +369,41 @@ void Application::keyReleased(int key){
 			cam.enableOrtho();
 			orthoEnabled = true;
 		}
+	}
+	switch (key) {
+		case 51: // touche 3
+			camera_active = Camera::front;
+			setupCamera();
+			break;
+
+		case 52: // touche 4
+			camera_active = Camera::back;
+			setupCamera();
+			break;
+
+		case 53: // touche 5
+			camera_active = Camera::left;
+			setupCamera();
+			break;
+
+		case 54: // touche 6
+			camera_active = Camera::right;
+			setupCamera();
+			break;
+
+		case 55: // touche 7
+			camera_active = Camera::top;
+			setupCamera();
+			break;
+
+		case 56: // touche 8
+			camera_active = Camera::down;
+			setupCamera();
+			break;
+
+		default:
+			break;
+
 	}
 }
 
@@ -747,7 +801,37 @@ void Application::reset(bool& value) {
 		meshButton = false;
 		noise_activate = false;
 		meshAnimationButton = false;
+		
 	}
+}
+
+void Application::reset_cam() {
+	offset_camera = 500.0f * 3.5f * -1.0f;
+
+	// position initiale de chaque caméra
+	camFront.setPosition(0, 0, -offset_camera);
+	camBack.setPosition(0, 0, offset_camera);
+	camLeft.setPosition(-offset_camera, 0, 0);
+	camRight.setPosition(offset_camera, 0, 0);
+	camTop.setPosition(0, offset_camera, 0);
+	camBottom.setPosition(0, -offset_camera, 0);
+
+	// orientation de chaque caméra
+	camFront.lookAt(camera_target);
+	camBack.lookAt(camera_target);
+	camLeft.lookAt(camera_target);
+	camRight.lookAt(camera_target);
+	camTop.lookAt(camera_target, ofVec3f(1, 0, 0));
+	camBottom.lookAt(camera_target, ofVec3f(1, 0, 0));
+
+	camFront.setVFlip(true);
+	camBack.setVFlip(true);
+	camLeft.setVFlip(true);
+	camRight.setVFlip(true);
+	camTop.setVFlip(true);
+	camBottom.setVFlip(true);
+
+	camera_active = Camera::front;
 }
 
 void Application::buttons_list(bool& value)
@@ -856,4 +940,46 @@ void Application::camera_setup_perspective(float width, float height, float fov,
 float Application::compute_zoom_from_fov(float fov)
 {
 	return 1.0f / tanf(glm::radians(fov) / 2.0f);;
+}
+
+void Application::setupCamera() {
+	switch (camera_active) {
+		case Camera::front:
+			camera = &camFront;
+			renderer.interface.camera_name = "avant";
+			break;
+
+		case Camera::back:
+			camera = &camBack;
+			renderer.interface.camera_name = "arrière";
+			break;
+
+		case Camera::left:
+			camera = &camLeft;
+			renderer.interface.camera_name = "gauche";
+			break;
+
+		case Camera::right:
+			camera = &camRight;
+			renderer.interface.camera_name = "droite";
+			break;
+
+		case Camera::top:
+			camera = &camTop;
+			renderer.interface.camera_name = "haut";
+			break;
+
+		case Camera::down:
+			camera = &camBottom;
+			renderer.interface.camera_name = "bas";
+			break;
+
+		default:
+			break;
+		}
+		camera_position = camera->getPosition();
+		camera_orientation = camera->getOrientationQuat();
+
+		camera->setPosition(camera_position);
+		camera->setOrientation(camera_orientation);
 }

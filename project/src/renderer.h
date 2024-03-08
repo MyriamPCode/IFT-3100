@@ -5,6 +5,7 @@
 #include "Forme.h"
 #include <memory>
 #include "ofxGui.h"
+#include "ofxAssimpModelLoader.h"
 
 using namespace std;
 
@@ -15,6 +16,8 @@ class Renderer {
 
 		list<ofImage> imageList; //Liste d'images import�es
 		list<vector<int>> imgPosList; //Positions x et y des images import�es
+
+        ofxAssimpModelLoader teapot;
 
         void setup();
         void setup(vector<Forme*>& v_formes);
