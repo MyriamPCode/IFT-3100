@@ -98,4 +98,8 @@ class Application : public ofBaseApp{
 
 		bool moveCameraRight;
 		bool moveCameraLeft;
+		bool moveCameraUp;
+		bool moveCameraDown;
+		bool moveCameraNear;
+		bool moveCameraFar;
 };

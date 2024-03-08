@@ -7,6 +7,7 @@ using namespace std;
 void Application::setup(){
 	ofSetWindowTitle("Team 7");
 	ofBackground(backgroundColor);
+	ofSetOrientation(OF_ORIENTATION_180);
 	renderer.setup();
 	//ofSetOrientation(OF_ORIENTATION_180);
 	//cam.setPosition(ofVec3f(0, 0, 500));
@@ -131,14 +132,27 @@ void Application::update()
 		renderer.captureImage();
 	}
 
-	// Déplacer la caméra de gauche à droite si moveCameraLeft est vrai
 	if (moveCameraLeft) {
 		cam.move(-1, 0, 0); // Déplacer la caméra vers la gauche
 	}
 
-	// Déplacer la caméra de droite à gauche si moveCameraRight est vrai
 	if (moveCameraRight) {
 		cam.move(1, 0, 0); // Déplacer la caméra vers la droite
+	}
+
+	if (moveCameraUp) {
+		cam.move(0, 1, 0); // Déplacer la caméra vers le haut
+	}
+
+	if (moveCameraDown) {
+		cam.move(0, -1, 0); // Déplacer la caméra vers le bas
+	}
+	if (moveCameraNear) {
+		cam.move(0, 0, 1); // Déplacer la caméra en s'approchant
+	}
+
+	if (moveCameraFar) {
+		cam.move(0, 0, -1); // Déplacer la caméra en s'eloignant
 	}
 }
 
@@ -295,6 +309,12 @@ void Application::keyPressed(int key)
 	if (key == OF_KEY_RIGHT) {
 		moveCameraRight = true;
 	}
+	if (key == OF_KEY_UP) {
+		moveCameraUp = true;
+	}
+	if (key == OF_KEY_DOWN) {
+		moveCameraDown = true;
+	}
 }
 
 void Application::keyReleased(int key){
@@ -307,6 +327,18 @@ void Application::keyReleased(int key){
 	}
 	if (key == OF_KEY_RIGHT) {
 		moveCameraRight = false;
+	}
+	if (key == OF_KEY_UP) {
+		moveCameraUp = false;
+	}
+	if (key == OF_KEY_DOWN) {
+		moveCameraDown = false;
+	}
+	if (key == 49) { // 49 = touche 1
+		moveCameraNear = false;
+	}
+	if (key == 50) { // 50 = touche 2
+		moveCameraFar = false;
 	}
 }
 

@@ -30,7 +30,6 @@ void Interface::setup() {
 	outilsGui.setup();
 	outilsGui.loadFont("roboto/Roboto-Regular.ttf", 10);
 	outilsGui.setPosition(WIDTH - outilsGui.getWidth() - INTERACTION_BAR_HEIGHT, INTERACTION_BAR_HEIGHT);
-	//outilsGui.setPosition(0, 0);
 	outilsGui.setSize(200, 1080);
 
 	color_picker_background.set("Couleur du canevas", ofColor(31), ofColor(0, 0), ofColor(255, 255));
