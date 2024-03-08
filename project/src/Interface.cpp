@@ -5,8 +5,6 @@
 using namespace std;
 
 void Interface::setup() {
-	//buttonFont.load("roboto/Roboto-Regular.ttf", 24);
-
 	//we only need to add the images of the buttons here to add it to the top bar
 	imgImport.load("img/import.png");
 	iconTopBar.push_back(imgImport);
@@ -14,6 +12,8 @@ void Interface::setup() {
 	iconTopBar.push_back(imgExport);
 	imgAnimation.load("img/animation.png");
 	iconTopBar.push_back(imgAnimation);
+	imgMesh.load("img/mesh.png");
+	iconTopBar.push_back(imgMesh);
 
 	//same here but for the side bar
 	imgColorWheel.load("img/color-wheel.png");
@@ -26,6 +26,8 @@ void Interface::setup() {
 	iconSideBar.push_back(imgRectangle);
 	imgTriangle.load("img/triangle.png");
 	iconSideBar.push_back(imgTriangle);
+	imgEllipse.load("img/ellipse.png");
+	iconSideBar.push_back(imgEllipse);
 
 	outilsGui.setup();
 	outilsGui.loadFont("roboto/Roboto-Regular.ttf", 10);
@@ -52,7 +54,6 @@ void Interface::setup() {
 }
 
 void Interface::draw() {
-	backgroundLine();
 	backgroundInteraction();
 	topButtons();
 	sideButtons();

@@ -42,7 +42,6 @@ void Renderer::setup(vector<unique_ptr<Forme>>& v_formes)
 
 
 void Renderer::draw() {
-	interface.draw();
 	ofSetBackgroundColor(interface.color_picker_background);
 
 	if (visible) {
@@ -319,7 +318,7 @@ void Renderer::image_export(const string name, const string extension) const {
 	string file_name = name + time_stamp + "." + extension;
 
 	// capturer le contenu du framebuffer actif
-	image.grabScreen(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
+	image.grabScreen(0, INTERACTION_BAR_HEIGHT, ofGetWindowWidth() - INTERACTION_BAR_HEIGHT, ofGetWindowHeight() - INTERACTION_BAR_HEIGHT);
 
 	// sauvegarder le fichier image
 	image.save(file_name);

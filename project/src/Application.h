@@ -8,7 +8,6 @@
 using namespace std;
 
 class Application : public ofBaseApp{
-
 	public:
 		Renderer renderer;
 		Forme forme;
@@ -39,7 +38,7 @@ class Application : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 		void reset(bool& value);
 
-		ofxPanel gui;
+		ofxPanel drawingGUI;
 		ofParameter <ofVec2f> uiPosition;
 		ofParameter <int> uiAmount;
 		ofParameter <ofVec2f> uiStep;
@@ -47,13 +46,13 @@ class Application : public ofBaseApp{
 		ofParameter <ofVec2f> uiShift;
 		ofParameter <ofVec2f> uiSize;
 
-		ofxGuiGroup primitivesGroupe; // Cr�er un groupe pour les boutons
-		ofxToggle drawTriangle; // Bouton pour le triangle 
-		ofxToggle drawCircle; // Bouton pour le cercle
-		ofxToggle drawRectangle; // Bouton pour le rectangle
-		ofxToggle drawLine; // Bouton pour le triangle 
-		ofxToggle drawEllipse; // Bouton pour le cercle
-		ofxToggle drawBezier; // Bouton pour le rectangle
+		//ofxGuiGroup primitivesGroupe; // Cr�er un groupe pour les boutons
+		//ofxToggle drawTriangle; // Bouton pour le triangle 
+		//ofxToggle drawCircle; // Bouton pour le cercle
+		//ofxToggle drawRectangle; // Bouton pour le rectangle
+		//ofxToggle drawLine; // Bouton pour le triangle 
+		//ofxToggle drawEllipse; // Bouton pour le cercle
+		//ofxToggle drawBezier; // Bouton pour le rectangle
 
 		ofxGuiGroup reinitialisationGroupe;
 		ofxToggle resetButton; // Bouton de r�initialisation
@@ -65,6 +64,7 @@ class Application : public ofBaseApp{
 		ofxToggle meshButton;
 		ofxToggle meshAnimationButton; // Bouton pour l'animation sur la maille géométrique 
 
+		bool drawingGUIPressed;
 		bool draw_triangle;
 		bool draw_circle;
 		bool draw_rectangle;
@@ -73,26 +73,37 @@ class Application : public ofBaseApp{
 		bool mesh_activate;
 		bool noise_activate;
 
-		void button_triangle(bool & value);
-		void button_circle(bool& value);
-		void button_rectangle(bool& value);
-		void button_line(bool& value);
-		void button_ellipse(bool& value);
-		void button_bezier(bool& value);
-		void button_rotation(bool& value);
-		void button_mesh(bool& value);
-		void button_noise(bool& value);
-
 		float rotate;
-
 
 		float diffX, diffY, newX2, newY2, newX3, newY3;
 
 		void buttons_list(bool& value);
 		ofColor backgroundPanelSceneColor = ofColor(125);
-		ofxPanel guiScene; 
+
 		vector<unique_ptr<ofxToggle>> v_buttons;
 		vector<unique_ptr<ofxToggle>>* v_buttons_ptr;
 		void deleteShapeSelected();
 		bool shapeBool; 
+
+	private:
+		Forme::TypeForme lastShape;
+
+		ofxPanel guiScene;
+		ofParameter<string> circle = "CIRCLE";
+		ofParameter<string> triangle = "TRIANGLE";
+		ofParameter<string> ellipse = "ELLIPSE";
+		ofParameter<string> line = "LINE";
+		ofParameter<string> bezier = "BEZIER";
+		ofParameter<string> rectangle = "RECTANGLE";
+
+		void toggleDrawingGUI(Forme::TypeForme drawingShape);
+		void drawTriangle();
+		void drawCircle();
+		void drawRectangle();
+		void drawLine();
+		void drawEllipse();
+		void drawBezier();
+		void button_rotation(bool& value);
+		void button_mesh(bool& value);
+		void button_noise(bool& value);
 };
