@@ -22,6 +22,7 @@ void Forme::setup() {
     yS = 1440.00 / 2.00;
     zS = 0.00; 
     sphereRad = 150.00; 
+    sizeCube = 150.00; 
 };
 
 
