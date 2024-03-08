@@ -14,6 +14,8 @@ void Interface::setup() {
 	iconTopBar.push_back(imgExport);
 	imgAnimation.load("img/animation.png");
 	iconTopBar.push_back(imgAnimation);
+	imgCamera.load("img/camera.png");
+	iconTopBar.push_back(imgCamera);
 
 	//same here but for the side bar
 	imgColorWheel.load("img/color-wheel.png");
@@ -27,28 +29,8 @@ void Interface::setup() {
 	imgTriangle.load("img/triangle.png");
 	iconSideBar.push_back(imgTriangle);
 
-	outilsGui.setup();
-	outilsGui.loadFont("roboto/Roboto-Regular.ttf", 10);
-	outilsGui.setPosition(WIDTH - outilsGui.getWidth() - INTERACTION_BAR_HEIGHT, INTERACTION_BAR_HEIGHT);
-	outilsGui.setSize(200, 1080);
-
-	color_picker_background.set("Couleur du canevas", ofColor(31), ofColor(0, 0), ofColor(255, 255));
-	color_picker_stroke.set("Couleur de la ligne de contour", ofColor(255), ofColor(0, 0), ofColor(255, 255));
-	colorPickerFill.set("Couleur de remplissage", ofColor(255), ofColor(0, 0), ofColor(255, 255));
-	slider_stroke_weight.set("Epaisseur de la ligne de contour", 4.0f, 0.0f, 10.0f);
-
-	outilsGui.add(color_picker_background);
-	outilsGui.add(color_picker_stroke);
-	outilsGui.add(fillButton.setup("Remplissage de forme", false));
-	outilsGui.add(colorPickerFill);
-	outilsGui.add(slider_stroke_weight);
-
-	fillButton.addListener(this, &Interface::enableFill);
-
-	outilsGui.setFillColor(backgroundInteractionColor);
-	outilsGui.setTextColor(backgroundInteractionColor);
-	outilsGui.maximizeAll();
-	outilsGui.disableHeader();
+	setupOutilsGuiOptions();
+	setupCameraOptions();
 
 	is_mouse_button_pressed = false;
 	is_mouse_button_dragged = false;
@@ -58,7 +40,6 @@ void Interface::setup() {
 }
 
 void Interface::draw() {
-	backgroundLine();
 	backgroundInteraction();
 	topButtons();
 	sideButtons();
@@ -66,6 +47,9 @@ void Interface::draw() {
 
 	if (outilsPressed) {
 		outilsGui.draw();
+	}
+	if (camPressed) {
+		cameraGui.draw();
 	}
 	int gridSize = 50; // Espacement de la grille
 	// Obtenir les coordonnées de la souris
@@ -82,6 +66,11 @@ void Interface::draw() {
 	ofDrawBitmapString("Grid X: " + ofToString(gridX) + ", Grid Y: " + ofToString(gridY), 1630, 85);
 	ofDrawBitmapString("Current camera: " + camera_name, 1630, 105);
 
+}
+
+void Interface::drawBackground() {
+	backgroundLine();
+	ofSetColor(255);
 }
 
 void Interface::draw_cursor(float x, float y) const {
@@ -104,9 +93,7 @@ void Interface::draw_cursor(float x, float y) const {
 		float tailleTriangle = 20;
 		ofDrawTriangle(x, y - tailleTriangle, x - tailleTriangle, y + tailleTriangle, x + tailleTriangle, y + tailleTriangle);
 	}
-
-	else
-		ofSetColor(255); // Couleur blanche
+	ofSetColor(255); // Couleur blanche
 
 
 	ofDrawLine(x + offset, y, x + offset + length, y);
@@ -147,6 +134,90 @@ void Interface::toggleColorWheel() {
 
 void Interface::enableFill(bool& value) {
 	fillEnabled = !fillEnabled;
+}
+
+void Interface::toggleCamOptions() {
+	camPressed = !camPressed;
+}
+
+void Interface::enableOrtho(bool& value) {
+	if (value) {
+		orthoIsActive = true;
+		angleIsActive = false;
+		angleActivate = false;
+	}
+}
+
+void Interface::enableAngle(bool& value) {
+	if (value) {
+		angleIsActive = true;
+		orthoIsActive = false;
+		orthoActivate = false;
+	}
+}
+
+void Interface::orthoSelect(bool& value) {
+	if (value) {
+		orthoRendering = true;
+		perspRendering = false;
+		renderAsPersp = false;
+	}
+}
+
+void Interface::perspSelect(bool& value) {
+	if (value) {
+		perspRendering = true;
+		orthoRendering = false;
+		renderAsOrtho = false;
+	}
+}
+
+void Interface::frontCamSelect(bool& value) {
+	if (value) {
+		frontCamRendering = true;
+		backCamRendering = leftCamRendering = rightCamRendering = topCamRendering = bottomCamRendering = false;
+		backCam = leftCam = rightCam = topCam = bottomCam = false;
+	}
+}
+
+void Interface::backCamSelect(bool& value) {
+	if (value) {
+		backCamRendering = true;
+		frontCamRendering = leftCamRendering = rightCamRendering = topCamRendering = bottomCamRendering = false;
+		frontCam = leftCam = rightCam = topCam = bottomCam = false;
+	}
+}
+
+void Interface::leftCamSelect(bool& value) {
+	if (value) {
+		leftCamRendering = true;
+		backCamRendering = topCamRendering = rightCamRendering = topCamRendering = bottomCamRendering = false;
+		backCam = topCam = rightCam = topCam = bottomCam = false;
+	}
+}
+
+void Interface::rightCamSelect(bool& value) {
+	if (value) {
+		rightCamRendering = true;
+		backCamRendering = leftCamRendering = frontCamRendering = topCamRendering = bottomCamRendering = false;
+		backCam = leftCam = frontCam = topCam = bottomCam = false;
+	}
+}
+
+void Interface::topCamSelect(bool& value) {
+	if (value) {
+		topCamRendering = true;
+		backCamRendering = leftCamRendering = rightCamRendering = frontCamRendering = bottomCamRendering = false;
+		backCam = leftCam = rightCam = frontCam = bottomCam = false;
+	}
+}
+
+void Interface::bottomCamSelect(bool& value) {
+	if (value) {
+		bottomCamRendering = true;
+		backCamRendering = leftCamRendering = rightCamRendering = topCamRendering = frontCamRendering = false;
+		backCam = leftCam = rightCam = topCam = frontCam = false;
+	}
 }
 
 void Interface::backgroundLine() {
@@ -200,5 +271,72 @@ void Interface::panelScene()
 	//	// Dessiner une ligne horizontale pour segmenter la zone
 	//	ofDrawLine(0, 41 + i * segmentHeight, 255, 41 + i * segmentHeight);
 	//}
+}
 
+void Interface::setupOutilsGuiOptions() {
+	outilsGui.setup();
+	outilsGui.loadFont("roboto/Roboto-Regular.ttf", 10);
+	outilsGui.setPosition(WIDTH - outilsGui.getWidth() - INTERACTION_BAR_HEIGHT, INTERACTION_BAR_HEIGHT);
+	outilsGui.setSize(200, 1080);
+
+	color_picker_background.set("Couleur du canevas", ofColor(31), ofColor(0, 0), ofColor(255, 255));
+	color_picker_stroke.set("Couleur de la ligne de contour", ofColor(255), ofColor(0, 0), ofColor(255, 255));
+	colorPickerFill.set("Couleur de remplissage", ofColor(255), ofColor(0, 0), ofColor(255, 255));
+	slider_stroke_weight.set("Epaisseur de la ligne de contour", 4.0f, 0.0f, 10.0f);
+
+	outilsGui.add(color_picker_background);
+	outilsGui.add(color_picker_stroke);
+	outilsGui.add(fillButton.setup("Remplissage de forme", false));
+	outilsGui.add(colorPickerFill);
+	outilsGui.add(slider_stroke_weight);
+
+	fillButton.addListener(this, &Interface::enableFill);
+
+	outilsGui.setFillColor(backgroundInteractionColor);
+	outilsGui.setTextColor(backgroundInteractionColor);
+	outilsGui.maximizeAll();
+	outilsGui.disableHeader();
+
+}
+
+void Interface::setupCameraOptions() {
+	cameraGui.setup();
+	cameraGui.loadFont("roboto/Roboto-Regular.ttf", 10);
+	cameraGui.setPosition(WIDTH / 2 - 250, INTERACTION_BAR_HEIGHT);
+	cameraGui.setSize(250, 1080);
+
+	cameraGui.add(orthoActivate.setup("Activate Perspective Camera", true));
+	cameraGui.add(angleActivate.setup("Activate Angle Cameras", false));
+	
+	orthoOptions.setup("Perspective Camera Options");
+	orthoOptions.add(renderAsOrtho.setup("Render orthographically", true));
+	orthoOptions.add(renderAsPersp.setup("Render as perspective", false));
+
+	angleOptions.setup("Multiple Camera Selection");
+	angleOptions.add(frontCam.setup("See with Front Camera", true));
+	angleOptions.add(backCam.setup("See with Back Camera", false));
+	angleOptions.add(leftCam.setup("See with Left Camera", false));
+	angleOptions.add(rightCam.setup("See with Right Camera", false));
+	angleOptions.add(topCam.setup("See with Top Camera", false));
+	angleOptions.add(bottomCam.setup("See with Bottom Camera", false));
+
+	renderAsOrtho.addListener(this, &Interface::orthoSelect);
+	renderAsPersp.addListener(this, &Interface::perspSelect);
+	frontCam.addListener(this, &Interface::frontCamSelect);
+	backCam.addListener(this, &Interface::backCamSelect);
+	leftCam.addListener(this, &Interface::leftCamSelect);
+	rightCam.addListener(this, &Interface::rightCamSelect);
+	topCam.addListener(this, &Interface::topCamSelect);
+	bottomCam.addListener(this, &Interface::bottomCamSelect);
+
+	cameraGui.add(&orthoOptions);
+	cameraGui.add(&angleOptions);
+
+	orthoActivate.addListener(this, &Interface::enableOrtho);
+	angleActivate.addListener(this, &Interface::enableAngle);
+
+	cameraGui.setFillColor(backgroundInteractionColor);
+	cameraGui.setTextColor(backgroundInteractionColor);
+	cameraGui.maximizeAll();
+	cameraGui.disableHeader();
 }

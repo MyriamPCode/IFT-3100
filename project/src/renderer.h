@@ -17,7 +17,8 @@ class Renderer {
 		list<ofImage> imageList; //Liste d'images import�es
 		list<vector<int>> imgPosList; //Positions x et y des images import�es
 
-        ofxAssimpModelLoader teapot;
+        ofxAssimpModelLoader teapotOrtho;
+        ofxAssimpModelLoader teapotMultiple;
 
         void setup();
         void setup(vector<Forme*>& v_formes);

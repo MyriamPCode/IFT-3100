@@ -18,8 +18,11 @@ void Renderer::setup() {
 	gui.add(exportButton);
 	gui.setPosition(0, 0);
 
-	teapot.loadModel("teapot.obj");
-	teapot.setPosition(0, 0, 0);
+	teapotMultiple.loadModel("teapot.obj");
+	teapotMultiple.setPosition(0, 0, 0);
+
+	teapotOrtho.loadModel("teapot.obj");
+	teapotOrtho.setPosition(800, 700, 0);
 
 	okDessiner = false; 
 
@@ -58,7 +61,8 @@ void Renderer::draw() {
 
 	}
 
-	teapot.draw(OF_MESH_WIREFRAME);
+	teapotMultiple.draw(OF_MESH_WIREFRAME);
+	teapotOrtho.draw(OF_MESH_FILL);
 	
 	//////////////////////////////////////////////////////////////////
 	if (okDessiner)

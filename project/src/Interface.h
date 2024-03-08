@@ -24,6 +24,29 @@ class Interface {
 
 		string camera_name;
 
+		ofxToggle orthoActivate;
+		ofxToggle angleActivate;
+		bool orthoIsActive = true;
+		bool angleIsActive = false;
+		ofxGuiGroup orthoOptions;
+		ofxToggle renderAsOrtho;
+		ofxToggle renderAsPersp;
+		bool orthoRendering = true;
+		bool perspRendering = false;
+		ofxGuiGroup angleOptions;
+		ofxToggle frontCam;
+		ofxToggle backCam;
+		ofxToggle leftCam;
+		ofxToggle rightCam;
+		ofxToggle topCam;
+		ofxToggle bottomCam;
+		bool frontCamRendering = true;
+		bool backCamRendering = false;
+		bool leftCamRendering = false;
+		bool rightCamRendering = false;
+		bool topCamRendering = false;
+		bool bottomCamRendering = false;
+
 		int mouse_press_x;
 		int mouse_press_y;
 
@@ -39,10 +62,14 @@ class Interface {
 
 		void setup();
 		void draw();
+		void drawBackground();
 		void toggleColorWheel();
+		void Interface::toggleCamOptions();
 
 	private:
 		bool outilsPressed = false;
+		bool camPressed = false;
+		
 		ofTrueTypeFont buttonFont;
 
 		ofImage imgImport;
@@ -53,6 +80,7 @@ class Interface {
 		ofImage imgRectangle;
 		ofImage imgTriangle;
 		ofImage imgAnimation;
+		ofImage imgCamera;
 
 		ofColor backgroundLineColor = ofColor(217, 217, 217);
 		ofColor backgroundInteractionColor = ofColor(4, 3, 77);
@@ -61,7 +89,7 @@ class Interface {
 		ofColor textColor = backgroundLineColor;
 
 		ofxPanel outilsGui;
-
+		ofxPanel cameraGui;
 
 		void backgroundLine();
 		void backgroundInteraction();
@@ -71,9 +99,21 @@ class Interface {
 
 		void panelScene(); 
 		ofColor backgroundPanelSceneColor = ofColor(125);
+		void setupCameraOptions();
+		void setupOutilsGuiOptions();
 		//Renderer& renderer;
 		void showOutils(bool& value);
 		void enableFill(bool& value);
+		void enableOrtho(bool& value);
+		void enableAngle(bool& value);
+		void orthoSelect(bool& value);
+		void perspSelect(bool& value);
+		void frontCamSelect(bool& value);
+		void backCamSelect(bool& value);
+		void leftCamSelect(bool& value);
+		void rightCamSelect(bool& value);
+		void topCamSelect(bool& value);
+		void bottomCamSelect(bool& value);
 };
 
 

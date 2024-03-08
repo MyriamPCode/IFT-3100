@@ -153,30 +153,66 @@ void Application::update()
 }
 
 void Application::draw(){
-	renderer.interface.draw();
-	gui.draw();
-
+	renderer.interface.drawBackground();
 	if (isImportable) {
 		renderer.interface.import_activate = true;
-		ofDrawBitmapString("Please drag an image to import it.", 30, 30);
+		ofDrawBitmapString("Please drag an image to import it.", 30, 70);
 	}
-	//cam.begin();
-	camera->begin();
-	if (is_visible_camera)
-	{
-		if (camera_active != Camera::front)
-			camFront.draw();
-		if (camera_active != Camera::back)
-			camBack.draw();
-		if (camera_active != Camera::left)
-			camLeft.draw();
-		if (camera_active != Camera::right)
-			camRight.draw();
-		if (camera_active != Camera::top)
-			camTop.draw();
-		if (camera_active != Camera::down)
-			camBottom.draw();
+	//cam.begin(); //TODO: ***TROUVER UN MOYEN DE RELIER LES DEUX CAMERA POUR PASSER DU CIRCUIT A CELLE ORTHOGRAPHIQUE***
+	if (renderer.interface.orthoIsActive) {
+		if (renderer.interface.orthoRendering) {
+			cam.enableOrtho();
+		}
+		else if (renderer.interface.perspRendering) {
+			cam.disableOrtho();
+		}
+		cam.begin();
 	}
+	else if (renderer.interface.angleIsActive) {
+		if (renderer.interface.frontCamRendering) {
+			camera_active = Camera::front;
+			setupCamera();
+		}
+		else if (renderer.interface.backCamRendering) {
+			camera_active = Camera::back;
+			setupCamera();
+		}
+		else if (renderer.interface.leftCamRendering) {
+			camera_active = Camera::left;
+			setupCamera();
+		}
+		else if (renderer.interface.rightCamRendering) {
+			camera_active = Camera::right;
+			setupCamera();
+		}
+		else if (renderer.interface.topCamRendering) {
+			camera_active = Camera::top;
+			setupCamera();
+		}
+		else if (renderer.interface.bottomCamRendering) {
+			camera_active = Camera::down;
+			setupCamera();
+		}
+
+		camera->begin();
+
+		if (is_visible_camera)
+		{
+			if (camera_active != Camera::front)
+				camFront.draw();
+			if (camera_active != Camera::back)
+				camBack.draw();
+			if (camera_active != Camera::left)
+				camLeft.draw();
+			if (camera_active != Camera::right)
+				camRight.draw();
+			if (camera_active != Camera::top)
+				camTop.draw();
+			if (camera_active != Camera::down)
+				camBottom.draw();
+		}
+	}
+	
 	// Partie Myriam 
 	//************** 
 	//ofPushMatrix();
@@ -232,10 +268,15 @@ void Application::draw(){
 	renderer.draw();
 	
 	//ofPopMatrix();
-	
-	//cam.end();
-	camera->end();
+	if (renderer.interface.orthoIsActive) {
+		cam.end();
+	}
+	else if (renderer.interface.angleIsActive) {
+		camera->end();
+	}
 
+	renderer.interface.draw();
+	gui.draw();
 	guiScene.draw();
 }
 
@@ -360,7 +401,7 @@ void Application::keyReleased(int key){
 	if (key == 50) { // 50 = touche 2
 		moveCameraFar = false;
 	}
-	if (key == 'n') {
+	/*if (key == 'n') {
 		if (orthoEnabled) {
 			cam.disableOrtho();
 			orthoEnabled = false;
@@ -404,7 +445,7 @@ void Application::keyReleased(int key){
 		default:
 			break;
 
-	}
+	}*/
 }
 
 void Application::mouseMoved(int x, int y ){
@@ -595,6 +636,7 @@ void Application::mouseReleased(int x, int y, int button){
 				//call to import image method
 				cout << "import \n";
 				isImportable = !isImportable;
+				renderer.interface.import_activate = !renderer.interface.import_activate;
 				break;
 			case 1:
 				//call to export method
@@ -603,6 +645,9 @@ void Application::mouseReleased(int x, int y, int button){
 			case 2:
 				//call to animation method
 				cout << "animation \n";
+				break;
+			case 3:
+				renderer.interface.toggleCamOptions();
 				break;
 		}
 	}
