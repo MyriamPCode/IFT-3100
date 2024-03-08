@@ -27,25 +27,25 @@ void Application::setup(){
 	mesh_activate = false;
 	noise_activate = false;
 
-	primitivesGroupe.setup("Primitives");
+	//primitivesGroupe.setup("Primitives");
 
-	// Ajout des boutons pour les primitives
-	primitivesGroupe.add(drawTriangle.setup("Draw Triangle",false));
-	primitivesGroupe.add(drawCircle.setup("Draw Circle",false));
-	primitivesGroupe.add(drawRectangle.setup("Draw Rectangle",false));
-	primitivesGroupe.add(drawLine.setup("Draw Line", false));
-	primitivesGroupe.add(drawEllipse.setup("Draw Ellipse", false));
-	primitivesGroupe.add(drawBezier.setup("Draw Bezier", false));
-	
-	// Associer des fonctions de rappel aux boutons
-	drawTriangle.addListener(this, &Application::button_triangle);
-	drawCircle.addListener(this, &Application::button_circle);
-	drawRectangle.addListener(this, &Application::button_rectangle);
-	drawLine.addListener(this, &Application::button_line);
-	drawEllipse.addListener(this, &Application::button_ellipse);
-	drawBezier.addListener(this, &Application::button_bezier);
+	//// Ajout des boutons pour les primitives
+	//primitivesGroupe.add(drawTriangle.setup("Draw Triangle",false));
+	//primitivesGroupe.add(drawCircle.setup("Draw Circle",false));
+	//primitivesGroupe.add(drawRectangle.setup("Draw Rectangle",false));
+	//primitivesGroupe.add(drawLine.setup("Draw Line", false));
+	//primitivesGroupe.add(drawEllipse.setup("Draw Ellipse", false));
+	//primitivesGroupe.add(drawBezier.setup("Draw Bezier", false));
+	//
+	//// Associer des fonctions de rappel aux boutons
+	//drawTriangle.addListener(this, &Application::button_triangle);
+	//drawCircle.addListener(this, &Application::button_circle);
+	//drawRectangle.addListener(this, &Application::button_rectangle);
+	//drawLine.addListener(this, &Application::button_line);
+	//drawEllipse.addListener(this, &Application::button_ellipse);
+	//drawBezier.addListener(this, &Application::button_bezier);
 
-	drawingGUI.add(&primitivesGroupe);
+	//drawingGUI.add(&primitivesGroupe);
 
 	reinitialisationGroupe.setup("Reinitialisation");
 	reinitialisationGroupe.add(resetButton.setup("Reset", false));
@@ -127,7 +127,7 @@ void Application::update()
 void Application::draw(){
 	if (isImportable) {
 		renderer.import_activate = true;
-		ofDrawBitmapString("Please drag an image to import it.", 30, 30);
+		ofDrawBitmapString("Please drag an image to import it.", 250, 45);
 	}
 	
 	// Partie Myriam 
@@ -306,7 +306,7 @@ void Application::mouseDragged(int x, int y, int button){
 	renderer.is_mouse_button_dragged = true;
 	renderer.is_mouse_button_pressed = false;
 
-	if (draw_line && drawLine)
+	if (draw_line)
 	{
 		renderer.ligne.addVertex(renderer.mouse_drag_x, renderer.mouse_drag_y);
 	}
@@ -335,8 +335,7 @@ void Application::mousePressed(int x, int y, int button){
 	renderer.mouse_press_x = x;
 	renderer.mouse_press_y = y;
 
-	if(draw_triangle && drawTriangle)
-	{
+	if(draw_triangle) {
 		// A partir du mouse click, calcul des 2 autres sommets 
 		newX2 = renderer.mouse_press_x - diffX;
 		newY2 = renderer.mouse_press_y + diffY;
@@ -357,14 +356,11 @@ void Application::mousePressed(int x, int y, int button){
 		renderer.triangleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
 		renderer.triangleFill = renderer.interface.fillEnabled;
 		renderer.triangleStroke = renderer.interface.slider_stroke_weight;
-		//ofxToggle button;
-		auto button = make_unique<ofxToggle>();
-		button->addListener(this, &Application::buttons_list);
-		guiScene.add(button->setup("TRIANGLE", shapeBool)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton � la liste des boutons
+
+		guiScene.add(triangle);
 	}
 
-	if(draw_circle && drawCircle)
+	if(draw_circle)
 	{ 
 		forme.setXC(renderer.mouse_press_x); 
 		forme.setYC(renderer.mouse_press_y); 
@@ -374,13 +370,11 @@ void Application::mousePressed(int x, int y, int button){
 		renderer.cercleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
 		renderer.cercleFill = renderer.interface.fillEnabled;
 		renderer.cercleStroke = renderer.interface.slider_stroke_weight;
-		//ofxToggle button;
-		auto button = make_unique<ofxToggle>();
-		guiScene.add(button->setup("CERCLE", false)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton � la liste des boutons
+
+		guiScene.add(circle);
 	}
 
-	if(draw_rectangle && drawRectangle)
+	if(draw_rectangle)
 	{ 
 		forme.setXR(renderer.mouse_current_x);
 		forme.setYR(renderer.mouse_current_y); 
@@ -389,15 +383,11 @@ void Application::mousePressed(int x, int y, int button){
 		renderer.rectangleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
 		renderer.rectangleFill = renderer.interface.fillEnabled;
 		renderer.rectangleStroke = renderer.interface.slider_stroke_weight;
-		//ofxToggle button;
-		auto button = make_unique<ofxToggle>();
-		guiScene.add(button->setup("RECTANGLE", false)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton � la liste des boutons
+
+		guiScene.add(rectangle);
 	}
 
-	// DRAW LINE
-	///////////////////////////////
-	if (draw_line && drawLine)
+	if (draw_line)
 	{
 		//renderer.vecteur_lignes_ptr->emplace_back(make_unique<ofPolyline>());
 		//auto& polyline = renderer.vecteur_lignes_ptr->back();
@@ -407,13 +397,11 @@ void Application::mousePressed(int x, int y, int button){
 		renderer.okDessiner = true;
 		renderer.ligneColor = renderer.interface.color_picker_stroke; // Ajuste les parametres
 		renderer.ligneStroke = renderer.interface.slider_stroke_weight;
-		auto button = make_unique<ofxToggle>();
-		guiScene.add(button->setup("LIGNE", false)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton � la liste des boutons
-	}
-	///////////////////////////////
 
-	if (draw_ellipse && drawEllipse)
+		guiScene.add(line);
+	}
+
+	if (draw_ellipse)
 	{
 		forme.setXR(renderer.mouse_press_x);
 		forme.setYR(renderer.mouse_press_y);
@@ -422,12 +410,11 @@ void Application::mousePressed(int x, int y, int button){
 		renderer.ellipseColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
 		renderer.ellipseFill = renderer.interface.fillEnabled;
 		renderer.ellipseStroke = renderer.interface.slider_stroke_weight;
-		auto button = make_unique<ofxToggle>();
-		guiScene.add(button->setup("ELLIPSE", false)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton � la liste des boutons
+
+		guiScene.add(ellipse);
 	}
 
-	if(draw_bezier && drawBezier)
+	if(draw_bezier)
 	{
 		float x1 = renderer.mouse_press_x; 
 		float y1 = renderer.mouse_press_y; 
@@ -453,11 +440,9 @@ void Application::mousePressed(int x, int y, int button){
 		renderer.bezierColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
 		renderer.bezierFill = renderer.interface.fillEnabled;
 		renderer.bezierStroke = renderer.interface.slider_stroke_weight;
-		auto button = make_unique<ofxToggle>();
-		guiScene.add(button->setup("BEZIER", false)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton � la liste des boutons
+		
+		guiScene.add(bezier);
 	}
-
 }
 
 void Application::mouseReleased(int x, int y, int button){
@@ -500,21 +485,31 @@ void Application::mouseReleased(int x, int y, int button){
 			//call to pen method
 			cout << "pen \n";
 			toggleDrawingGUI(forme.LIGNE);
+			drawLine();
 			break;
 		case 2:
 			//call to ellipse method
-			cout << "ellipse \n";
-			toggleDrawingGUI(forme.ELLIPSE);
+			cout << "circle \n";
+			toggleDrawingGUI(forme.CERCLE);
+			drawCircle();
 			break;
 		case 3:
 			//call to rectangle method
 			cout << "rectangle \n";
-			toggleDrawingGUI(forme.CERCLE);
+			toggleDrawingGUI(forme.RECTANGLE);
+			drawRectangle();
 			break;
 		case 4:
 			//call to triangle method
 			cout << "triangle \n";
 			toggleDrawingGUI(forme.TRIANGLE);
+			drawTriangle();
+			break;
+		case 5:
+			//call to ellipse method
+			cout << "ellipse \n";
+			toggleDrawingGUI(forme.ELLIPSE);
+			drawEllipse();
 			break;
 		}
 	}
@@ -522,7 +517,7 @@ void Application::mouseReleased(int x, int y, int button){
 	renderer.mouse_current_x = x;
 	renderer.mouse_current_y = y;
 
-	if (draw_line && drawLine)
+	if (draw_line)
 	{
 		renderer.is_mouse_button_dragged = true; 
 		renderer.ligne.addVertex(x, y);
@@ -573,94 +568,77 @@ void Application::dragEvent(ofDragInfo dragInfo) {
 	}
 }
 
-void Application::button_triangle(bool& value) { 
-	if (value) {
-		draw_triangle = !draw_triangle;
-		draw_circle = draw_rectangle = draw_line = draw_ellipse = draw_bezier = false;
-		drawCircle = drawRectangle = drawLine = drawEllipse = drawBezier = false;
-		if (!renderer.triangleColors.empty()) { // Conserve les parametres de la forme pour la reselection
-			renderer.interface.colorPickerFill = renderer.triangleColors[1];
-			renderer.interface.color_picker_stroke = renderer.triangleColors[0];
-			if (renderer.interface.fillButton != renderer.triangleFill) {
-				renderer.interface.fillButton = renderer.triangleFill;
-			}
-			renderer.interface.slider_stroke_weight = renderer.triangleStroke;
+void Application::drawTriangle() {
+	cout << "drawTriangle 2 \n";
+	draw_triangle = !draw_triangle;
+	draw_circle = draw_rectangle = draw_line = draw_ellipse = draw_bezier = false;
+	
+	if (!renderer.triangleColors.empty()) { // Conserve les parametres de la forme pour la reselection
+		renderer.interface.colorPickerFill = renderer.triangleColors[1];
+		renderer.interface.color_picker_stroke = renderer.triangleColors[0];
+		if (renderer.interface.fillButton != renderer.triangleFill) {
+			renderer.interface.fillButton = renderer.triangleFill;
 		}
+		renderer.interface.slider_stroke_weight = renderer.triangleStroke;
 	}
 }
 
-void Application::button_circle(bool& value) {
-	if (value) {
-		draw_circle = !draw_circle;
-		draw_triangle = draw_rectangle = draw_line = draw_ellipse = draw_bezier = false;
-		drawTriangle = drawRectangle = drawLine = drawEllipse = drawBezier = false;
-		if (!renderer.cercleColors.empty()) {// Conserve les parametres de la forme pour la reselection
-			renderer.interface.colorPickerFill = renderer.cercleColors[1];
-			renderer.interface.color_picker_stroke = renderer.cercleColors[0];
-			if (renderer.interface.fillButton != renderer.cercleFill) {
-				renderer.interface.fillButton = renderer.cercleFill;
-			}
-			renderer.interface.slider_stroke_weight = renderer.cercleStroke;
+void Application::drawCircle() {
+	draw_circle = !draw_circle;
+	draw_triangle = draw_rectangle = draw_line = draw_ellipse = draw_bezier = false;
+	if (!renderer.cercleColors.empty()) {// Conserve les parametres de la forme pour la reselection
+		renderer.interface.colorPickerFill = renderer.cercleColors[1];
+		renderer.interface.color_picker_stroke = renderer.cercleColors[0];
+		if (renderer.interface.fillButton != renderer.cercleFill) {
+			renderer.interface.fillButton = renderer.cercleFill;
 		}
+		renderer.interface.slider_stroke_weight = renderer.cercleStroke;
 	}
 }
 
-void Application::button_rectangle(bool& value) {
-	if (value) {
-		draw_rectangle = !draw_rectangle;
-		draw_triangle = draw_circle = draw_line = draw_ellipse = draw_bezier = false;
-		drawTriangle = drawCircle = drawLine = drawEllipse = drawBezier = false;
-		if (!renderer.rectangleColors.empty()) { // Conserve les parametres de la forme pour la reselection
-			renderer.interface.colorPickerFill = renderer.rectangleColors[1];
-			renderer.interface.color_picker_stroke = renderer.rectangleColors[0];
-			if (renderer.interface.fillButton != renderer.rectangleFill) {
-				renderer.interface.fillButton = renderer.rectangleFill;
-			}
-			renderer.interface.slider_stroke_weight = renderer.rectangleStroke;
+void Application::drawRectangle() {
+	draw_rectangle = !draw_rectangle;
+	draw_triangle = draw_circle = draw_line = draw_ellipse = draw_bezier = false;
+	if (!renderer.rectangleColors.empty()) { // Conserve les parametres de la forme pour la reselection
+		renderer.interface.colorPickerFill = renderer.rectangleColors[1];
+		renderer.interface.color_picker_stroke = renderer.rectangleColors[0];
+		if (renderer.interface.fillButton != renderer.rectangleFill) {
+			renderer.interface.fillButton = renderer.rectangleFill;
 		}
+		renderer.interface.slider_stroke_weight = renderer.rectangleStroke;
 	}
 }
 
-void Application::button_line(bool& value) {
-	if (value) {
-		draw_line = !draw_line;
-		draw_triangle = draw_rectangle = draw_circle = draw_ellipse = draw_bezier = false;
-		drawTriangle = drawRectangle = drawCircle = drawEllipse = drawBezier = false;
-		renderer.interface.color_picker_stroke = renderer.ligneColor;
-		renderer.interface.slider_stroke_weight = renderer.ligneStroke;
-		
+void Application::drawLine() {
+	draw_line = !draw_line;
+	draw_triangle = draw_rectangle = draw_circle = draw_ellipse = draw_bezier = false;
+	renderer.interface.color_picker_stroke = renderer.ligneColor;
+	renderer.interface.slider_stroke_weight = renderer.ligneStroke;
+}
+
+void Application::drawEllipse() {
+	draw_ellipse = !draw_ellipse;
+	draw_triangle = draw_rectangle = draw_circle = draw_line = draw_bezier = false;
+	if (!renderer.ellipseColors.empty()) { // Conserve les parametres de la forme pour la reselection
+		renderer.interface.colorPickerFill = renderer.ellipseColors[1];
+		renderer.interface.color_picker_stroke = renderer.ellipseColors[0];
+		if (renderer.interface.fillButton != renderer.ellipseFill) {
+			renderer.interface.fillButton = renderer.ellipseFill;
+		}
+		renderer.interface.slider_stroke_weight = renderer.ellipseStroke;
 	}
 }
 
-void Application::button_ellipse(bool& value) {
-	if (value) {
-		draw_ellipse = !draw_ellipse;
-		draw_triangle = draw_rectangle = draw_circle = draw_line = draw_bezier = false;
-		drawTriangle = drawRectangle = drawCircle = drawLine = drawBezier = false;
-		if (!renderer.ellipseColors.empty()) { // Conserve les parametres de la forme pour la reselection
-			renderer.interface.colorPickerFill = renderer.ellipseColors[1];
-			renderer.interface.color_picker_stroke = renderer.ellipseColors[0];
-			if (renderer.interface.fillButton != renderer.ellipseFill) {
-				renderer.interface.fillButton = renderer.ellipseFill;
-			}
-			renderer.interface.slider_stroke_weight = renderer.ellipseStroke;
+void Application::drawBezier() {
+	draw_bezier = !draw_bezier;
+	draw_triangle = draw_rectangle = draw_circle = draw_line = draw_ellipse = false;
+	if (!renderer.bezierColors.empty()) { // Conserve les parametres de la forme pour la reselection
+		renderer.interface.colorPickerFill = renderer.bezierColors[1];
+		renderer.interface.color_picker_stroke = renderer.bezierColors[0];
+		if (renderer.interface.fillButton != renderer.bezierFill) {
+			renderer.interface.fillButton = renderer.bezierFill;
 		}
-	}
-}
-
-void Application::button_bezier(bool& value) {
-	if (value) {
-		draw_bezier = !draw_bezier;
-		draw_triangle = draw_rectangle = draw_circle = draw_line = draw_ellipse = false;
-		drawTriangle = drawRectangle = drawCircle = drawLine = drawEllipse = false;
-		if (!renderer.bezierColors.empty()) { // Conserve les parametres de la forme pour la reselection
-			renderer.interface.colorPickerFill = renderer.bezierColors[1];
-			renderer.interface.color_picker_stroke = renderer.bezierColors[0];
-			if (renderer.interface.fillButton != renderer.bezierFill) {
-				renderer.interface.fillButton = renderer.bezierFill;
-			}
-			renderer.interface.slider_stroke_weight = renderer.bezierStroke;
-		}
+		renderer.interface.slider_stroke_weight = renderer.bezierStroke;
 	}
 }
 
@@ -674,11 +652,8 @@ void Application::reset(bool& value) {
 		uiSize.set(ofVec2f(6));
 
 		draw_triangle = false;
-		drawTriangle = false;
 		draw_circle = false;
-		drawCircle = false;
 		draw_rectangle = false;
-		drawRectangle = false;
 		resetButton = false;
 		rotationButton = false;
 		rotation_activate = false;

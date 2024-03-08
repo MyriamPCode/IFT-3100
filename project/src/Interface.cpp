@@ -26,6 +26,8 @@ void Interface::setup() {
 	iconSideBar.push_back(imgRectangle);
 	imgTriangle.load("img/triangle.png");
 	iconSideBar.push_back(imgTriangle);
+	imgEllipse.load("img/ellipse.png");
+	iconSideBar.push_back(imgEllipse);
 
 	outilsGui.setup();
 	outilsGui.loadFont("roboto/Roboto-Regular.ttf", 10);

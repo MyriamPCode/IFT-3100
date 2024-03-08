@@ -38,6 +38,7 @@ class Interface {
 		ofImage imgRectangle;
 		ofImage imgTriangle;
 		ofImage imgAnimation;
+		ofImage imgEllipse;
 
 		ofColor backgroundLineColor = ofColor(217, 217, 217);
 		ofColor backgroundInteractionColor = ofColor(4, 3, 77);
