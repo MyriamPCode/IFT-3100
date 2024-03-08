@@ -14,6 +14,8 @@ void Interface::setup() {
 	iconTopBar.push_back(imgExport);
 	imgAnimation.load("img/animation.png");
 	iconTopBar.push_back(imgAnimation);
+	imgModele.load("img/model.png");
+	iconTopBar.push_back(imgModele);
 
 	//same here but for the side bar
 	imgColorWheel.load("img/color-wheel.png");
@@ -52,24 +54,22 @@ void Interface::setup() {
 
 	typeRender = MeshRenderMode::wireframe;
 
-	modelsGui.setup();
+	modelsGui.setup("Model options");
 	modelsGui.loadFont("roboto/Roboto-Regular.ttf", 10);
-	modelsGui.setPosition((WIDTH - INTERACTION_BAR_HEIGHT)/2, INTERACTION_BAR_HEIGHT);
+	modelsGui.setPosition(200, 40);
+	modelsGui.setSize(200,1080);
 
-	modelsGui.add(modelToggle.setup("Montrer les modeles", false));
-	modelsGui.add(fillRender.setup("Render en remplissant", false));
-	modelsGui.add(wireframeRender.setup("Render avec du wireframe", true));
-	modelsGui.add(pointRender.setup("Render avec des points", false));
+	modelsGui.add(modelToggle.setup("Show models", false));
+	modelsGui.add(fillRender.setup("Fill render", false));
+	modelsGui.add(wireframeRender.setup("Wireframe render", true));
+	modelsGui.add(pointRender.setup("Vertex render", false));
 
 	modelToggle.addListener(this, &Interface::enableModels);
 	fillRender.addListener(this, &Interface::modelFill);
 	wireframeRender.addListener(this, &Interface::modelWireframe);
 	pointRender.addListener(this, &Interface::modelPoints);
 
-	modelsGui.setFillColor(backgroundInteractionColor);
-	modelsGui.setTextColor(backgroundInteractionColor);
 	modelsGui.maximizeAll();
-	modelsGui.disableHeader();
 }
 
 void Interface::draw() {

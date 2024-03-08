@@ -274,15 +274,6 @@ void Application::keyReleased(int key){
 	}
 	if (key == 'o') { //Change le type de dessin des modèles 3D
 		renderer.interface.toggleModelOptions();
-		/*if (renderer.typeRender == MeshRenderMode::wireframe) {
-			renderer.typeRender = MeshRenderMode::fill;
-		}
-		else if (renderer.typeRender == MeshRenderMode::fill) {
-			renderer.typeRender = MeshRenderMode::vertex;
-		}
-		else if (renderer.typeRender == MeshRenderMode::vertex) {
-			renderer.typeRender = MeshRenderMode::wireframe;
-		}*/
 	}
 }
 
@@ -482,6 +473,10 @@ void Application::mouseReleased(int x, int y, int button){
 			case 2:
 				//call to animation method
 				cout << "animation \n";
+				break;
+			case 3:
+				renderer.interface.toggleModelOptions();
+				cout << "modele \n";
 				break;
 		}
 	}
