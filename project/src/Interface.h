@@ -29,6 +29,7 @@ class Interface {
 		void backgroundLine();
 
 		bool mesh_activate;
+		bool noise_activate;
 
 	private:
 		bool outilsPressed = false;
@@ -56,6 +57,7 @@ class Interface {
 		ofxPanel mailleGui;
 		bool mailleVisible = false;
 		ofParameter<bool> meshButton = false;
+		ofParameter<bool> meshAnimationButton = false;
 		
 
 		void backgroundInteraction();

@@ -55,6 +55,8 @@ void Interface::setup() {
 	mailleGui.setup("Mesh");
 	meshButton.setName("Mesh");
 	mailleGui.add(meshButton);
+	meshAnimationButton.setName("Mesh animation");
+	mailleGui.add(meshAnimationButton);
 
 }
 
@@ -71,7 +73,11 @@ void Interface::draw() {
 		mailleGui.draw();
 		if (meshButton) {
 			mesh_activate = true;
+			if (meshAnimationButton) {
+				noise_activate = true;
+			}
 		}
+		
 	}
 }
 

@@ -86,19 +86,6 @@ void Application::setup(){
 void Application::update()
 {
 	renderer.update();
-	// Animation sur la maille 
-	/*
-	if (noise_activate) {
-		int count = 0;
-		for (int x = 0; x < size; x++) {
-			for (int y = 0; y < size; y++) {
-				ofVec3f vertex = mesh.getVertex(count);
-				vertex.z = ofMap(ofNoise(count, ofGetElapsedTimef()), 0, 1, 0, uiAmount);
-				mesh.setVertex(count, vertex);
-				count++;
-			}
-		}
-	}*/
 
 	if (renderer.isRecording) {
 		// Mettez � jour et capturez l'image � intervalles r�guliers
@@ -447,8 +434,10 @@ void Application::mouseReleased(int x, int y, int button){
 				rotation_activate = true;
 				for (auto& forme : renderer.v_formes) {
 					ofPushMatrix();
+					ofBeginShape();
 				    renderer.rotation(renderer.rotate);
 				    forme->draw();
+					ofEndShape();
 					ofPopMatrix();
 				}
 				break;
@@ -639,7 +628,6 @@ void Application::reset(bool& value) {
 		resetButton = false;
 		rotationButton = false;
 		rotation_activate = false;
-		meshButton = false;
 		noise_activate = false;
 		meshAnimationButton = false;
 	}

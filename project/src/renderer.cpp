@@ -331,6 +331,20 @@ void Renderer::update()
 	// Rotations des primitives vectorielles
 	rotate++;
 
+	// Animation sur la maille 
+	/*
+	if (noise_activate) {
+		int count = 0;
+		for (int x = 0; x < size; x++) {
+			for (int y = 0; y < size; y++) {
+				ofVec3f vertex = mesh.getVertex(count);
+				vertex.z = ofMap(ofNoise(count, ofGetElapsedTimef()), 0, 1, 0, uiAmount);
+				mesh.setVertex(count, vertex);
+				count++;
+			}
+		}
+	}*/
+
 	if (isRecording)
 	{
 		frameCounter++;
@@ -385,7 +399,7 @@ void Renderer::captureImage() {
 }
 
 void Renderer::rotation(float rotate) {
-	/*for (auto& forme : *v_formes_ptr) {
+	/*for (auto& forme : v_formes) {
 		if (forme->getType() == Forme::CERCLE) {
 			ofPushMatrix();
 			ofRotateXDeg(rotate);
@@ -404,12 +418,10 @@ void Renderer::rotation(float rotate) {
 			cout << "Le pointeur vers le vecteur de formes n'est pas valide." << endl;
 		}*/
 
-	ofPushMatrix();
+	
 	ofRotateXDeg(rotate);
 	ofRotateYDeg(rotate);
 	ofRotateZDeg(rotate);
 	
-	ofPopMatrix();
-		
 	
 }
