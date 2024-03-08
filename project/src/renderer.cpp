@@ -16,7 +16,7 @@ void Renderer::setup() {
 	gui.add(nameField);
 	exportButton.setName("Export");
 	gui.add(exportButton);
-	gui.setPosition(200, 40);
+	gui.setPosition(0, 0);
 
 	is_mouse_button_pressed = false;
 	is_mouse_button_dragged = false;

@@ -9,12 +9,18 @@ void Application::setup(){
 	ofBackground(backgroundColor);
 	renderer.setup();
 	//ofSetOrientation(OF_ORIENTATION_180);
-	cam.setPosition(ofVec3f(0, 0, 500));
+	//cam.setPosition(ofVec3f(0, 0, 500));
+	//cam.setPosition(ofPoint(ofGetWidth()/2, ofGetHeight()/2, 700));
 	//gui.setPosition(ofGetWidth() - gui.getWidth(), ofGetHeight() - gui.getHeight());
-	cam.setDistance(500);
+	//cam.setDistance(500);
+
+	cam.setNearClip(0.1f);
+	cam.setFarClip(3000.0f);
+	cam.setPosition(ofPoint(ofGetWidth() / 2, ofGetHeight() / 2, 700));
+	cam.lookAt(ofPoint(ofGetWidth() / 2, ofGetHeight() / 2, 0));
 	
 	gui.setup();
-	gui.setPosition(0, 0);
+	gui.setPosition(300, 40);
 	gui.add(uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
 	gui.add(uiAmount.set("amount", 1, 0, 64)); // La quantit� de primitives. Nombre maximal est 64 et nombre minimum est 1
 	gui.add(uiStep.set("step", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
@@ -568,7 +574,7 @@ void Application::windowResized(int w, int h){
 
 
 void Application::gotMessage(ofMessage msg){
-	ofEasyCam cam;
+	//ofEasyCam cam;
 
 }
 

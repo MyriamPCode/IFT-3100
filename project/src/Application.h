@@ -16,7 +16,7 @@ class Application : public ofBaseApp{
 		ofMesh mesh;
 		int size = 96; // Taille de la maille
 
-		ofEasyCam cam;
+		ofCamera cam;
 
 		bool isImportable = false; //Indique si le mode d'importation est actif ou non
 		int imgDistFromMax = 0; //Indicateur de la position de l'image par rapport � la taille maximale de la liste
