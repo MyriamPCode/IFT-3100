@@ -138,6 +138,7 @@ void Renderer::dessinerSphere(){
 			if(formeCourante->getType() == Forme::SPHERE){
 				ofVec3f viktor = formeCourante->getVSphere();
 				ofDrawSphere(viktor.x, viktor.y, 0, 150);
+			
 			}
 		}
 	}

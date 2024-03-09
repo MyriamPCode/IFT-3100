@@ -673,11 +673,14 @@ void Application::mousePressed(int x, int y, int button){
   
 		if (draw_sphere) //  && drawSphere
 		{
-			float x = renderer.mouse_press_x / 1.00;
-			float y = renderer.mouse_press_y / 1.00;
+			float x = renderer.interface.mouse_press_x / 1.00;
+			float y = renderer.interface.mouse_press_y / 1.00;
 			ofVec3f viktor(x, y, 0);
 			forme.setVSphere(viktor); 
+			//forme.setXS(x);
+			//forme.setYS(y);
 			renderer.v_formes.push_back(make_unique<Forme>(Forme::SPHERE, forme.getVSphere(), forme.getSphereRad()));
+			//renderer.v_formes.push_back(make_unique<Forme>(Forme::SPHERE, forme.getXS(), forme.getYS(), 0, forme.getSphereRad()));
 			renderer.okDessiner = true; 
 			auto button = make_unique<ofxToggle>(); 
 			//guiScene.add(button->setup("SPHERE", false)); 
@@ -688,8 +691,8 @@ void Application::mousePressed(int x, int y, int button){
 
 		if (draw_cube) //  && drawCube
 		{
-			float x = renderer.mouse_press_x;
-			float y = renderer.mouse_press_y;
+			float x = renderer.interface.mouse_press_x;
+			float y = renderer.interface.mouse_press_y;
 			ofVec3f viktor(x, y, 0);
 			forme.setVSphere(viktor);
 			forme.setSizeCube(150);
