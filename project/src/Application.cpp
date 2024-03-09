@@ -6,7 +6,7 @@
 using namespace std;
 
 void Application::setup(){
-	ofSetWindowTitle("Team 7");
+	ofSetWindowTitle("BIBO");
 	ofBackground(backgroundColor);
 	renderer.setup();
 
@@ -513,16 +513,16 @@ void Application::mousePressed(int x, int y, int button){
 		}
 	}
 
-	renderer.is_mouse_button_pressed = true;
-	renderer.is_mouse_button_dragged = false;
-	renderer.mouse_current_x = x;
-	renderer.mouse_current_y = y;
+	renderer.interface.is_mouse_button_pressed = true;
+	renderer.interface.is_mouse_button_dragged = false;
+	renderer.interface.mouse_current_x = x;
+	renderer.interface.mouse_current_y = y;
 	renderer.interface.mouse_press_x = x;
 	renderer.interface.mouse_press_y = y;
 
 	// Pour les spheres et cubes, peuvent etre ameliore plus tard
-	renderer.mouse_press_x = x;
-	renderer.mouse_press_y = y;
+	renderer.interface.mouse_press_x = x;
+	renderer.interface.mouse_press_y = y;
 
 	if(draw_triangle) {
 		// A partir du mouse click, calcul des 2 autres sommets 
