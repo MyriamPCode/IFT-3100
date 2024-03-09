@@ -138,7 +138,7 @@ void Renderer::dessinerTriangle() {
 			if (formeCourante->getType() == Forme::TRIANGLE) {
 				//if (triangleFill) {
 					//ofFill();
-					ofSetLineWidth(triangleStroke);
+					ofSetLineWidth(formeCourante->getOutlineWeight());
 					ofSetColor(formeCourante->getColors()[1]);
 					// Dessin du triangle avec translation si l'index correspond et le mode de transformation est activé
 					if (i == inputIndex && modeTransformState) {
@@ -150,7 +150,7 @@ void Renderer::dessinerTriangle() {
 						ofRotateYDeg(uiRotate->y); // pivoter sur y 
 						ofRotateZDeg(uiRotate->z); // pivoter sur z 
 						ofScale(uiSize->x, uiSize->y);
-							if (triangleFill) { // Remplissage
+							if (formeCourante->getIsFilled()) { // Remplissage
 								ofFill();
 								ofSetColor(formeCourante->getColors()[1]);
 								ofBeginShape();
@@ -170,7 +170,7 @@ void Renderer::dessinerTriangle() {
 						ofPopMatrix();
 					}
 					else {
-						if (triangleFill) { // Remplissage
+						if (formeCourante->getIsFilled()) { // Remplissage
 							ofFill();
 							ofSetColor(formeCourante->getColors()[1]);
 							ofDrawTriangle(formeCourante->getX1(), formeCourante->getY1(),
@@ -179,6 +179,7 @@ void Renderer::dessinerTriangle() {
 						}
 						// Dessin du triangle sans translation
 						ofNoFill();
+						ofSetLineWidth(formeCourante->getOutlineWeight());
 						ofSetColor(formeCourante->getColors()[0]); // Couleur de contour normale
 						ofDrawTriangle(formeCourante->getX1(), formeCourante->getY1(),
 							formeCourante->getX2(), formeCourante->getY2(),
@@ -197,7 +198,7 @@ void Renderer::dessinerCercle() {
 			if (formeCourante->getType() == Forme::CERCLE) {
 				//if (cercleFill) {
 					//ofFill();
-					ofSetLineWidth(cercleStroke);
+					ofSetLineWidth(formeCourante->getOutlineWeight());
 					ofSetColor(cercleColors[1]);
 					// Dessiner le cercle avec transformation si l'index correspond et le mode de transformation est activé
 					if (i == inputIndex && modeTransformState) {
@@ -209,7 +210,7 @@ void Renderer::dessinerCercle() {
 						ofRotateZDeg(uiRotate->z); // pivoter sur z 
 						ofTranslate(uiStep->x, uiStep->y);
 						ofTranslate(uiShift->x, uiShift->y);
-						if (cercleFill) { // Remplissage
+						if (formeCourante->getIsFilled()) { // Remplissage
 							ofFill();
 							ofSetColor(formeCourante->getColors()[1]);
 							ofBeginShape();
@@ -225,13 +226,13 @@ void Renderer::dessinerCercle() {
 					}
 					else {
 						// Dessiner le rectangle sans transformation
-						if (cercleFill) { // Remplissage
+						if (formeCourante->getIsFilled()) { // Remplissage
 							ofFill();
 							ofSetColor(formeCourante->getColors()[1]);
 							ofDrawCircle(formeCourante->getXC(), formeCourante->getYC(), formeCourante->getRayon());
 						}
 						ofNoFill(); // Outline
-						ofSetLineWidth(cercleStroke);
+						ofSetLineWidth(formeCourante->getOutlineWeight());
 						ofSetColor(formeCourante->getColors()[0]);
 						ofDrawCircle(formeCourante->getXC(), formeCourante->getYC(), formeCourante->getRayon());
 					}
@@ -250,7 +251,7 @@ void Renderer::dessinerRectangle() {
 			if (formeCourante->getType() == Forme::RECTANGLE) {
 				//if (rectangleFill) {
 					//ofFill();
-					ofSetLineWidth(rectangleStroke);
+					ofSetLineWidth(formeCourante->getOutlineWeight());
 					ofSetColor(rectangleColors[1]);
 					ofPushMatrix();
 					ofTranslate(0, 0, 0); 
@@ -264,7 +265,7 @@ void Renderer::dessinerRectangle() {
 						ofTranslate(uiStep->x, uiStep->y);
 						ofTranslate(uiShift->x, uiShift->y);
 						ofScale(uiSize->x, uiSize->y,1);
-						if (rectangleFill) { // Remplissage
+						if (formeCourante->getIsFilled()) { // Remplissage
 							ofFill();
 							ofSetColor(formeCourante->getColors()[1]);
 							ofBeginShape();
@@ -283,14 +284,14 @@ void Renderer::dessinerRectangle() {
 					}
 					else {
 						// Dessiner le rectangle sans transformation
-						if (rectangleFill) { // Remplissage
+						if (formeCourante->getIsFilled()) { // Remplissage
 							ofFill();
 							ofSetColor(formeCourante->getColors()[1]);
 							ofDrawRectangle(formeCourante->getXR(), formeCourante->getYR(),
 								formeCourante->getWidth(), formeCourante->getHeight());
 						}
 						ofNoFill(); // Outline
-						ofSetLineWidth(rectangleStroke);
+						ofSetLineWidth(formeCourante->getOutlineWeight());
 						ofSetColor(formeCourante->getColors()[0]);
 						ofDrawRectangle(formeCourante->getXR(), formeCourante->getYR(),
 							formeCourante->getWidth(), formeCourante->getHeight());
@@ -323,7 +324,7 @@ void Renderer::dessinerEllipse() {
 			if (formeCourante->getType() == Forme::ELLIPSE) {
 				//if (ellipseFill) {
 					//ofFill();
-					ofSetLineWidth(ellipseStroke);
+					ofSetLineWidth(formeCourante->getOutlineWeight());
 					ofSetColor(ellipseColors[1]);
 					// Dessiner l'ellipse avec transformation si l'index correspond et le mode de transformation est activé
 					if (i == inputIndex && modeTransformState) {
@@ -333,7 +334,7 @@ void Renderer::dessinerEllipse() {
 						ofRotateXDeg(uiRotate->x); // pivoter sur x 
 						ofRotateYDeg(uiRotate->y); // pivoter sur y 
 						ofRotateZDeg(uiRotate->z); // pivoter sur z
-						if (ellipseFill) { // Remplissage
+						if (formeCourante->getIsFilled()) { // Remplissage
 							ofFill();
 							ofSetColor(formeCourante->getColors()[1]);
 							ofBeginShape();
@@ -351,14 +352,14 @@ void Renderer::dessinerEllipse() {
 					}
 					else {
 						// Dessiner le ellipse sans transformation
-						if (ellipseFill) { // Remplissage
+						if (formeCourante->getIsFilled()) { // Remplissage
 							ofFill();
 							ofSetColor(formeCourante->getColors()[1]);
 							ofDrawEllipse(formeCourante->getXR(), formeCourante->getYR(),
 								formeCourante->getWidth(), formeCourante->getHeight());
 						}
 						ofNoFill(); // Outline
-						ofSetLineWidth(ellipseStroke);
+						ofSetLineWidth(formeCourante->getOutlineWeight());
 						ofSetColor(formeCourante->getColors()[0]);
 						ofDrawEllipse(formeCourante->getXR(), formeCourante->getYR(),
 							formeCourante->getWidth(), formeCourante->getHeight());
@@ -377,7 +378,7 @@ void Renderer::dessinerBezier() {
 			if (formeCourante->getType() == Forme::BEZIER) {
 				//if (bezierFill) {
 					//ofFill();
-					ofSetLineWidth(bezierStroke);
+					ofSetLineWidth(formeCourante->getOutlineWeight());
 					ofSetColor(bezierColors[1]);
 					// Dessiner la courbe de Bézier avec transformation si l'index correspond et le mode de transformation est activé
 					if (i == inputIndex && modeTransformState) {
@@ -390,7 +391,7 @@ void Renderer::dessinerBezier() {
 						ofRotateZDeg(uiRotate->z); // pivoter sur z 
 						ofTranslate(uiStep->x, uiStep->y);
 						ofTranslate(uiShift->x, uiShift->y);
-						if (bezierFill) { // Remplissage
+						if (formeCourante->getIsFilled()) { // Remplissage
 							ofFill();
 							ofSetColor(formeCourante->getColors()[1]);
 							ofBeginShape();
@@ -410,14 +411,14 @@ void Renderer::dessinerBezier() {
 					}
 					else {
 						// Dessiner la courbe de Bézier sans transformation
-						if (bezierFill) { // Remplissage
+						if (formeCourante->getIsFilled()) { // Remplissage
 							ofFill();
 							ofSetColor(formeCourante->getColors()[1]);
 							ofDrawBezier(formeCourante->getX1(), formeCourante->getX2(), formeCourante->getXB1(), formeCourante->getYB1(),
 								formeCourante->getXB2(), formeCourante->getYB2(), formeCourante->getX2(), formeCourante->getY2());
 						}
 						ofNoFill(); // Outline
-						ofSetLineWidth(bezierStroke);
+						ofSetLineWidth(formeCourante->getOutlineWeight());
 						ofSetColor(formeCourante->getColors()[0]);
 						ofDrawBezier(formeCourante->getX1(), formeCourante->getX2(), formeCourante->getXB1(), formeCourante->getYB1(),
 							formeCourante->getXB2(), formeCourante->getYB2(), formeCourante->getX2(), formeCourante->getY2());
