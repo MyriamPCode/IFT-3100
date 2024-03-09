@@ -67,6 +67,9 @@ class Interface {
 		ofxToggle wireframeRender;
 		ofxToggle pointRender;
 
+		bool mesh_activate;
+		bool noise_activate;
+
 		void setup();
 		void draw();
 		void drawBackground();
@@ -76,7 +79,8 @@ class Interface {
 		MeshRenderMode getRenderType() { return typeRender; }
 		bool getShowModel() { return showModels; }
 		void backgroundLine();
-		void Interface::toggleCamOptions();
+		void toggleCamOptions();
+		void toggleMailleGUI();
 
 	private:
 		bool outilsPressed = false;
@@ -111,6 +115,11 @@ class Interface {
 		ofxPanel modelsGui;
 		ofxPanel cameraGui;
 
+		ofxPanel mailleGui;
+		bool mailleVisible = false;
+		ofParameter<bool> meshButton = false;
+		ofParameter<bool> meshAnimationButton = false;
+
 		void backgroundInteraction();
 		void topButtons();
 		void sideButtons();
@@ -121,8 +130,10 @@ class Interface {
 		void setupCameraOptions();
 		void setupOutilsGuiOptions();
 		void setupModelOptions();
+		void setupMeshOptions();
 		//Renderer& renderer;
 		void showOutils(bool& value);
+		void showMaille();
 		void enableFill(bool& value);
 		void enableOrtho(bool& value);
 		void enableAngle(bool& value);

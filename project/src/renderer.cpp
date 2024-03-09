@@ -34,6 +34,26 @@ void Renderer::setup() {
 	isRecording = false;
 
 	modeDrawState = modeTransformState = false;
+
+	mesh.setMode(OF_PRIMITIVE_LINE_STRIP);
+
+	// Création de la maille
+	for (int x = 0; x < size; x++) {
+		for (int y = 0; y < size; y++) {
+			mesh.addVertex(ofPoint(1000 - (size / 10) * x, 1000 - (size / 10) * y));
+		}
+	}
+
+	for (int y = 0; y < size - 1; y++) {
+		for (int x = 0; x < size - 1; x++) {
+			mesh.addIndex(x + y * size);
+			mesh.addIndex((x + 1) + y * size);
+			mesh.addIndex(x + (y + 1) * size);
+			mesh.addIndex((x + 1) + y * size);
+			mesh.addIndex((x + 1) + (y + 1) * size);
+			mesh.addIndex(x + (y + 1) * size);
+		}
+	}
 }
 
 
@@ -63,6 +83,9 @@ void Renderer::draw() {
 
 	}
 
+	if (interface.mesh_activate) {
+		mesh.drawWireframe();
+	}
 	
 	model1.setPosition(1410,700, 0);
 	model2.setPosition(-50, 1200, -400);
@@ -100,6 +123,9 @@ void Renderer::draw() {
 	// Afficher un message si l'enregistrement est activé
 	if (isRecording)
 		ofDrawBitmapString("Enregistrement enmouse cours...", 20, 20);
+
+
+
 }
 
 
@@ -450,6 +476,18 @@ void Renderer::update()
 			//ofSaveScreen(ofToString(frameCounter) + ".png");
 			frameCounter = 0;
 			//captureInterval -= compteur;
+		}
+	}
+
+	if (interface.noise_activate) {
+		int count = 0;
+		for (int x = 0; x < size; x++) {
+			for (int y = 0; y < size; y++) {
+				ofVec3f vertex = mesh.getVertex(count);
+				vertex.z = ofMap(ofNoise(count, ofGetElapsedTimef()), 0, 1, 0, 30);
+				mesh.setVertex(count, vertex);
+				count++;
+			}
 		}
 	}
 }

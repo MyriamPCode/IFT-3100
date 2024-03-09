@@ -19,6 +19,9 @@ public:
     Interface interface;
     ofImage image;
 
+    ofMesh mesh;
+    int size = 96; // Taille de la maille
+
     list<ofImage> imageList; //Liste d'images import�es
     list<vector<int>> imgPosList; //Positions x et y des images import�es
 

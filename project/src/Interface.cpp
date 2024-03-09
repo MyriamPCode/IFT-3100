@@ -36,6 +36,7 @@ void Interface::setup() {
 	setupOutilsGuiOptions();
 	setupCameraOptions();
 	setupModelOptions();
+	setupMeshOptions();
 
 	is_mouse_button_pressed = false;
 	is_mouse_button_dragged = false;
@@ -57,10 +58,22 @@ void Interface::draw() {
 	if (modelsPressed) {
 		modelsGui.draw();
 	}
-
 	if (camPressed) {
 		cameraGui.draw();
 	}
+
+	if (mailleVisible) {
+		mailleGui.draw();
+		if (meshButton) {
+			mesh_activate = true;
+		}
+		else mesh_activate = false;
+		if (meshAnimationButton) {
+			noise_activate = true;
+		}
+		else noise_activate = false;
+	}
+
 	int gridSize = 50; // Espacement de la grille
 	// Obtenir les coordonnées de la souris
 	int mouseX = ofGetMouseX();
@@ -173,6 +186,14 @@ void Interface::enableFill(bool& value) {
 
 void Interface::toggleCamOptions() {
 	camPressed = !camPressed;
+}
+
+void Interface::toggleMailleGUI() {
+	showMaille();
+}
+
+void Interface::showMaille() {
+	mailleVisible = !mailleVisible;
 }
 
 void Interface::enableOrtho(bool& value) {
@@ -397,4 +418,13 @@ void Interface::setupCameraOptions() {
 	cameraGui.setTextColor(backgroundInteractionColor);
 	cameraGui.maximizeAll();
 	cameraGui.disableHeader();
+}
+
+void Interface::setupMeshOptions() {
+	mailleGui.setup("Mesh");
+	mailleGui.setPosition(200, 40);
+	meshButton.setName("Mesh");
+	mailleGui.add(meshButton);
+	meshAnimationButton.setName("Mesh animation");
+	mailleGui.add(meshAnimationButton);
 }
