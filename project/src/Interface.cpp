@@ -73,11 +73,12 @@ void Interface::draw() {
 		mailleGui.draw();
 		if (meshButton) {
 			mesh_activate = true;
-			if (meshAnimationButton) {
-				noise_activate = true;
-			}
+		} 
+		else mesh_activate = false;
+		if (meshAnimationButton) {
+			noise_activate = true;
 		}
-		
+		else noise_activate = false;
 	}
 }
 

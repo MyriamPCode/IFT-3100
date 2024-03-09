@@ -34,10 +34,12 @@ void Renderer::setup() {
 	captureInterval = 60; // changer l'intervalle pour le nombre d'image exportee
 	isRecording = false;
 
+	mesh.setMode(OF_PRIMITIVE_LINE_STRIP);
+
 	// Création de la maille
 	for (int x = 0; x < size; x++) {
 		for (int y = 0; y < size; y++) {
-			mesh.addVertex(ofPoint(x - size / 2, y - size / 2));
+			mesh.addVertex(ofPoint(1000 - (size / 10)*x, 1000 - (size / 10)*y));
 		}
 	}
 
@@ -74,12 +76,16 @@ void Renderer::draw() {
 		}
 	}
 
+	if (rotationActive) {
+		rotation(rotate);
+	}
+
 	if (interface.mesh_activate) {
+		ofLog() << "Mesh devrait dessiner";
 		mesh.drawWireframe();
 		//if (noise_activate) {
 			//button_noise(noise_activate);
 		//}
-
 	}
 
 	auto currImg = imgPosList.begin();
@@ -332,18 +338,18 @@ void Renderer::update()
 	rotate++;
 
 	// Animation sur la maille 
-	/*
-	if (noise_activate) {
+	
+	if (interface.noise_activate) {
 		int count = 0;
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
 				ofVec3f vertex = mesh.getVertex(count);
-				vertex.z = ofMap(ofNoise(count, ofGetElapsedTimef()), 0, 1, 0, uiAmount);
+				vertex.z = ofMap(ofNoise(count, ofGetElapsedTimef()), 0, 1, 0, 30);
 				mesh.setVertex(count, vertex);
 				count++;
 			}
 		}
-	}*/
+	}
 
 	if (isRecording)
 	{
@@ -399,29 +405,19 @@ void Renderer::captureImage() {
 }
 
 void Renderer::rotation(float rotate) {
-	/*for (auto& forme : v_formes) {
-		if (forme->getType() == Forme::CERCLE) {
-			ofPushMatrix();
-			ofRotateXDeg(rotate);
-			ofRotateYDeg(rotate);
-			ofRotateZDeg(rotate);
-		    forme->draw();
+	for (const auto& forme1 : *v_formes_ptr) {
+		ofPushMatrix();
+		ofRotateXDeg(rotate);
+		ofRotateYDeg(rotate);
+		ofRotateZDeg(rotate);
+		ofBeginShape();
+		if (forme1->getType() == Forme::TRIANGLE) {
 
-		
-		// Dessiner toutes les formes
-		if (v_formes_ptr) {
-			for (const auto& forme : *v_formes_ptr) {
-				forme->draw();
-			}
 		}
-		else {
-			cout << "Le pointeur vers le vecteur de formes n'est pas valide." << endl;
-		}*/
+		if (forme1->getType() == Forme::RECTANGLE) {
 
-	
-	ofRotateXDeg(rotate);
-	ofRotateYDeg(rotate);
-	ofRotateZDeg(rotate);
-	
-	
+		}
+		ofEndShape();
+		ofPopMatrix();
+    }
 }
