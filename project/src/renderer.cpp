@@ -16,7 +16,7 @@ void Renderer::setup() {
 	gui.add(nameField);
 	exportButton.setName("Export");
 	gui.add(exportButton);
-	gui.setPosition(0, 0);
+	gui.setPosition(200, 40);
 
 	teapotMultiple.loadModel("models/teapot.obj");
 	teapotMultiple.setPosition(0, 0, 0);
@@ -498,6 +498,7 @@ void Renderer::toggleColorWheelGUI() {
 
 void Renderer::toggleExportGUI() {
 	visible = !visible;
+	interface.export_activate = !interface.export_activate;
 }
 
 void Renderer::image_export(const string name, const string extension) const {

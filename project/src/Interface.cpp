@@ -41,6 +41,7 @@ void Interface::setup() {
 	is_mouse_button_pressed = false;
 	is_mouse_button_dragged = false;
 	import_activate = false;
+	export_activate = false;
 
 	typeRender = MeshRenderMode::wireframe;
 	mouse_current_x = mouse_current_y = mouse_press_x = mouse_press_y = mouse_drag_x = mouse_drag_y = 0;
@@ -116,7 +117,27 @@ void Interface::draw_cursor(float x, float y) const {
 		float tailleTriangle = 20;
 		ofDrawTriangle(x, y - tailleTriangle, x - tailleTriangle, y + tailleTriangle, x + tailleTriangle, y + tailleTriangle);
 	}
-	ofSetColor(255); // Couleur blanche
+	else if (export_activate) {
+		ofSetColor(0, 0, 255); // Couleur bleue
+		float hexagoneSize = 20.0f; // Taille de l'hexagone
+		ofSetColor(0, 0, 255); // Couleur bleue
+		ofPushMatrix();
+		ofTranslate(x, y); // Translation au position du curseur
+		ofBeginShape();
+		for (int i = 0; i < 6; ++i) {
+			float angle = i * TWO_PI / 6;
+			float px = hexagoneSize * cos(angle);
+			float py = hexagoneSize * sin(angle);
+			ofVertex(px, py);
+		}
+		ofEndShape(true);
+		ofPopMatrix();
+
+	}
+	else {
+		ofSetColor(255);
+	}
+	 // Couleur blanche
 
 
 	ofDrawLine(x + offset, y, x + offset + length, y);

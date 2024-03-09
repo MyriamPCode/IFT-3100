@@ -1,7 +1,7 @@
 #pragma once
 
-int WIDTH = 1920;
-int HEIGHT = 1080;
+int WIDTH = 2560;
+int HEIGHT = 1440;
 
 const int IMPORT_BUTTON_WIDTH = 40;
 const int INTERACTION_BAR_HEIGHT = 40;

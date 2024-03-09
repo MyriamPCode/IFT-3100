@@ -61,6 +61,7 @@ class Interface {
 		bool is_mouse_button_pressed;
 		bool is_mouse_button_dragged;
 		bool import_activate;
+		bool export_activate;
 
 		ofxToggle modelToggle;
 		ofxToggle fillRender;
