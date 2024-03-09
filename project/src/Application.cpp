@@ -133,21 +133,10 @@ void Application::update()
 	// Rotations des primitives vectorielles
 	rotate++;
 
-	// Animation sur la maille 
-	if (noise_activate) {
-		int count = 0;
-		for (int x = 0; x < size; x++) {
-			for (int y = 0; y < size; y++) {
-				ofVec3f vertex = mesh.getVertex(count);
-				vertex.z = ofMap(ofNoise(count, ofGetElapsedTimef()), 0, 1, 0, uiAmount);
-				mesh.setVertex(count, vertex);
-				count++;
-			}
-		}
-	}
+	renderer.update();
+	
 	if (renderer.isRecording) {
 		// Mettez Ã¯Â¿Â½ jour et capturez l'image Ã¯Â¿Â½ intervalles rÃ¯Â¿Â½guliers
-		renderer.update();
 		renderer.captureImage();
 	}
 
@@ -744,6 +733,7 @@ void Application::mouseReleased(int x, int y, int button){
 			case 3:
 				//call to mesh
 				cout << "mesh \n";
+				renderer.interface.toggleMailleGUI();
 				break;
 			case 4:
 				renderer.interface.toggleModelOptions();
