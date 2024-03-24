@@ -174,46 +174,34 @@ void Renderer::draw() {
 		++currImg;
 
 	}
-	// activer le filtre
-	//shader.begin();
 
-	// passer les attributs uniformes au shader
-
-	//ofTexture textu = textureImage.getTexture();
-	
-
-	/*glActiveTexture(GL_TEXTURE_2D);
-	GLuint texture_id;
-	glGenTextures(1, &texture_id);
-	glBindTexture(GL_TEXTURE_2D, texture_id);
-	int image_size = textureImage.getWidth() * textureImage.getHeight() * 10;
-	GLubyte* pixels = (GLubyte*)std::malloc(image_size * sizeof(GLubyte));
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureImage.getWidth(), textureImage.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	mesh.enableTextures();*/
-
+	textu.bind();
 	if (interface.mesh_activate) {
-		//mesh.drawWireframe();
 		textu.generateMipmap();
-		textu.bind();
 		mesh.draw();
-		textu.unbind();
 	}
+	textu.unbind();
 
 	ofSpherePrimitive sphere;
+	sphere.mapTexCoordsFromTexture(textu);
 	sphere.setPosition(0, 0, 50);
 	sphere.setRadius(200);
+	sphere.rotateDeg(180, ofVec3f(0, 1, 0));
+	sphere.rotateDeg(180, ofVec3f(1, 0, 0));
 	textu.generateMipmap();
 	textu.bind();
 	sphere.draw();
 	textu.unbind();
 
-	// désactiver le filtre
-	//shader.end();
-	
+	ofPlanePrimitive plane;
+	plane.mapTexCoordsFromTexture(textu);
+	plane.setPosition(800, 700, 0);
+	plane.setScale(ofVec3f(2 , 3 , 1));
+	plane.rotateDeg(180, ofVec3f(1, 0, 0));
+	textu.generateMipmap();
+	textu.bind();
+	plane.draw();
+	textu.unbind();
 
 	//////////////////////////////////////////////////////////////////
 
@@ -274,7 +262,10 @@ void Renderer::draw() {
 		}
 		else if (interface.getRenderType() == MeshRenderMode::fill) {
 			teapotMultiple.draw(OF_MESH_FILL);
+			textu.generateMipmap();
+			textu.bind();
 			teapotOrtho.draw(OF_MESH_FILL);
+			textu.unbind();
 		}
 		else if (interface.getRenderType() == MeshRenderMode::vertex) {
 			teapotMultiple.draw(OF_MESH_POINTS);
