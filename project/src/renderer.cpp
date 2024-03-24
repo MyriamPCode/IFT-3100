@@ -18,6 +18,8 @@ void Renderer::setup() {
 	gui.add(exportButton);
 	gui.setPosition(200, 40);
 
+	textureImage.load("img/teapot.jpg");
+
 	teapotMultiple.loadModel("models/teapot.obj");
 	teapotMultiple.setPosition(0, 0, 0);
 
@@ -54,6 +56,9 @@ void Renderer::setup() {
 			mesh.addIndex(x + (y + 1) * size);
 		}
 	}
+
+	ofDisableArbTex();
+	ofLoadImage(textu, "img/teapot.jpg");
 }
 
 
@@ -82,14 +87,46 @@ void Renderer::draw() {
 		++currImg;
 
 	}
+	// activer le filtre
+	//shader.begin();
+
+	// passer les attributs uniformes au shader
+
+	//ofTexture textu = textureImage.getTexture();
+	
+
+	/*glActiveTexture(GL_TEXTURE_2D);
+	GLuint texture_id;
+	glGenTextures(1, &texture_id);
+	glBindTexture(GL_TEXTURE_2D, texture_id);
+	int image_size = textureImage.getWidth() * textureImage.getHeight() * 10;
+	GLubyte* pixels = (GLubyte*)std::malloc(image_size * sizeof(GLubyte));
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureImage.getWidth(), textureImage.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	mesh.enableTextures();*/
 
 	if (interface.mesh_activate) {
-		mesh.drawWireframe();
+		//mesh.drawWireframe();
+		textu.generateMipmap();
+		textu.bind();
+		mesh.draw();
+		textu.unbind();
 	}
+
+	ofSpherePrimitive sphere;
+	sphere.setPosition(0, 0, 50);
+	sphere.setRadius(200);
+	textu.generateMipmap();
+	textu.bind();
+	sphere.draw();
+	textu.unbind();
+
+	// désactiver le filtre
+	//shader.end();
 	
-	model1.setPosition(1410,700, 0);
-	model2.setPosition(-50, 1200, -400);
-	//model3.setPosition(800, 1000, -600);
 
 	//////////////////////////////////////////////////////////////////
 	if (okDessiner)
@@ -111,8 +148,13 @@ void Renderer::draw() {
 		}
 		else if (interface.getRenderType() == MeshRenderMode::fill) {
 
+			// activer le filtre
+			//shader.begin();
+
 			teapotMultiple.draw(OF_MESH_FILL);
 			teapotOrtho.draw(OF_MESH_FILL);
+			
+			//shader.end();
 		}
 		else if (interface.getRenderType() == MeshRenderMode::vertex) {
 			teapotMultiple.draw(OF_MESH_POINTS);
@@ -123,9 +165,6 @@ void Renderer::draw() {
 	// Afficher un message si l'enregistrement est activé
 	if (isRecording)
 		ofDrawBitmapString("Enregistrement enmouse cours...", 20, 20);
-
-
-
 }
 
 
