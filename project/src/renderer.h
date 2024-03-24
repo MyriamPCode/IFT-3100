@@ -27,16 +27,17 @@ class Renderer {
         float mix_factor;
         ofColor tint;
 
-        ofMesh mesh;
-        int size = 96; // Taille de la maille
-        list<ofImage> imageList; //Liste d'images import�es
-        list<vector<int>> imgPosList; //Positions x et y des images import�es
+    ofShader shader;
+
+    ofMesh mesh;
+    int size = 96; // Taille de la maille
+    ofImage textureImage;
+    ofTexture textu;
+    list<ofImage> imageList; //Liste d'images import�es
+    list<vector<int>> imgPosList; //Positions x et y des images import�es
 
         ofxAssimpModelLoader teapotOrtho;
         ofxAssimpModelLoader teapotMultiple;
-        ofxAssimpModelLoader model1;
-        ofxAssimpModelLoader model2;
-        ofxAssimpModelLoader model3;
         //MeshRenderMode typeRender;
 
         int mouse_press_x;
