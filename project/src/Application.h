@@ -117,12 +117,18 @@ class Application : public ofBaseApp{
 		ofxGuiGroup filterGroupe;
 		ofxToggle grayButton;
 		ofxToggle sharpenButton;
+		ofParameter<float> param_sumR;
+		ofParameter<float> param_sumG;
+		ofParameter<float> param_sumB;
+		ofxToggle embossButton;
 
 		bool gray_activate;
 		bool sharpen_activate;
+		bool emboss_activate;
 
 		void button_blackAndWhite(bool& value);
 		void button_sharpen(bool& value);
+		void button_emboss(bool& value);
 
 		float rotate;
 

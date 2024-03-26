@@ -71,6 +71,7 @@ void Application::setup(){
 
 	gray_activate = false;
 	sharpen_activate = false;
+	emboss_activate = false;
 
 	reinitialisationGroupe.setup("Reinitialisation");
 	reinitialisationGroupe.add(resetButton.setup("Reset", false));
@@ -142,12 +143,23 @@ void Application::update()
 		grayButton.addListener(this, &Application::button_blackAndWhite);
 		filterGroupe.add(sharpenButton.setup("Sharpen", false));
 		sharpenButton.addListener(this, &Application::button_sharpen);
+		filterGUI.add(param_sumR.set("sumR", 0, 0, 255)); 
+		filterGUI.add(param_sumG.set("sumG", 0, 0, 255));
+		filterGUI.add(param_sumB.set("sumB", 0, 0, 255));
+		filterGroupe.add(embossButton.setup("Emboss", false));
+		embossButton.addListener(this, &Application::button_emboss);
 		filterGUI.add(&filterGroupe);
+		renderer.param_sumR = param_sumR;
+		renderer.param_sumG = param_sumG;
+		renderer.param_sumB = param_sumB;
 		if (grayButton) {
 			gray_activate = true;
 		}
 		if (sharpenButton) {
 			sharpen_activate = true;
+		}
+		if (embossButton) {
+			emboss_activate = true;
 		}
 	}
 
@@ -191,9 +203,6 @@ void Application::draw(){
 		ofDrawBitmapString("Please drag an image to import it.", 30, 70);
 	}
 
-	if (renderer.interface.import_activate) {
-		filterGUI.draw();
-	}
 
 	//cam.begin(); //TODO: ***TROUVER UN MOYEN DE RELIER LES DEUX CAMERA POUR PASSER DU CIRCUIT A CELLE ORTHOGRAPHIQUE***
 	if (renderer.interface.orthoIsActive) {
@@ -251,6 +260,10 @@ void Application::draw(){
 	}
 
 	renderer.interface.backgroundLine();
+
+	if (renderer.interface.import_activate) {
+		filterGUI.draw();
+	}
 
 	renderer.draw();
 	
@@ -1276,6 +1289,7 @@ void Application::button_blackAndWhite(bool& value) {
 }
 
 void Application::button_sharpen(bool& value) {
+	/*
 	sharpen_activate = value;
 	if (value) {
 		for (ofImage& img : renderer.imageList) {
@@ -1311,6 +1325,76 @@ void Application::button_sharpen(bool& value) {
 				}
 			}
 			img.setFromPixels(sharpenedPixels);
+		}
+	}*/
+	sharpen_activate = value;
+	if (value) {
+		for (ofImage& img : renderer.imageList) {
+			// Convertir l'image en niveau de gris
+			ofPixels pixels = img.getPixels();
+			int w = img.getWidth();
+			int h = img.getHeight();
+
+			// Appliquer un filtre de convolution pour l'effet de netteté
+			float kernel[9] = { -1, -1, -1, -1, 9, -1, -1, -1, -1 }; // Noyau de filtre pour l'effet de netteté
+			ofPixels sharpenedPixels;
+			sharpenedPixels.allocate(w, h, OF_PIXELS_RGB);
+
+			for (int y = 1; y < h - 1; y++) {
+				for (int x = 1; x < w - 1; x++) {
+					float sumR = 0;
+					float sumG = 0;
+					float sumB = 0;
+					int index = 0;
+					for (int j = -1; j <= 1; j++) {
+						for (int i = -1; i <= 1; i++) {
+							ofColor color = pixels.getColor(x + i, y + j);
+							sumR += color.r * kernel[index];
+							sumG += color.g * kernel[index];
+							sumB += color.b * kernel[index];
+							index++;
+						}
+					}
+					// Ajuster les valeurs avec les paramètres
+					sumR = ofClamp(sumR + param_sumR, 0, 255);
+					sumG = ofClamp(sumG + param_sumG, 0, 255);
+					sumB = ofClamp(sumB + param_sumB, 0, 255);
+					sharpenedPixels.setColor(x, y, ofColor(sumR, sumG, sumB));
+				}
+			}
+			img.setFromPixels(sharpenedPixels);
+		}
+
+	}
+}
+
+void Application::button_emboss(bool& value) {
+	emboss_activate = value;
+
+	if (value) {
+		for (ofImage& img : renderer.imageList) {
+			ofPixels pixels = img.getPixels();
+			int w = img.getWidth();
+			int h = img.getHeight();
+
+			ofPixels embossedPixels;
+			embossedPixels.allocate(w, h, OF_PIXELS_RGB);
+
+			// Appliquer l'effet de bosselage en parcourant tous les pixels de l'image
+			for (int y = 0; y < h; y++) {
+				for (int x = 0; x < w; x++) {
+					// Calculer la différence de luminosité entre les pixels voisins
+					int pixelBrightness = pixels.getColor(x, y).getBrightness();
+					int neighborBrightness = pixels.getColor(ofClamp(x + 1, 0, w - 1), ofClamp(y + 1, 0, h - 1)).getBrightness();
+					int diff = neighborBrightness - pixelBrightness;
+
+					// Ajuster la couleur du pixel en fonction de la différence de luminosité
+					int grayValue = ofClamp(128 + diff, 0, 255);
+					embossedPixels.setColor(x, y, ofColor(grayValue));
+				}
+			}
+
+			img.setFromPixels(embossedPixels);
 		}
 	}
 }

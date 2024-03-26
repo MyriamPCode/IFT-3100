@@ -10,6 +10,7 @@ using namespace std;
 void Renderer::setup() {
 	ofSetFrameRate(60);
 	interface.setup();
+	ofDisableArbTex();
 	
 	gui.setup("Exportation");
 	nameField.set("Image name", "name");
@@ -54,6 +55,10 @@ void Renderer::setup() {
 			mesh.addIndex(x + (y + 1) * size);
 		}
 	}
+
+	float param_sumR = 0;
+	float param_sumG = 0;
+	float param_sumB = 0;
 }
 
 
