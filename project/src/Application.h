@@ -116,9 +116,13 @@ class Application : public ofBaseApp{
 		ofxPanel filterGUI;
 		ofxGuiGroup filterGroupe;
 		ofxToggle grayButton;
+		ofxToggle sharpenButton;
 
 		bool gray_activate;
+		bool sharpen_activate;
+
 		void button_blackAndWhite(bool& value);
+		void button_sharpen(bool& value);
 
 		float rotate;
 
