@@ -117,7 +117,7 @@ class Application : public ofBaseApp{
 		ofxGuiGroup filterGroupe;
 		ofxToggle grayButton;
 
-		bool blackAndWhiteMode;
+		bool gray_activate;
 		void button_blackAndWhite(bool& value);
 
 		float rotate;

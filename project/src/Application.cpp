@@ -69,7 +69,7 @@ void Application::setup(){
 	mesh_activate = false;
 	noise_activate = false;
 
-	blackAndWhiteMode = false;
+	gray_activate = false;
 
 	reinitialisationGroupe.setup("Reinitialisation");
 	reinitialisationGroupe.add(resetButton.setup("Reset", false));
@@ -140,6 +140,10 @@ void Application::update()
 		filterGroupe.add(grayButton.setup("Black and White", false));
 		grayButton.addListener(this, &Application::button_blackAndWhite);
 		filterGUI.add(&filterGroupe);
+		if (grayButton) {
+			gray_activate = true;
+
+		}
 	}
 
 	renderer.update();
@@ -180,6 +184,9 @@ void Application::draw(){
 	if (isImportable) {
 		renderer.interface.import_activate = true;
 		ofDrawBitmapString("Please drag an image to import it.", 30, 70);
+		if (renderer.interface.import_activate) {
+			filterGUI.draw();
+		}
 	}
 	//cam.begin(); //TODO: ***TROUVER UN MOYEN DE RELIER LES DEUX CAMERA POUR PASSER DU CIRCUIT A CELLE ORTHOGRAPHIQUE***
 	if (renderer.interface.orthoIsActive) {
@@ -237,10 +244,6 @@ void Application::draw(){
 	}
 
 	renderer.interface.backgroundLine();
-
-	if (renderer.interface.import_activate) {
-		filterGUI.draw();
-	}
 
 	renderer.draw();
 	
@@ -1252,8 +1255,15 @@ void Application::setupCamera() {
 }
 
 void Application::button_blackAndWhite(bool& value) {
-	noise_activate = value;
-	if (value) {
-		noise_activate = true;
+	gray_activate = value;
+	if (isImportable && !isRepositioning) {
+		for (ofImage& img : renderer.imageList) {
+			if (value) {
+				img.setImageType(OF_IMAGE_GRAYSCALE); 
+			}
+			else {
+				img.setImageType(OF_IMAGE_COLOR);
+			}
+		}
 	}
 }
