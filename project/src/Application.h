@@ -113,6 +113,13 @@ class Application : public ofBaseApp{
 		bool noise_activate;
 		bool draw_sphere, draw_cube;
 
+		ofxPanel filterGUI;
+		ofxGuiGroup filterGroupe;
+		ofxToggle grayButton;
+
+		bool blackAndWhiteMode;
+		void button_blackAndWhite(bool& value);
+
 		float rotate;
 
 		float diffX, diffY, newX2, newY2, newX3, newY3;

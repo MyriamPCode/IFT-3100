@@ -69,7 +69,7 @@ void Application::setup(){
 	mesh_activate = false;
 	noise_activate = false;
 
-
+	blackAndWhiteMode = false;
 
 	reinitialisationGroupe.setup("Reinitialisation");
 	reinitialisationGroupe.add(resetButton.setup("Reset", false));
@@ -132,6 +132,15 @@ void Application::update()
 {
 	// Rotations des primitives vectorielles
 	rotate++;
+
+	if (renderer.interface.import_activate) {
+		filterGUI.setup();
+		filterGUI.setPosition(700, 70);
+		filterGroupe.setup("Filtres");
+		filterGroupe.add(grayButton.setup("Black and White", false));
+		grayButton.addListener(this, &Application::button_blackAndWhite);
+		filterGUI.add(&filterGroupe);
+	}
 
 	renderer.update();
 	
@@ -228,6 +237,10 @@ void Application::draw(){
 	}
 
 	renderer.interface.backgroundLine();
+
+	if (renderer.interface.import_activate) {
+		filterGUI.draw();
+	}
 
 	renderer.draw();
 	
@@ -1083,6 +1096,8 @@ void Application::reset(bool& value) {
 		meshButton = false;
 		noise_activate = false;
 		meshAnimationButton = false;
+		grayButton = false;
+		
 	}
 }
 
@@ -1236,3 +1251,9 @@ void Application::setupCamera() {
 		camera->setOrientation(camera_orientation);
 }
 
+void Application::button_blackAndWhite(bool& value) {
+	noise_activate = value;
+	if (value) {
+		noise_activate = true;
+	}
+}
