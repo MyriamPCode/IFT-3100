@@ -36,12 +36,18 @@ class Renderer {
     list<ofImage> imageList; //Liste d'images import�es
     list<vector<int>> imgPosList; //Positions x et y des images import�es
 
-        ofxAssimpModelLoader teapotOrtho;
-        ofxAssimpModelLoader teapotMultiple;
-        //MeshRenderMode typeRender;
+    ofxAssimpModelLoader teapotOrtho;
+    ofxAssimpModelLoader teapotMultiple;
+    //MeshRenderMode typeRender;
 
-        int mouse_press_x;
-        int mouse_press_y;
+    ofColor lightAmbient;
+    ofLight lightArea;
+    ofLight lightDirectionnal;
+    ofLight lightPoint;
+    ofLight lightSpot;
+
+    int mouse_press_x;
+    int mouse_press_y;
 
         int mouse_current_x;
         int mouse_current_y;
@@ -53,11 +59,13 @@ class Renderer {
         bool is_mouse_button_dragged;
         bool import_activate;
 
-        void setup();
-        void setup(vector<Forme*>& v_formes);
-        void draw();
-        void newImage(string filePath, int posX, int posY);
-        void draw_cursor(float x, float y) const;
+    void setup();
+    void lightSetup();
+    void setup(vector<Forme*>& v_formes);
+    void draw();
+    void drawLighting();
+    void newImage(string filePath, int posX, int posY);
+    void draw_cursor(float x, float y) const;
 
         Forme forme;
         vector<unique_ptr<Forme>>* v_formes_ptr;

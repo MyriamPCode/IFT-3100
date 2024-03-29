@@ -23,7 +23,7 @@ void Renderer::setup() {
 	gui.add(exportButton);
 	gui.setPosition(200, 40);
 
-	textureImage.load("img/teapot.jpg");
+	textureImage.load("img/teapot.jpg"); //Changer l'image pour une vraie texture
 
 	setTeapotMaterials();
 	setSphereMaterials();
@@ -114,8 +114,46 @@ void Renderer::setup() {
 
 	ofDisableArbTex();
 	ofLoadImage(textu, "img/teapot.jpg");
+	lightSetup();
+
 }
 
+void Renderer::lightSetup() {
+	// configurer la lumière ambiante
+	lightAmbient.set(interface.ambientLightColor);
+
+	lightArea.setDiffuseColor(ofColor(interface.areaLightColor));
+	lightArea.setSpecularColor(ofColor(interface.areaLightColor));
+	lightArea.setPosition(ofVec3f(interface.areaLightPositionX, interface.areaLightPositionY,
+		interface.areaLightPositionZ));
+	lightArea.setOrientation(ofVec3f(interface.areaLightOrientationX, interface.areaLightOrientationY,
+		interface.areaLightOrientationZ));
+	lightArea.setAreaLight(interface.areaLightWidth,interface.areaLightHeight);
+
+	// configurer la lumière directionnelle
+	lightDirectionnal.setDiffuseColor(ofColor(interface.directionnalLightColor));
+	lightDirectionnal.setSpecularColor(ofColor(interface.directionnalLightColor));
+	lightDirectionnal.setPosition(ofVec3f(interface.directionnalLightPositionX, interface.directionnalLightPositionY,
+		interface.directionnalLightPositionZ));
+	lightDirectionnal.setOrientation(ofVec3f(interface.directionnalLightOrientationX, interface.directionnalLightOrientationY,
+		interface.directionnalLightOrientationZ));
+	lightDirectionnal.setDirectional();
+	//lightDirectionnal.setAreaLight(200,200); Peut etre mettre un Area Light dans le mix
+	
+	// configurer la lumière ponctuelle
+	lightPoint.setDiffuseColor(ofColor(interface.pointLightColor));
+	lightPoint.setSpecularColor(ofColor(interface.pointLightColor));
+	lightPoint.setPointLight();
+
+	// configurer la lumière projecteur
+	lightSpot.setDiffuseColor(ofColor(interface.spotLightColor));
+	lightSpot.setSpecularColor(ofColor(interface.spotLightColor));
+	lightSpot.setOrientation(ofVec3f(interface.spotLightOrientationX, interface.spotLightOrientationY,
+		interface.spotLightOrientationZ));
+	lightSpot.setSpotConcentration(2);
+	lightSpot.setSpotlightCutOff(30);
+	lightSpot.setSpotlight();
+}
 // a ete ajoute avec le mode Illumination 
 void Renderer::reset()
 {
@@ -142,7 +180,6 @@ void Renderer::setup(vector<unique_ptr<Forme>>& v_formes)
 {
 	v_formes_ptr = &v_formes;
 }
-
 
 void Renderer::draw() {
 	ofSetBackgroundColor(interface.color_picker_background);
@@ -174,6 +211,8 @@ void Renderer::draw() {
 		++currImg;
 
 	}
+	ofEnableLighting();
+	drawLighting();
 
 	textu.bind();
 	if (interface.mesh_activate) {
@@ -182,16 +221,16 @@ void Renderer::draw() {
 	}
 	textu.unbind();
 
-	ofSpherePrimitive sphere;
+	/*ofSpherePrimitive sphere;
 	sphere.mapTexCoordsFromTexture(textu);
 	sphere.setPosition(0, 0, 50);
 	sphere.setRadius(200);
 	sphere.rotateDeg(180, ofVec3f(0, 1, 0));
 	sphere.rotateDeg(180, ofVec3f(1, 0, 0));
 	textu.generateMipmap();
-	textu.bind();
+	//textu.bind();
 	sphere.draw();
-	textu.unbind();
+	//textu.unbind();*/
 
 	ofPlanePrimitive plane;
 	plane.mapTexCoordsFromTexture(textu);
@@ -283,6 +322,13 @@ void Renderer::draw() {
 		}
 	}
 
+	ofSetGlobalAmbientColor(ofColor(0, 0, 0));
+	lightArea.disable();
+	lightDirectionnal.disable();
+	lightPoint.disable();
+	lightSpot.disable();
+
+	ofDisableLighting();
 	// Afficher un message si l'enregistrement est activé
 	if (isRecording) {
 		ofDrawBitmapString("Enregistrement enmouse cours...", 20, 20);
@@ -767,6 +813,37 @@ void Renderer::dessinerBezier() {
 	}
 }
 
+void Renderer::drawLighting()
+{
+	if (interface.showAmbientLight)
+		ofSetGlobalAmbientColor(lightAmbient);
+	else
+		ofSetGlobalAmbientColor(ofColor(0, 0, 0));
+
+	if (interface.showAreaLight) {
+		lightArea.enable();
+		lightArea.draw();
+	}
+	else lightArea.disable();
+
+	if (interface.showDirectionnalLight) {
+		lightDirectionnal.enable();
+		lightDirectionnal.draw();
+	}
+	else lightDirectionnal.disable();
+
+	if (interface.showPointLight) {
+		lightPoint.enable();
+		lightPoint.draw();
+	}
+	else lightPoint.disable();
+
+	if (interface.showSpotLight) {
+		lightSpot.enable();
+		lightSpot.draw();
+	}
+	else lightSpot.disable();
+}
 
 void Renderer::newImage(string filePath, int posX, int posY) {
 	ofImage newImage;
@@ -800,6 +877,47 @@ void Renderer::update()
 				mesh.setVertex(count, vertex);
 				count++;
 			}
+		}
+	}
+	if (interface.showAmbientLight) {
+		lightAmbient.set(interface.ambientLightColor);
+	}
+	if (interface.showAreaLight) {
+		lightArea.setDiffuseColor(ofColor(interface.areaLightColor));
+		lightArea.setSpecularColor(ofColor(interface.areaLightColor));
+		lightArea.setPosition(ofVec3f(interface.areaLightPositionX, interface.areaLightPositionY,
+			interface.areaLightPositionZ));
+		lightArea.setOrientation(ofVec3f(interface.areaLightOrientationX, interface.areaLightOrientationY,
+			interface.areaLightOrientationZ));
+		lightArea.setAreaLight(interface.areaLightWidth, interface.areaLightHeight);
+	}
+	if (interface.showDirectionnalLight)
+	{
+		lightDirectionnal.setDiffuseColor(ofColor(interface.directionnalLightColor));
+		lightDirectionnal.setSpecularColor(ofColor(interface.directionnalLightColor));
+		lightDirectionnal.setPosition(ofVec3f(interface.directionnalLightPositionX, interface.directionnalLightPositionY, 
+			interface.directionnalLightPositionZ));
+		lightDirectionnal.setOrientation(ofVec3f(interface.directionnalLightOrientationX, interface.directionnalLightOrientationY,
+			interface.directionnalLightOrientationZ));
+	}
+
+	if (interface.showPointLight)
+	{
+		lightPoint.setDiffuseColor(ofColor(interface.pointLightColor));
+		lightPoint.setSpecularColor(ofColor(interface.pointLightColor));
+		lightPoint.setPosition(ofVec3f(interface.pointLightPositionX, interface.pointLightPositionY,
+			interface.pointLightPositionZ));
+	}
+
+	if (interface.showSpotLight)
+	{
+		// configurer la lumière projecteur
+		lightSpot.setDiffuseColor(ofColor(interface.spotLightColor));
+		lightSpot.setSpecularColor(ofColor(interface.spotLightColor));
+		lightSpot.setOrientation(ofVec3f(interface.spotLightOrientationX, interface.spotLightOrientationY,
+			interface.spotLightOrientationZ));
+		lightSpot.setPosition(ofVec3f(interface.spotLightPositionX, interface.spotLightPositionY,
+			interface.spotLightPositionZ));
 		}
 	}
 

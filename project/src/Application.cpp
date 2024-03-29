@@ -1030,6 +1030,9 @@ void Application::mouseReleased(int x, int y, int button){
 				renderer.interface.toggleCurveOptions();
 				renderer.interface.curve_activate = !renderer.interface.curve_activate;
 				break;
+			case 6:
+				renderer.interface.toggleLightOptions();
+				break;
 		}
 	}
 

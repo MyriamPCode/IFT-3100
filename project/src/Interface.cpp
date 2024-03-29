@@ -18,6 +18,8 @@ void Interface::setup() {
 	iconTopBar.push_back(imgModele);
 	imgCamera.load("img/camera.png");
 	iconTopBar.push_back(imgCamera);
+	imgLight.load("img/Light.png");
+	iconTopBar.push_back(imgLight);
 	imgCurve.load("img/curve.png");
 	iconTopBar.push_back(imgCurve);
 
@@ -38,6 +40,7 @@ void Interface::setup() {
 	setupOutilsGuiOptions();
 	setupCameraOptions();
 	setupModelOptions();
+	setupLightOptions();
 	setupMeshOptions();
 
 	sphereAmbientColorPicker.set("Couleur ambiante", ofColor(36, 36, 36));
@@ -91,7 +94,9 @@ void Interface::draw() {
 	if (camPressed) {
 		cameraGui.draw();
 	}
-
+	if (lightPressed) {
+		lightGui.draw();
+	}
 	if (mailleVisible) {
 		mailleGui.draw();
 		if (meshButton) {
@@ -246,6 +251,10 @@ void Interface::enableTextureFill(bool& value) {
 
 void Interface::toggleCamOptions() {
 	camPressed = !camPressed;
+}
+
+void Interface::toggleLightOptions() {
+	lightPressed = !lightPressed;
 }
 
 void Interface::toggleMailleGUI() {
@@ -499,6 +508,108 @@ void Interface::setupCameraOptions() {
 	cameraGui.setTextColor(backgroundInteractionColor);
 	cameraGui.maximizeAll();
 	cameraGui.disableHeader();
+}
+
+void Interface::setupLightOptions() {
+	lightGui.setup();
+	lightGui.loadFont("roboto/Roboto-Regular.ttf", 10);
+	lightGui.setPosition(WIDTH / 2 - 250, INTERACTION_BAR_HEIGHT);
+	lightGui.setSize(200, 1080);
+
+	ambientLightOptions.setup("Ambient Light Options");
+	ambientLightOptions.add(showAmbientLight.setup("Show Ambient Light", false));
+	ambientLightOptions.add(ambientLightColor);
+	areaLightOptions.setup("Area Light Options");
+	areaLightOptions.add(showAreaLight.setup("Show Area Light", false));
+	areaLightOptions.add(areaLightWidth);
+	areaLightOptions.add(areaLightHeight);
+	areaLightOptions.add(&areaLightPosition);
+	areaLightPosition.setup("Position of Area Light");
+	areaLightPosition.add(areaLightPositionX);
+	areaLightPosition.add(areaLightPositionY);
+	areaLightPosition.add(areaLightPositionZ); //Determiner comment ajouter l'orientation
+	areaLightOptions.add(&areaLightOrientation);
+	areaLightOrientation.setup("Orientation of Area Light");
+	areaLightOrientation.add(areaLightOrientationX);
+	areaLightOrientation.add(areaLightOrientationY);
+	areaLightOrientation.add(areaLightOrientationZ);
+	areaLightOptions.add(areaLightColor);
+	directionnalLightOptions.setup("Directionnal Light Options");
+	directionnalLightOptions.add(showDirectionnalLight.setup("Show Directionnal Light", false));
+	directionnalLightOptions.add(&directionnalLightPosition);
+	directionnalLightPosition.setup("Position of Directionnal Light");
+	directionnalLightPosition.add(directionnalLightPositionX);
+	directionnalLightPosition.add(directionnalLightPositionY);
+	directionnalLightPosition.add(directionnalLightPositionZ); //Determiner comment ajouter l'orientation
+	directionnalLightOptions.add(&directionnalLightOrientation);
+	directionnalLightOrientation.setup("Orientation of Directionnal Light");
+	directionnalLightOrientation.add(directionnalLightOrientationX);
+	directionnalLightOrientation.add(directionnalLightOrientationY);
+	directionnalLightOrientation.add(directionnalLightOrientationZ);
+	directionnalLightOptions.add(directionnalLightColor);
+	spotLightOptions.setup("Spot Light Options");
+	spotLightOptions.add(showSpotLight.setup("Show Spot Light", false));
+	spotLightOptions.add(&spotLightPosition);
+	spotLightPosition.setup("Position of Spot Light");
+	spotLightPosition.add(spotLightPositionX);
+	spotLightPosition.add(spotLightPositionY);
+	spotLightPosition.add(spotLightPositionZ);
+	spotLightOptions.add(&spotLightOrientation);
+	spotLightOrientation.setup("Orientation of Spot Light");
+	spotLightOrientation.add(spotLightOrientationX);
+	spotLightOrientation.add(spotLightOrientationY);
+	spotLightOrientation.add(spotLightOrientationZ);
+	spotLightOptions.add(spotLightColor);
+	pointLightOptions.setup("Point Light Options");
+	pointLightOptions.add(showPointLight.setup("Show Point Light", false));
+	pointLightOptions.add(&pointLightPosition);
+	pointLightPosition.setup("Position of Point Light");
+	pointLightPosition.add(pointLightPositionX);
+	pointLightPosition.add(pointLightPositionY);
+	pointLightPosition.add(pointLightPositionZ);
+	pointLightOptions.add(pointLightColor);
+
+	ambientLightColor.set("Ambient Light Color", ofColor(255), ofColor(0, 0), ofColor(255, 255));
+	areaLightColor.set("Area Light Color", ofColor(255), ofColor(0, 0), ofColor(255, 255));
+	areaLightWidth.set("Area Light Width", 200.0f, 1.0f, 1000.0f);
+	areaLightHeight.set("Area Light Height", 200.0f, 1.0f, 1000.0f);
+	areaLightPositionX.set("X", 0.0f, -5000.0f, 5000.0f); //A verifier
+	areaLightPositionY.set("Y", 0.0f, -5000.0f, 5000.0f);
+	areaLightPositionZ.set("Z", 0.0f, -5000.0f, 5000.0f);
+	areaLightOrientationX.set("X", 0.0f, 0.0f, 360.0f);
+	areaLightOrientationY.set("Y", 0.0f, 0.0f, 360.0f);
+	areaLightOrientationZ.set("Z", 0.0f, 0.0f, 360.0f);
+	directionnalLightColor.set("Directionnal Light Color", ofColor(255), ofColor(0, 0), ofColor(255, 255));
+	directionnalLightPositionX.set("X", 0.0f, -5000.0f, 5000.0f); //A verifier
+	directionnalLightPositionY.set("Y", 0.0f, -5000.0f, 5000.0f);
+	directionnalLightPositionZ.set("Z", 0.0f, -5000.0f, 5000.0f);
+	directionnalLightOrientationX.set("X", 0.0f, 0.0f, 360.0f);
+	directionnalLightOrientationY.set("Y", 0.0f, 0.0f, 360.0f);
+	directionnalLightOrientationZ.set("Z", 0.0f, 0.0f, 360.0f);
+	spotLightColor.set("Spot Light Color", ofColor(255), ofColor(0, 0), ofColor(255, 255));
+	spotLightPositionX.set("X", 0.0f, -5000.0f, 5000.0f);
+	spotLightPositionY.set("Y", 0.0f, -5000.0f, 5000.0f);
+	spotLightPositionZ.set("Z", 0.0f, -5000.0f, 5000.0f);
+	spotLightOrientationX.set("X", 0.0f, 0.0f, 360.0f);
+	spotLightOrientationY.set("Y", 0.0f, 0.0f, 360.0f);
+	spotLightOrientationZ.set("Z", 0.0f, 0.0f, 360.0f);
+	pointLightColor.set("Point Light Color", ofColor(255), ofColor(0, 0), ofColor(255, 255));
+	pointLightPositionX.set("X Position of point Light", 0.0f, -5000.0f, 5000.0f);
+	pointLightPositionY.set("Y Position of point Light", 0.0f, -5000.0f, 5000.0f);
+	pointLightPositionZ.set("Z Position of point Light", 0.0f, -5000.0f, 5000.0f);
+
+	lightGui.add(&ambientLightOptions);
+	lightGui.add(&areaLightOptions);
+	lightGui.add(&directionnalLightOptions);
+	lightGui.add(&spotLightOptions);
+	lightGui.add(&pointLightOptions);
+	ambientLightOptions.minimizeAll();
+	areaLightOptions.minimizeAll();
+	directionnalLightOptions.minimizeAll();
+	spotLightOptions.minimizeAll();
+	pointLightOptions.minimizeAll();
+	lightGui.minimizeAll();
+	lightGui.disableHeader();
 }
 
 void Interface::setupMeshOptions() {
