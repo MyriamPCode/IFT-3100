@@ -440,11 +440,17 @@ void Interface::setupModelOptions() {
 	modelsGui.setPosition(200, 40);
 	modelsGui.setSize(200, 1080);
 
+	texturedModels.setup("Textured Model Options");
+	texturedModels.add(texturedPanel.setup("Panel", false));
+	texturedModels.add(texturedBox.setup("Box", false));
+	texturedModels.add(texturedSphere.setup("Sphere", false));
+
 	modelsGui.add(modelToggle.setup("Show models", false));
 	modelsGui.add(fillRender.setup("Fill render", false));
 	modelsGui.add(wireframeRender.setup("Wireframe render", true));
 	modelsGui.add(pointRender.setup("Vertex render", false));
-
+	modelsGui.add(&texturedModels);
+	
 	modelToggle.addListener(this, &Interface::enableModels);
 	fillRender.addListener(this, &Interface::modelFill);
 	wireframeRender.addListener(this, &Interface::modelWireframe);

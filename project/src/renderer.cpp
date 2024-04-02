@@ -113,7 +113,7 @@ void Renderer::setup() {
 	reset();
 
 	ofDisableArbTex();
-	ofLoadImage(textu, "img/teapot.jpg");
+	ofLoadImage(textu, "img/testure.jpg");
 	lightSetup();
 
 }
@@ -214,6 +214,8 @@ void Renderer::draw() {
 	ofEnableLighting();
 	drawLighting();
 
+	ofEnableDepthTest();
+
 	textu.bind();
 	if (interface.mesh_activate) {
 		textu.generateMipmap();
@@ -221,26 +223,43 @@ void Renderer::draw() {
 	}
 	textu.unbind();
 
-	/*ofSpherePrimitive sphere;
-	sphere.mapTexCoordsFromTexture(textu);
-	sphere.setPosition(0, 0, 50);
-	sphere.setRadius(200);
-	sphere.rotateDeg(180, ofVec3f(0, 1, 0));
-	sphere.rotateDeg(180, ofVec3f(1, 0, 0));
-	textu.generateMipmap();
-	//textu.bind();
-	sphere.draw();
-	//textu.unbind();*/
+	if (interface.texturedSphere) {
+		ofSpherePrimitive sphere;
+		sphere.mapTexCoordsFromTexture(textu);
+		sphere.setPosition(0, 0, 50);
+		sphere.setRadius(200);
+		//textu.generateMipmap();
 
-	ofPlanePrimitive plane;
-	plane.mapTexCoordsFromTexture(textu);
-	plane.setPosition(800, 700, 0);
-	plane.setScale(ofVec3f(2 , 3 , 1));
-	plane.rotateDeg(180, ofVec3f(1, 0, 0));
-	textu.generateMipmap();
-	textu.bind();
-	plane.draw();
-	textu.unbind();
+		sphere.rotateDeg(180, ofVec3f(0, 1, 0));
+		sphere.rotateDeg(180, ofVec3f(1, 0, 0));
+		textu.bind();
+		sphere.draw();
+		textu.unbind();
+	}
+
+	if (interface.texturedBox) {
+		ofBoxPrimitive cube;
+		cube.mapTexCoordsFromTexture(textu);
+		cube.setPosition(400, 0, 50);
+		cube.rotateDeg(180, ofVec3f(0, 1, 0));
+		cube.rotateDeg(180, ofVec3f(1, 0, 0));
+		textu.bind();
+		cube.draw();
+		textu.unbind();
+	}
+
+	if (interface.texturedPanel) {
+		ofPlanePrimitive plane;
+		plane.mapTexCoordsFromTexture(textu);
+		plane.setPosition(800, 700, 0);
+		plane.setScale(ofVec3f(2, 3, 1));
+		plane.rotateDeg(180, ofVec3f(1, 0, 0));
+		textu.generateMipmap();
+		textu.bind();
+		plane.draw();
+		textu.unbind();
+	}
+
 
 	//////////////////////////////////////////////////////////////////
 
@@ -321,6 +340,8 @@ void Renderer::draw() {
 
 		}
 	}
+
+	ofDisableDepthTest();
 
 	ofSetGlobalAmbientColor(ofColor(0, 0, 0));
 	lightArea.disable();

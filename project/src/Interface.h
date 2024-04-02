@@ -116,6 +116,10 @@ class Interface {
 		ofxToggle fillRender;
 		ofxToggle wireframeRender;
 		ofxToggle pointRender;
+		ofxGuiGroup texturedModels;
+		ofxToggle texturedPanel;
+		ofxToggle texturedSphere;
+		ofxToggle texturedBox;
 
 		ofxGuiGroup teapotMaterials;
 		ofxToggle showTeapotMaterials;
