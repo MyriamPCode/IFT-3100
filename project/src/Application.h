@@ -103,6 +103,11 @@ class Application : public ofBaseApp{
 		ofxToggle meshButton;
 		ofxToggle meshAnimationButton; // Bouton pour l'animation sur la maille géométrique 
 
+		ofxPanel filterGUI;
+		ofxGuiGroup textureGroupe;
+		ofxToggle sphereTextureButton;
+
+
 		bool drawingGUIPressed;
 		bool draw_triangle;
 		bool draw_circle;
@@ -112,6 +117,7 @@ class Application : public ofBaseApp{
 		bool mesh_activate;
 		bool noise_activate;
 		bool draw_sphere, draw_cube;
+		bool draw_sphereTexture;
 
 		float rotate;
 
@@ -193,6 +199,8 @@ private:
 		void button_rotation(bool& value);
 		void button_mesh(bool& value);
 		void button_noise(bool& value);
+		void button_sphereTexture(bool& value);
+
 
 
 };

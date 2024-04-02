@@ -45,6 +45,7 @@ void Application::setup(){
 	drawSphere.addListener(this, &Application::button_sphere); 
 	drawCube.addListener(this, &Application::button_cube);
 
+
 	drawingGUI.add(&primitivesGroupe);
 	drawingGUI.add(renderer.uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
 	drawingGUI.add(renderer.uiAmount.set("amount", 1, 0, 5));
@@ -225,6 +226,15 @@ void Application::draw(){
 			if (camera_active != Camera::down)
 				camBottom.draw();
 		}
+	}
+
+	if (renderer.interface.import_activate) {
+		filterGUI.setup();
+		filterGUI.setPosition(800, 40);
+		textureGroupe.setup("Filtres");
+		textureGroupe.add(sphereTextureButton.setup("Sphere", false));
+		sphereTextureButton.addListener(this, &Application::button_sphereTexture);
+		filterGUI.add(&textureGroupe);
 	}
 
 	renderer.interface.backgroundLine();
@@ -857,6 +867,7 @@ void Application::button_triangle(bool& value)
 		}
 	}
 }
+
 void Application::drawTriangle() 
 {
 	cout << "drawTriangle 2 \n";
@@ -1056,6 +1067,17 @@ void Application::button_sphere(bool& value) {
 	}
 }
 
+void Application::button_sphereTexture(bool& value) {
+	if (value)
+	{
+		draw_sphereTexture = !draw_sphereTexture;
+		draw_circle = draw_rectangle = draw_line = draw_ellipse = draw_bezier = draw_sphere = draw_cube = draw_triangle = false;
+		draw_sphere = draw_cube = false;
+
+	}
+}
+
+
 void Application::button_cube(bool& value) {
 	if (value) {
 		draw_cube = !draw_cube; 
@@ -1073,6 +1095,8 @@ void Application::reset(bool& value) {
 		renderer.uiShift.set(ofVec2f(0));
 		renderer.uiSize.set(ofVec2f(6));
 
+		draw_sphere = false;
+		draw_cube = false;
 		draw_triangle = false;
 		draw_circle = false;
 		draw_rectangle = false;
@@ -1083,6 +1107,7 @@ void Application::reset(bool& value) {
 		meshButton = false;
 		noise_activate = false;
 		meshAnimationButton = false;
+		sphereTextureButton = false;
 	}
 }
 

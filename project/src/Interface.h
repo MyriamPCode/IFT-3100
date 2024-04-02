@@ -105,6 +105,7 @@ class Interface {
 		ofImage imgEllipse;
 		ofImage imgMesh;
 		ofImage imgCamera;
+		ofImage imgCurve;
 
 		ofColor backgroundLineColor = ofColor(217, 217, 217);
 		ofColor backgroundInteractionColor = ofColor(4, 3, 77);
@@ -115,8 +116,9 @@ class Interface {
 		ofxPanel outilsGui;
 		ofxPanel modelsGui;
 		ofxPanel cameraGui;
-
 		ofxPanel mailleGui;
+		ofxPanel curveGui;
+
 		bool mailleVisible = false;
 		ofParameter<bool> meshButton = false;
 		ofParameter<bool> meshAnimationButton = false;
