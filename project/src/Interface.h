@@ -82,10 +82,12 @@ class Interface {
 		void backgroundLine();
 		void toggleCamOptions();
 		void toggleMailleGUI();
+		void toggleCurveOptions();
 
 	private:
 		bool outilsPressed = false;
 		bool camPressed = false;
+		bool curvePressed = false;
 		
 		bool modelsPressed = false;
 		bool showModels = false;
@@ -134,6 +136,7 @@ class Interface {
 		void setupOutilsGuiOptions();
 		void setupModelOptions();
 		void setupMeshOptions();
+		void setupCurveOptions();
 		//Renderer& renderer;
 		void showOutils(bool& value);
 		void showMaille();

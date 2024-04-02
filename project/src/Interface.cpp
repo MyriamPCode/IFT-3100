@@ -39,6 +39,7 @@ void Interface::setup() {
 	setupCameraOptions();
 	setupModelOptions();
 	setupMeshOptions();
+	setupCurveOptions();
 
 	is_mouse_button_pressed = false;
 	is_mouse_button_dragged = false;
@@ -75,6 +76,10 @@ void Interface::draw() {
 			noise_activate = true;
 		}
 		else noise_activate = false;
+	}
+
+	if (curvePressed) {
+		curveGui.draw();
 	}
 
 	int gridSize = 50; // Espacement de la grille
@@ -217,6 +222,10 @@ void Interface::toggleMailleGUI() {
 
 void Interface::showMaille() {
 	mailleVisible = !mailleVisible;
+}
+
+void Interface::toggleCurveOptions() {
+	curvePressed = !curvePressed;
 }
 
 void Interface::enableOrtho(bool& value) {
@@ -445,9 +454,16 @@ void Interface::setupCameraOptions() {
 
 void Interface::setupMeshOptions() {
 	mailleGui.setup("Mesh");
+	mailleGui.loadFont("roboto/Roboto-Regular.ttf", 10);
 	mailleGui.setPosition(200, 40);
 	meshButton.setName("Mesh");
 	mailleGui.add(meshButton);
 	meshAnimationButton.setName("Mesh animation");
 	mailleGui.add(meshAnimationButton);
+}
+
+void Interface::setupCurveOptions() {
+	curveGui.setup("Curve");
+	curveGui.loadFont("roboto/Roboto-Regular.ttf", 10);
+	curveGui.setPosition(600, 40);
 }

@@ -755,6 +755,9 @@ void Application::mouseReleased(int x, int y, int button){
 			case 5:
 				renderer.interface.toggleCamOptions();
 				break;
+			case 6:
+				renderer.interface.toggleCurveOptions();
+				break;
 		}
 	}
 
