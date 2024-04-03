@@ -19,6 +19,8 @@ public:
     Interface interface;
     ofImage image;
 
+    ofShader shader;
+
     ofMesh mesh;
     int size = 96; // Taille de la maille
 

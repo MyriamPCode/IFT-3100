@@ -20,9 +20,11 @@ class Interface {
 		ofParameter<ofColor> color_picker_background;
 		ofParameter<ofColor> color_picker_stroke;
 		ofxToggle fillButton;
+		ofxToggle textureFillButton;
 		ofParameter<ofColor> colorPickerFill;
 		ofParameter<float> slider_stroke_weight;
 		bool fillEnabled = false;
+		bool textureFill = false;
 
 		string camera_name;
 
@@ -136,6 +138,7 @@ class Interface {
 		void showOutils(bool& value);
 		void showMaille();
 		void enableFill(bool& value);
+		void enableTextureFill(bool& value);
 		void enableOrtho(bool& value);
 		void enableAngle(bool& value);
 		void orthoSelect(bool& value);
