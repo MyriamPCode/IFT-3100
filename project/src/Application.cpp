@@ -92,6 +92,7 @@ void Application::setup(){
 	curveGui.setup("Curve");
 	curveGui.loadFont("roboto/Roboto-Regular.ttf", 10);
 	curveGui.setPosition(600, 50);
+	curveGui.add(segments.set("Segments", 150, 150, 400));
 	catmullRomGroupe.setup("Catmull-Rom's curve");
 	catmullRomButton.setName("5 points");
 	catmullRomGroupe.add(catmullRomButton);
@@ -137,33 +138,6 @@ void Application::setup(){
 
 	addAction([this]() { undo(); }, [this]() { redo(); });
 
-	/*
-	line_resolution = 100;
-	line_width_outline = 4.0f;
-	line_width_curve = 8.0f;
-	for (index = 0; index <= line_resolution; ++index)
-		line_renderer.addVertex(ofPoint());
-
-	// initialisation des variables
-	framebuffer_width = ofGetWidth();
-	framebuffer_height = ofGetHeight();
-
-	// ratios de positionnement dans la fenêtre
-	float w_1_8 = framebuffer_width / 8.0f;
-	float w_1_4 = framebuffer_width / 4.0f;
-	float w_1_2 = framebuffer_width / 2.0f;
-	float w_3_4 = framebuffer_width * 3.0f / 4.0f;
-	float w_7_8 = framebuffer_width * 7.0f / 8.0f;
-	float h_1_5 = framebuffer_height / 5.0f;
-	float h_1_3 = framebuffer_height / 3.0f;
-	float h_4_5 = framebuffer_height * 4.0f / 5.0f;
-
-	initial_position1 = { w_1_8, h_4_5, 0 };
-	initial_position2 = { w_1_4, h_1_3, 0 };
-	initial_position3 = { w_1_2, h_1_5, 0 };
-	initial_position4 = { w_3_4, h_1_3, 0 };
-	initial_position5 = { w_7_8, h_4_5, 0 };*/
-
 	controlPoints.push_back(ofVec2f(100, 300));
 	controlPoints.push_back(ofVec2f(200, 100));
 	controlPoints.push_back(ofVec2f(300, 500));
@@ -172,9 +146,6 @@ void Application::setup(){
 	controlPoints.push_back(ofVec2f(600, 100));
 	controlPoints.push_back(ofVec2f(700, 300));
 	controlPoints.push_back(ofVec2f(800, 200));
-
-	// Nombre de segments à dessiner entre chaque paire de points de contrôle
-	segments = 150;
 
 	// Aucun point de contrôle n'est sélectionné au début
 	selectedPointIndex = -1;

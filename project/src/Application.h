@@ -115,7 +115,7 @@ class Application : public ofBaseApp{
 		//void hermite(float t, float p1x, float p1y, float p1z, float p2x, float p2y, float p2z, float p3x, float p3y, float p3z, float p4x, float p4y, float p4z, float& x, float& y, float& z);
 
 		vector<ofVec2f> controlPoints;
-		int segments;
+		ofParameter<int> segments;
 		int selectedPointIndex;
 		ofVec2f catmullRom(float t, const ofVec2f& p0, const ofVec2f& p1, const ofVec2f& p2, const ofVec2f& p3);
 
