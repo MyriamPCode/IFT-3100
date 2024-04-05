@@ -96,6 +96,7 @@ class Application : public ofBaseApp{
 		void button_sphere(bool& value); 
 		void button_cube(bool& value);
 
+
 		ofxGuiGroup animationGroupe;
 		ofxToggle rotationButton; // Bouton pour l'animation de rotation
 
@@ -107,6 +108,38 @@ class Application : public ofBaseApp{
 		ofxGuiGroup textureGroupe;
 		ofxToggle sphereTextureButton;
 
+		ofxPanel curveGui;
+		ofxGuiGroup hermiteGroupe;
+		ofParameter<bool> hermiteButton = false;
+		void button_hermite(bool& value);
+		void hermite(float t, float p1x, float p1y, float p1z, float p2x, float p2y, float p2z, float p3x, float p3y, float p3z, float p4x, float p4y, float p4z, float& x, float& y, float& z);
+
+		/*
+		ofVec3f ctrl_point1;
+		ofVec3f ctrl_point2;
+		ofVec3f ctrl_point3;
+		ofVec3f ctrl_point4;
+
+		ofVec3f initial_position1;
+		ofVec3f initial_position2;
+		ofVec3f initial_position3;
+		ofVec3f initial_position4;
+		ofVec3f initial_position5;
+
+		ofVec3f position;
+
+		ofVec3f tangent1;
+		ofVec3f tangent2;
+
+		int framebuffer_width;
+		int framebuffer_height;
+
+		int line_resolution;
+		float line_width_outline;
+		float line_width_curve;
+		float radius;
+		ofPolyline line_renderer;
+		int index;*/
 
 		bool drawingGUIPressed;
 		bool draw_triangle;
@@ -118,6 +151,7 @@ class Application : public ofBaseApp{
 		bool noise_activate;
 		bool draw_sphere, draw_cube;
 		bool draw_sphereTexture;
+		bool hermite_activate;
 
 		float rotate;
 

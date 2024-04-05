@@ -69,7 +69,7 @@ void Application::setup(){
 	rotation_activate = false;
 	mesh_activate = false;
 	noise_activate = false;
-
+	hermite_activate = false;
 
 
 	reinitialisationGroupe.setup("Reinitialisation");
@@ -88,6 +88,15 @@ void Application::setup(){
 	meshGroupe.add(meshAnimationButton.setup("Animation", false));
 	meshAnimationButton.addListener(this, &Application::button_noise);
 	drawingGUI.add(&meshGroupe);
+
+	curveGui.setup("Curve");
+	curveGui.loadFont("roboto/Roboto-Regular.ttf", 10);
+	curveGui.setPosition(600, 50);
+	hermiteGroupe.setup("Hermite's curve");
+	hermiteButton.setName("5 points");
+	hermiteGroupe.add(hermiteButton);
+	hermiteButton.addListener(this, &Application::button_hermite);
+	curveGui.add(&hermiteGroupe);
 
 	// CrÃƒÂ©ation de la maille
 	for (int x = 0; x < size; x++) {
@@ -127,6 +136,33 @@ void Application::setup(){
 	guiScene.setPosition(0, 40);
 
 	addAction([this]() { undo(); }, [this]() { redo(); });
+
+	/*
+	line_resolution = 100;
+	line_width_outline = 4.0f;
+	line_width_curve = 8.0f;
+	for (index = 0; index <= line_resolution; ++index)
+		line_renderer.addVertex(ofPoint());
+
+	// initialisation des variables
+	framebuffer_width = ofGetWidth();
+	framebuffer_height = ofGetHeight();
+
+	// ratios de positionnement dans la fenêtre
+	float w_1_8 = framebuffer_width / 8.0f;
+	float w_1_4 = framebuffer_width / 4.0f;
+	float w_1_2 = framebuffer_width / 2.0f;
+	float w_3_4 = framebuffer_width * 3.0f / 4.0f;
+	float w_7_8 = framebuffer_width * 7.0f / 8.0f;
+	float h_1_5 = framebuffer_height / 5.0f;
+	float h_1_3 = framebuffer_height / 3.0f;
+	float h_4_5 = framebuffer_height * 4.0f / 5.0f;
+
+	initial_position1 = { w_1_8, h_4_5, 0 };
+	initial_position2 = { w_1_4, h_1_3, 0 };
+	initial_position3 = { w_1_2, h_1_5, 0 };
+	initial_position4 = { w_3_4, h_1_3, 0 };
+	initial_position5 = { w_7_8, h_4_5, 0 };*/
 }
 
 void Application::update()
@@ -259,6 +295,11 @@ void Application::draw(){
 	if (drawingGUIPressed) {
 		drawingGUI.draw();
 	}
+
+	if (renderer.interface.hermite_activate) {
+		curveGui.draw();
+	}
+
 	guiScene.draw();
 }
 
@@ -757,6 +798,7 @@ void Application::mouseReleased(int x, int y, int button){
 				break;
 			case 6:
 				renderer.interface.toggleCurveOptions();
+				renderer.interface.hermite_activate = !renderer.interface.hermite_activate;
 				break;
 		}
 	}
@@ -1111,6 +1153,7 @@ void Application::reset(bool& value) {
 		noise_activate = false;
 		meshAnimationButton = false;
 		sphereTextureButton = false;
+		//hermite_activate = false;
 	}
 }
 
@@ -1179,6 +1222,7 @@ void Application::button_noise(bool& value) {
 		noise_activate = true;
 	}
 }
+
 
 void Application::camera_setup_perspective(float width, float height, float fov, float n, float f)
 {
@@ -1264,3 +1308,40 @@ void Application::setupCamera() {
 		camera->setOrientation(camera_orientation);
 }
 
+void Application::button_hermite(bool& value) {
+	hermite_activate = value;
+	if (value) {
+		hermite_activate = true;
+		/*
+		if (hermite_activate) {
+			tangent1 = ctrl_point2 - ctrl_point1;
+			tangent2 = ctrl_point3 - ctrl_point4;
+
+			hermite(index / (float)line_resolution, ctrl_point1.x, ctrl_point1.y, ctrl_point1.z,
+				tangent1.x, tangent1.y, tangent1.z,
+				tangent2.x, tangent2.y, tangent2.z,
+				ctrl_point4.x, ctrl_point4.y, ctrl_point4.z,
+				position.x, position.y, position.z);
+		}*/
+
+	}
+}
+
+void Application::hermite(
+	float t,
+	float p1x, float p1y, float p1z,
+	float p2x, float p2y, float p2z,
+	float p3x, float p3y, float p3z,
+	float p4x, float p4y, float p4z,
+	float& x, float& y, float& z)
+{
+	float u = 1 - t;
+	float uu = u * u;
+	float uuu = uu * u;
+	float tt = t * t;
+	float ttt = tt * t;
+
+	x = (2 * ttt - 3 * tt + 1) * p1x + (ttt - 2 * tt + t) * p2x + (ttt - tt) * p3x + (-2 * ttt + 3 * tt) * p4x;
+	y = (2 * ttt - 3 * tt + 1) * p1y + (ttt - 2 * tt + t) * p2y + (ttt - tt) * p3y + (-2 * ttt + 3 * tt) * p4y;
+	z = (2 * ttt - 3 * tt + 1) * p1z + (ttt - 2 * tt + t) * p2z + (ttt - tt) * p3z + (-2 * ttt + 3 * tt) * p4z;
+}

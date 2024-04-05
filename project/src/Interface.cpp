@@ -39,12 +39,13 @@ void Interface::setup() {
 	setupCameraOptions();
 	setupModelOptions();
 	setupMeshOptions();
-	setupCurveOptions();
+	//setupCurveOptions();
 
 	is_mouse_button_pressed = false;
 	is_mouse_button_dragged = false;
 	import_activate = false;
 	export_activate = false;
+	hermite_activate = false;
 
 	typeRender = MeshRenderMode::wireframe;
 	mouse_current_x = mouse_current_y = mouse_press_x = mouse_press_y = mouse_drag_x = mouse_drag_y = 0;
@@ -79,7 +80,36 @@ void Interface::draw() {
 	}
 
 	if (curvePressed) {
+		hermite_activate = true;
+		/*
 		curveGui.draw();
+		if (hermite_activate) {
+			//hermite_activate = true;
+			ofSetColor(255, 3, 3);
+			ofDrawEllipse(initial_position1.x, initial_position1.y, radius / 2.0f, radius / 2.0f);
+			ofDrawEllipse(initial_position2.x, initial_position2.y, radius / 2.0f, radius / 2.0f);
+			ofDrawEllipse(initial_position3.x, initial_position3.y, radius / 2.0f, radius / 2.0f);
+			ofDrawEllipse(initial_position4.x, initial_position4.y, radius / 2.0f, radius / 2.0f);
+			ofDrawEllipse(initial_position5.x, initial_position5.y, radius / 2.0f, radius / 2.0f);
+
+			// dessiner la ligne contour
+			ofSetColor(255, 3, 3);
+			ofSetLineWidth(line_width_outline);
+			ofDrawLine(ctrl_point1.x, ctrl_point1.y, ctrl_point2.x, ctrl_point2.y);
+			ofDrawLine(ctrl_point3.x, ctrl_point3.y, ctrl_point4.x, ctrl_point4.y);
+
+			// dessiner la courbe
+			ofSetColor(0, 255, 0);
+			ofSetLineWidth(line_width_curve);
+			line_renderer.draw();
+
+			// dessiner les points de contrôle
+			ofSetColor(255, 0, 0);
+			ofDrawEllipse(ctrl_point1.x, ctrl_point1.y, radius, radius);
+			ofDrawEllipse(ctrl_point2.x, ctrl_point2.y, radius, radius);
+			ofDrawEllipse(ctrl_point3.x, ctrl_point3.y, radius, radius);
+			ofDrawEllipse(ctrl_point4.x, ctrl_point4.y, radius, radius);
+		}*/
 	}
 
 	int gridSize = 50; // Espacement de la grille
@@ -462,8 +492,53 @@ void Interface::setupMeshOptions() {
 	mailleGui.add(meshAnimationButton);
 }
 
+/*
 void Interface::setupCurveOptions() {
 	curveGui.setup("Curve");
 	curveGui.loadFont("roboto/Roboto-Regular.ttf", 10);
 	curveGui.setPosition(600, 40);
-}
+	hermiteGroupe.setup("Hermite's curve");
+	hermiteButton.setName("5 points");
+	hermiteGroupe.add(hermiteButton);
+	hermiteButton.addListener(this, &Interface::button_hermite);
+	curveGui.add(&hermiteGroupe);
+}*/
+
+/*
+void Interface::button_hermite(bool& value) {
+	hermite_activate = value;
+	if (value) {
+		hermite_activate = true;
+		if (hermite_activate) {
+			tangent1 = ctrl_point2 - ctrl_point1;
+			tangent2 = ctrl_point3 - ctrl_point4;
+
+			hermite(index / (float)line_resolution, ctrl_point1.x, ctrl_point1.y, ctrl_point1.z,
+					tangent1.x, tangent1.y, tangent1.z,
+					tangent2.x, tangent2.y, tangent2.z,
+					ctrl_point4.x, ctrl_point4.y, ctrl_point4.z,
+					position.x, position.y, position.z);			
+		}
+
+	}
+}*/
+
+/*
+void Interface::hermite(
+	float t,
+	float p1x, float p1y, float p1z,
+	float p2x, float p2y, float p2z,
+	float p3x, float p3y, float p3z,
+	float p4x, float p4y, float p4z,
+	float& x, float& y, float& z)
+{
+	float u = 1 - t;
+	float uu = u * u;
+	float uuu = uu * u;
+	float tt = t * t;
+	float ttt = tt * t;
+
+	x = (2 * ttt - 3 * tt + 1) * p1x + (ttt - 2 * tt + t) * p2x + (ttt - tt) * p3x + (-2 * ttt + 3 * tt) * p4x;
+	y = (2 * ttt - 3 * tt + 1) * p1y + (ttt - 2 * tt + t) * p2y + (ttt - tt) * p3y + (-2 * ttt + 3 * tt) * p4y;
+	z = (2 * ttt - 3 * tt + 1) * p1z + (ttt - 2 * tt + t) * p2z + (ttt - tt) * p3z + (-2 * ttt + 3 * tt) * p4z;
+}*/

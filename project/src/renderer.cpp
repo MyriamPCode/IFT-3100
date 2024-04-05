@@ -548,3 +548,4 @@ void Renderer::captureImage() {
 	// Exporter l'image
 	ofSaveScreen(ofToString(frameCounter) + ".png");
 }
+
