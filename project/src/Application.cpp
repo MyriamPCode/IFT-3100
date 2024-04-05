@@ -139,19 +139,22 @@ void Application::update()
 		filterGUI.setup();
 		filterGUI.setPosition(700, 70);
 		filterGroupe.setup("Filtres");
-		filterGroupe.add(grayButton.setup("Black and White", false));
+		filterGroupe.add(grayButton);
+		grayButton.setName("Black and white");
 		grayButton.addListener(this, &Application::button_blackAndWhite);
-		filterGroupe.add(sharpenButton.setup("Sharpen", false));
+		filterGroupe.add(sharpenButton);
+		sharpenButton.setName("Sharpen");
 		sharpenButton.addListener(this, &Application::button_sharpen);
-		filterGUI.add(param_sumR.set("sumR", 0, 0, 255)); 
+		filterGUI.add(param_sumR.set("sumR", 0, 0, 255));
 		filterGUI.add(param_sumG.set("sumG", 0, 0, 255));
 		filterGUI.add(param_sumB.set("sumB", 0, 0, 255));
-		filterGroupe.add(embossButton.setup("Emboss", false));
+		filterGroupe.add(embossButton);
+		embossButton.setName("Emboss");
 		embossButton.addListener(this, &Application::button_emboss);
 		filterGUI.add(&filterGroupe);
-		renderer.param_sumR = param_sumR;
-		renderer.param_sumG = param_sumG;
-		renderer.param_sumB = param_sumB;
+		//renderer.param_sumR = param_sumR;
+		//renderer.param_sumG = param_sumG;
+		//renderer.param_sumB = param_sumB;
 		if (grayButton) {
 			gray_activate = true;
 		}
@@ -1120,6 +1123,11 @@ void Application::reset(bool& value) {
 		noise_activate = false;
 		meshAnimationButton = false;
 		grayButton = false;
+		gray_activate = false;
+		sharpen_activate = false;
+		sharpenButton = false;
+		embossButton = false;
+		emboss_activate = false;
 		
 	}
 }
@@ -1279,7 +1287,7 @@ void Application::button_blackAndWhite(bool& value) {
 	if (isImportable && !isRepositioning) {
 		for (ofImage& img : renderer.imageList) {
 			if (value) {
-				img.setImageType(OF_IMAGE_GRAYSCALE); 
+				img.setImageType(OF_IMAGE_GRAYSCALE);
 			}
 			else {
 				img.setImageType(OF_IMAGE_COLOR);
@@ -1289,44 +1297,6 @@ void Application::button_blackAndWhite(bool& value) {
 }
 
 void Application::button_sharpen(bool& value) {
-	/*
-	sharpen_activate = value;
-	if (value) {
-		for (ofImage& img : renderer.imageList) {
-			// Convertir l'image en niveau de gris
-			ofPixels pixels = img.getPixels();
-			int w = img.getWidth();
-			int h = img.getHeight();
-
-			// Appliquer un filtre de convolution pour l'effet de netteté
-			float kernel[9] = { -1, -1, -1, -1, 9, -1, -1, -1, -1 }; // Noyau de filtre pour l'effet de netteté
-			ofPixels sharpenedPixels;
-			sharpenedPixels.allocate(w, h, OF_PIXELS_RGB);
-
-			for (int y = 1; y < h - 1; y++) {
-				for (int x = 1; x < w - 1; x++) {
-					float sumR = 0;
-					float sumG = 0;
-					float sumB = 0;
-					int index = 0;
-					for (int j = -1; j <= 1; j++) {
-						for (int i = -1; i <= 1; i++) {
-							ofColor color = pixels.getColor(x + i, y + j);
-							sumR += color.r * kernel[index];
-							sumG += color.g * kernel[index];
-							sumB += color.b * kernel[index];
-							index++;
-						}
-					}
-					sumR = ofClamp(sumR, 0, 255);
-					sumG = ofClamp(sumG, 0, 255);
-					sumB = ofClamp(sumB, 0, 255);
-					sharpenedPixels.setColor(x, y, ofColor(sumR, sumG, sumB));
-				}
-			}
-			img.setFromPixels(sharpenedPixels);
-		}
-	}*/
 	sharpen_activate = value;
 	if (value) {
 		for (ofImage& img : renderer.imageList) {

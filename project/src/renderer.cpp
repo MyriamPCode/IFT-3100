@@ -56,9 +56,9 @@ void Renderer::setup() {
 		}
 	}
 
-	float param_sumR = 0;
-	float param_sumG = 0;
-	float param_sumB = 0;
+	param_sumR = nullptr;
+	param_sumG = nullptr;
+	param_sumB = nullptr;
 }
 
 
@@ -529,3 +529,44 @@ void Renderer::captureImage() {
 	// Exporter l'image
 	ofSaveScreen(ofToString(frameCounter) + ".png");
 }
+
+/*
+void Renderer::updateSharpenEffect() {
+	if (param_sumR && param_sumG && param_sumB) {
+		for (ofImage& img : imageList) {
+			// Convertir l'image en niveau de gris
+			ofPixels pixels = img.getPixels();
+			int w = img.getWidth();
+			int h = img.getHeight();
+
+			// Appliquer un filtre de convolution pour l'effet de netteté
+			float kernel[9] = { -1, -1, -1, -1, 9, -1, -1, -1, -1 }; // Noyau de filtre pour l'effet de netteté
+			ofPixels sharpenedPixels;
+			sharpenedPixels.allocate(w, h, OF_PIXELS_RGB);
+
+			for (int y = 1; y < h - 1; y++) {
+				for (int x = 1; x < w - 1; x++) {
+					float sumR = 0;
+					float sumG = 0;
+					float sumB = 0;
+					int index = 0;
+					for (int j = -1; j <= 1; j++) {
+						for (int i = -1; i <= 1; i++) {
+							ofColor color = pixels.getColor(x + i, y + j);
+							sumR += color.r * kernel[index];
+							sumG += color.g * kernel[index];
+							sumB += color.b * kernel[index];
+							index++;
+						}
+					}
+					// Ajuster les valeurs avec les paramètres
+					sumR = ofClamp(sumR + float_sumR, 0, 255);
+					sumG = ofClamp(sumG + float_sumG, 0, 255);
+					sumB = ofClamp(sumB + float_sumB, 0, 255);
+					sharpenedPixels.setColor(x, y, ofColor(sumR, sumG, sumB));
+				}
+			}
+			img.setFromPixels(sharpenedPixels);
+		}
+	}
+} */

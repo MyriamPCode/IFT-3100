@@ -115,12 +115,13 @@ class Application : public ofBaseApp{
 
 		ofxPanel filterGUI;
 		ofxGuiGroup filterGroupe;
-		ofxToggle grayButton;
-		ofxToggle sharpenButton;
+		ofParameter<bool> grayButton = false;;
+		ofParameter<bool> sharpenButton = false;
+		ofxGuiGroup sharpenGroupe;
 		ofParameter<float> param_sumR;
 		ofParameter<float> param_sumG;
 		ofParameter<float> param_sumB;
-		ofxToggle embossButton;
+		ofParameter<bool> embossButton = false;;
 
 		bool gray_activate;
 		bool sharpen_activate;

@@ -111,12 +111,15 @@ public:
     ofParameter <ofVec3f> uiRotate;
     ofParameter <int> uiAmount; // Total de la liste formes 
 
-    //ofParameter<float> param_sumR;
-    //ofParameter<float> param_sumG;
-    //ofParameter<float> param_sumB;
-    float param_sumR;
-    float param_sumG;
-    float param_sumB;
+    ofParameter<float>* param_sumR;
+    ofParameter<float>* param_sumG;
+    ofParameter<float>* param_sumB;
+    //ofParameter<float> float_sumR;
+    //ofParameter<float> float_sumG;
+    //ofParameter<float> float_sumB;
+
+
+    //void updateSharpenEffect();
 
     ofxInputField<int> inputIndex; 
 
