@@ -90,6 +90,23 @@ void Application::setup(){
 	meshAnimationButton.addListener(this, &Application::button_noise);
 	drawingGUI.add(&meshGroupe);
 
+	filterGUI.setup();
+	filterGUI.setPosition(700, 70);
+	filterGroupe.setup("Filtres");
+	filterGroupe.add(grayButton);
+	grayButton.setName("Black and white");
+	grayButton.addListener(this, &Application::button_blackAndWhite);
+	filterGroupe.add(sharpenButton);
+	sharpenButton.setName("Sharpen");
+	sharpenButton.addListener(this, &Application::button_sharpen);
+	filterGUI.add(param_sumR.set("sumR", 0, 0, 255));
+	filterGUI.add(param_sumG.set("sumG", 0, 0, 255));
+	filterGUI.add(param_sumB.set("sumB", 0, 0, 255));
+	filterGroupe.add(embossButton);
+	embossButton.setName("Emboss");
+	embossButton.addListener(this, &Application::button_emboss);
+	filterGUI.add(&filterGroupe);
+
 	// CrÃƒÂ©ation de la maille
 	for (int x = 0; x < size; x++) {
 		for (int y = 0; y < size; y++) {
@@ -134,37 +151,6 @@ void Application::update()
 {
 	// Rotations des primitives vectorielles
 	rotate++;
-
-	if (renderer.interface.import_activate) {
-		filterGUI.setup();
-		filterGUI.setPosition(700, 70);
-		filterGroupe.setup("Filtres");
-		filterGroupe.add(grayButton);
-		grayButton.setName("Black and white");
-		grayButton.addListener(this, &Application::button_blackAndWhite);
-		filterGroupe.add(sharpenButton);
-		sharpenButton.setName("Sharpen");
-		sharpenButton.addListener(this, &Application::button_sharpen);
-		filterGUI.add(param_sumR.set("sumR", 0, 0, 255));
-		filterGUI.add(param_sumG.set("sumG", 0, 0, 255));
-		filterGUI.add(param_sumB.set("sumB", 0, 0, 255));
-		filterGroupe.add(embossButton);
-		embossButton.setName("Emboss");
-		embossButton.addListener(this, &Application::button_emboss);
-		filterGUI.add(&filterGroupe);
-		//renderer.param_sumR = param_sumR;
-		//renderer.param_sumG = param_sumG;
-		//renderer.param_sumB = param_sumB;
-		if (grayButton) {
-			gray_activate = true;
-		}
-		if (sharpenButton) {
-			sharpen_activate = true;
-		}
-		if (embossButton) {
-			emboss_activate = true;
-		}
-	}
 
 	renderer.update();
 	
@@ -1284,14 +1270,12 @@ void Application::setupCamera() {
 
 void Application::button_blackAndWhite(bool& value) {
 	gray_activate = value;
-	if (isImportable && !isRepositioning) {
-		for (ofImage& img : renderer.imageList) {
-			if (value) {
-				img.setImageType(OF_IMAGE_GRAYSCALE);
-			}
-			else {
-				img.setImageType(OF_IMAGE_COLOR);
-			}
+	for (ofImage& img : renderer.imageList) {
+		if (gray_activate) {
+			img.setImageType(OF_IMAGE_GRAYSCALE);
+		}
+		else {
+			img.setImageType(OF_IMAGE_COLOR);
 		}
 	}
 }
