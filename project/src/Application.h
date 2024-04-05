@@ -109,37 +109,15 @@ class Application : public ofBaseApp{
 		ofxToggle sphereTextureButton;
 
 		ofxPanel curveGui;
-		ofxGuiGroup hermiteGroupe;
-		ofParameter<bool> hermiteButton = false;
-		void button_hermite(bool& value);
-		void hermite(float t, float p1x, float p1y, float p1z, float p2x, float p2y, float p2z, float p3x, float p3y, float p3z, float p4x, float p4y, float p4z, float& x, float& y, float& z);
+		ofxGuiGroup catmullRomGroupe;
+		ofParameter<bool> catmullRomButton = false;
+		void button_catmullRom(bool& value);
+		//void hermite(float t, float p1x, float p1y, float p1z, float p2x, float p2y, float p2z, float p3x, float p3y, float p3z, float p4x, float p4y, float p4z, float& x, float& y, float& z);
 
-		/*
-		ofVec3f ctrl_point1;
-		ofVec3f ctrl_point2;
-		ofVec3f ctrl_point3;
-		ofVec3f ctrl_point4;
-
-		ofVec3f initial_position1;
-		ofVec3f initial_position2;
-		ofVec3f initial_position3;
-		ofVec3f initial_position4;
-		ofVec3f initial_position5;
-
-		ofVec3f position;
-
-		ofVec3f tangent1;
-		ofVec3f tangent2;
-
-		int framebuffer_width;
-		int framebuffer_height;
-
-		int line_resolution;
-		float line_width_outline;
-		float line_width_curve;
-		float radius;
-		ofPolyline line_renderer;
-		int index;*/
+		vector<ofVec2f> controlPoints;
+		int segments;
+		int selectedPointIndex;
+		ofVec2f catmullRom(float t, const ofVec2f& p0, const ofVec2f& p1, const ofVec2f& p2, const ofVec2f& p3);
 
 		bool drawingGUIPressed;
 		bool draw_triangle;
@@ -151,7 +129,7 @@ class Application : public ofBaseApp{
 		bool noise_activate;
 		bool draw_sphere, draw_cube;
 		bool draw_sphereTexture;
-		bool hermite_activate;
+		bool catmullRom_activate;
 
 		float rotate;
 

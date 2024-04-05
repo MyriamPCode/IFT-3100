@@ -69,7 +69,7 @@ void Application::setup(){
 	rotation_activate = false;
 	mesh_activate = false;
 	noise_activate = false;
-	hermite_activate = false;
+	catmullRom_activate = false;
 
 
 	reinitialisationGroupe.setup("Reinitialisation");
@@ -92,11 +92,11 @@ void Application::setup(){
 	curveGui.setup("Curve");
 	curveGui.loadFont("roboto/Roboto-Regular.ttf", 10);
 	curveGui.setPosition(600, 50);
-	hermiteGroupe.setup("Hermite's curve");
-	hermiteButton.setName("5 points");
-	hermiteGroupe.add(hermiteButton);
-	hermiteButton.addListener(this, &Application::button_hermite);
-	curveGui.add(&hermiteGroupe);
+	catmullRomGroupe.setup("Catmull-Rom's curve");
+	catmullRomButton.setName("5 points");
+	catmullRomGroupe.add(catmullRomButton);
+	catmullRomButton.addListener(this, &Application::button_catmullRom);
+	curveGui.add(&catmullRomGroupe);
 
 	// CrÃƒÂ©ation de la maille
 	for (int x = 0; x < size; x++) {
@@ -163,6 +163,21 @@ void Application::setup(){
 	initial_position3 = { w_1_2, h_1_5, 0 };
 	initial_position4 = { w_3_4, h_1_3, 0 };
 	initial_position5 = { w_7_8, h_4_5, 0 };*/
+
+	controlPoints.push_back(ofVec2f(100, 300));
+	controlPoints.push_back(ofVec2f(200, 100));
+	controlPoints.push_back(ofVec2f(300, 500));
+	controlPoints.push_back(ofVec2f(400, 200));
+	controlPoints.push_back(ofVec2f(500, 400));
+	controlPoints.push_back(ofVec2f(600, 100));
+	controlPoints.push_back(ofVec2f(700, 300));
+	controlPoints.push_back(ofVec2f(800, 200));
+
+	// Nombre de segments à dessiner entre chaque paire de points de contrôle
+	segments = 150;
+
+	// Aucun point de contrôle n'est sélectionné au début
+	selectedPointIndex = -1;
 }
 
 void Application::update()
@@ -296,8 +311,32 @@ void Application::draw(){
 		drawingGUI.draw();
 	}
 
-	if (renderer.interface.hermite_activate) {
+	if (renderer.interface.catmullRom_activate) {
 		curveGui.draw();
+		if (catmullRom_activate) {
+			ofSetColor(255);
+			for (auto& p : controlPoints) {
+				ofDrawCircle(p, 5);
+			}
+
+			ofSetColor(255, 0, 0);
+			for (auto& p : controlPoints) {
+				ofDrawCircle(p, 2);
+			}
+
+			ofSetColor(255, 0, 0);
+			for (unsigned int i = 1; i < controlPoints.size() - 2; i++) {
+				for (int j = 0; j <= segments; j++) {
+					float t = (float)j / segments;
+					ofVec2f p0 = controlPoints[i - 1];
+					ofVec2f p1 = controlPoints[i];
+					ofVec2f p2 = controlPoints[i + 1];
+					ofVec2f p3 = controlPoints[i + 2];
+					ofVec2f p = catmullRom(t, p0, p1, p2, p3);
+					ofDrawCircle(p, 2);
+				}
+			}
+		}
 	}
 
 	guiScene.draw();
@@ -502,6 +541,11 @@ void Application::mouseDragged(int x, int y, int button){
 	{
 		renderer.ligne.addVertex(renderer.interface.mouse_drag_x, renderer.interface.mouse_drag_y);
 	}
+
+	if (selectedPointIndex != -1) {
+		controlPoints[selectedPointIndex].set(x, y);
+	}
+
 }
 
 
@@ -561,6 +605,14 @@ void Application::mousePressed(int x, int y, int button){
 			}
 			++imgPos;
 			imgDistFromMax++;
+		}
+	}
+
+	for (int i = 0; i < controlPoints.size(); i++) {
+		float distance = ofDist(x, y, controlPoints[i].x, controlPoints[i].y);
+		if (distance < 5) {
+			selectedPointIndex = i;
+			break;
 		}
 	}
 
@@ -768,6 +820,8 @@ void Application::mouseReleased(int x, int y, int button){
 		imgDistFromMax = 0;
 	}
 
+	selectedPointIndex = -1;
+
 	if (button == 0 && y < INTERACTION_BAR_HEIGHT) {
 		int index = static_cast<int>(floor(x / (iconWidth)));
 		switch (index) {
@@ -798,7 +852,7 @@ void Application::mouseReleased(int x, int y, int button){
 				break;
 			case 6:
 				renderer.interface.toggleCurveOptions();
-				renderer.interface.hermite_activate = !renderer.interface.hermite_activate;
+				renderer.interface.catmullRom_activate = !renderer.interface.catmullRom_activate;
 				break;
 		}
 	}
@@ -1153,7 +1207,8 @@ void Application::reset(bool& value) {
 		noise_activate = false;
 		meshAnimationButton = false;
 		sphereTextureButton = false;
-		//hermite_activate = false;
+		catmullRomButton = false;
+		catmullRom_activate = false;
 	}
 }
 
@@ -1308,10 +1363,10 @@ void Application::setupCamera() {
 		camera->setOrientation(camera_orientation);
 }
 
-void Application::button_hermite(bool& value) {
-	hermite_activate = value;
+void Application::button_catmullRom(bool& value) {
+	catmullRom_activate = value;
 	if (value) {
-		hermite_activate = true;
+		catmullRom_activate = true;
 		/*
 		if (hermite_activate) {
 			tangent1 = ctrl_point2 - ctrl_point1;
@@ -1327,6 +1382,7 @@ void Application::button_hermite(bool& value) {
 	}
 }
 
+/*
 void Application::hermite(
 	float t,
 	float p1x, float p1y, float p1z,
@@ -1344,4 +1400,17 @@ void Application::hermite(
 	x = (2 * ttt - 3 * tt + 1) * p1x + (ttt - 2 * tt + t) * p2x + (ttt - tt) * p3x + (-2 * ttt + 3 * tt) * p4x;
 	y = (2 * ttt - 3 * tt + 1) * p1y + (ttt - 2 * tt + t) * p2y + (ttt - tt) * p3y + (-2 * ttt + 3 * tt) * p4y;
 	z = (2 * ttt - 3 * tt + 1) * p1z + (ttt - 2 * tt + t) * p2z + (ttt - tt) * p3z + (-2 * ttt + 3 * tt) * p4z;
+}*/
+
+ofVec2f Application::catmullRom(float t, const ofVec2f& p0, const ofVec2f& p1, const ofVec2f& p2, const ofVec2f& p3) {
+	float t2 = t * t;
+	float t3 = t2 * t;
+
+	float b0 = 0.5f * (-t3 + 2 * t2 - t);
+	float b1 = 0.5f * (3 * t3 - 5 * t2 + 2);
+	float b2 = 0.5f * (-3 * t3 + 4 * t2 + t);
+	float b3 = 0.5f * (t3 - t2);
+
+	return p0 * b0 + p1 * b1 + p2 * b2 + p3 * b3;
 }
+
