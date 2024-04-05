@@ -97,7 +97,7 @@ void Renderer::draw() {
 	if (okDessiner)
 	{
 		if (interface.textureFillButton) {
-			shader.load("filters/myCrazyVertFile.vert", "filters/myCrazyFragFile.frag");
+			shader.load("filters/colors.vert", "filters/wood.frag");
 
 			shader.begin();
 			shader.setUniform1f("u_time", ofGetElapsedTimef());
