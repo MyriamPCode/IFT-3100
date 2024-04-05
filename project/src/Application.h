@@ -111,13 +111,16 @@ class Application : public ofBaseApp{
 		ofxPanel curveGui;
 		ofxGuiGroup catmullRomGroupe;
 		ofParameter<bool> catmullRomButton = false;
+		ofParameter<bool> catmullRomButton6 = false;
 		void button_catmullRom(bool& value);
+		void button_catmullRom6(bool& value);
 		//void hermite(float t, float p1x, float p1y, float p1z, float p2x, float p2y, float p2z, float p3x, float p3y, float p3z, float p4x, float p4y, float p4z, float& x, float& y, float& z);
 
 		vector<ofVec2f> controlPoints;
 		ofParameter<int> segments;
 		int selectedPointIndex;
-		ofVec2f catmullRom(float t, const ofVec2f& p0, const ofVec2f& p1, const ofVec2f& p2, const ofVec2f& p3);
+		ofVec2f Application::catmullRom(float t, const ofVec2f& p0, const ofVec2f& p1, const ofVec2f& p2, const ofVec2f& p3, const ofVec2f& p4);
+		ofVec2f catmullRom6(float t, const ofVec2f& p0, const ofVec2f& p1, const ofVec2f& p2, const ofVec2f& p3, const ofVec2f& p4, const ofVec2f& p5);
 
 		bool drawingGUIPressed;
 		bool draw_triangle;
@@ -130,6 +133,7 @@ class Application : public ofBaseApp{
 		bool draw_sphere, draw_cube;
 		bool draw_sphereTexture;
 		bool catmullRom_activate;
+		bool catmullRom6_activate;
 
 		float rotate;
 
