@@ -10,8 +10,22 @@ using namespace std;
 
 enum class Camera { front, back, left, right, top, down };
 
+const std::array<float, 9> convolution_kernel_emboss
+{
+ -2.0f, -1.0f,  0.0f,
+ -1.0f,  1.0f,  1.0f,
+  0.0f,  1.0f,  2.0f
+};
+
 class Application : public ofBaseApp{
 	public:
+
+		struct OriginalImage {
+			ofPixels pixels;
+			int width;
+			int height;
+		};
+
 		Renderer renderer;
 		Forme forme;
 		ofColor backgroundColor = ofColor(178, 184, 194);
@@ -115,13 +129,15 @@ class Application : public ofBaseApp{
 
 		ofxPanel filterGUI;
 		ofxGuiGroup filterGroupe;
+		ofParameter<ofColor> color_picker;
+		ofParameter<float> slider;
 		ofParameter<bool> grayButton = false;;
 		ofParameter<bool> sharpenButton = false;
 		ofxGuiGroup sharpenGroupe;
 		ofParameter<float> param_sumR;
 		ofParameter<float> param_sumG;
 		ofParameter<float> param_sumB;
-		ofParameter<bool> embossButton = false;;
+		ofParameter<bool> embossButton = false;
 
 		bool gray_activate;
 		bool sharpen_activate;
@@ -168,6 +184,10 @@ class Application : public ofBaseApp{
 			}
 		}
 
+		void storeOriginalImages();
+		void restoreOriginalImages();
+		void applyConvolution(const std::array<float, 9>& kernel);
+
 private:
 	stack<function<void()>> undoStack;
 	stack<function<void()>> redoStack;
@@ -211,6 +231,5 @@ private:
 		void button_rotation(bool& value);
 		void button_mesh(bool& value);
 		void button_noise(bool& value);
-
 
 };

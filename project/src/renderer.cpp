@@ -11,6 +11,10 @@ void Renderer::setup() {
 	ofSetFrameRate(60);
 	interface.setup();
 	ofDisableArbTex();
+
+	tint.set(255, 255, 255);
+	mix_factor = 0.618f;
+	shader.load("image_filter_330_vs.glsl", "image_filter_330_fs.glsl");
 	
 	gui.setup("Exportation");
 	nameField.set("Image name", "name");
@@ -79,6 +83,17 @@ void Renderer::draw() {
 			visible = false;
 		}
 	}
+
+	shader.begin();
+	shader.setUniformTexture("image", image.getTexture(), 1);
+	shader.setUniform3f("tint", tint.r / 255.0f, tint.g / 255.0f, tint.b / 255.0f);
+	shader.setUniform1f("factor", mix_factor);
+	ofPushMatrix();
+	ofTranslate(image.getWidth(), image.getHeight());
+	ofSetColor(tint); // Définir la couleur de dessin avec la teinte sélectionnée
+	image.draw(0, 0, image.getWidth(), image.getHeight());
+	ofPopMatrix();
+	shader.end();
 
 	auto currImg = imgPosList.begin();
 	for (list<ofImage>::iterator iter = imageList.begin(); iter != imageList.end(); ++iter) {

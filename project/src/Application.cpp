@@ -93,6 +93,8 @@ void Application::setup(){
 	filterGUI.setup();
 	filterGUI.setPosition(700, 70);
 	filterGroupe.setup("Filtres");
+	filterGUI.add(color_picker.set("teinte", renderer.tint, ofColor(0, 0), ofColor(255, 255)));
+	filterGUI.add(slider.set("mix", renderer.mix_factor, 0.0f, 1.0f));
 	filterGroupe.add(grayButton);
 	grayButton.setName("Black and white");
 	grayButton.addListener(this, &Application::button_blackAndWhite);
@@ -153,6 +155,8 @@ void Application::update()
 	rotate++;
 
 	renderer.update();
+	renderer.tint = color_picker;
+	renderer.mix_factor = slider;
 	
 	if (renderer.isRecording) {
 		// Mettez Ã¯Â¿Â½ jour et capturez l'image Ã¯Â¿Â½ intervalles rÃ¯Â¿Â½guliers
@@ -190,7 +194,10 @@ void Application::draw(){
 	if (isImportable) {
 		renderer.interface.import_activate = true;
 		ofDrawBitmapString("Please drag an image to import it.", 30, 70);
+		ofSetColor(renderer.tint);
+		ofEnableBlendMode(OF_BLENDMODE_MULTIPLY);
 	}
+	ofDisableBlendMode();
 
 
 	//cam.begin(); //TODO: ***TROUVER UN MOYEN DE RELIER LES DEUX CAMERA POUR PASSER DU CIRCUIT A CELLE ORTHOGRAPHIQUE***
@@ -1269,17 +1276,19 @@ void Application::setupCamera() {
 }
 
 void Application::button_blackAndWhite(bool& value) {
-	gray_activate = value;
+    gray_activate = value;
+	cout << "gray_activate: " << gray_activate << endl; // Débogage
 	for (ofImage& img : renderer.imageList) {
 		if (gray_activate) {
+			cout << "Converting image to grayscale" << endl; // Débogage
 			img.setImageType(OF_IMAGE_GRAYSCALE);
 		}
 		else {
+			cout << "Converting image to color" << endl; // Débogage
 			img.setImageType(OF_IMAGE_COLOR);
 		}
 	}
 }
-
 void Application::button_sharpen(bool& value) {
 	sharpen_activate = value;
 	if (value) {
@@ -1322,6 +1331,7 @@ void Application::button_sharpen(bool& value) {
 	}
 }
 
+
 void Application::button_emboss(bool& value) {
 	emboss_activate = value;
 
@@ -1350,5 +1360,5 @@ void Application::button_emboss(bool& value) {
 
 			img.setFromPixels(embossedPixels);
 		}
-	}
+	} 
 }
