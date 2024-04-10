@@ -44,7 +44,7 @@ void Interface::setup() {
 	is_mouse_button_dragged = false;
 	import_activate = false;
 	export_activate = false;
-	catmullRom_activate = false;
+	curve_activate = false;
 
 	typeRender = MeshRenderMode::wireframe;
 	mouse_current_x = mouse_current_y = mouse_press_x = mouse_press_y = mouse_drag_x = mouse_drag_y = 0;
@@ -79,7 +79,7 @@ void Interface::draw() {
 	}
 
 	if (curvePressed) {
-		catmullRom_activate = true;
+		curve_activate = true;
 	}
 
 	int gridSize = 50; // Espacement de la grille

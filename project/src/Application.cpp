@@ -71,6 +71,7 @@ void Application::setup(){
 	noise_activate = false;
 	catmullRom_activate = false;
 	catmullRom6_activate = false;
+	hermite_activate = false;
 
 	reinitialisationGroupe.setup("Reinitialisation");
 	reinitialisationGroupe.add(resetButton.setup("Reset", false));
@@ -101,6 +102,11 @@ void Application::setup(){
 	catmullRomGroupe.add(catmullRomButton6);
 	catmullRomButton6.addListener(this, &Application::button_catmullRom6);
 	curveGui.add(&catmullRomGroupe);
+	hermiteGroupe.setup("Hermite's curve");
+	hermiteButton.setName("3 curves");
+	hermiteGroupe.add(hermiteButton);
+	hermiteButton.addListener(this, &Application::button_hermite);
+	curveGui.add(&hermiteGroupe);
 
 	// CrÃƒÂ©ation de la maille
 	for (int x = 0; x < size; x++) {
@@ -289,7 +295,7 @@ void Application::draw(){
 		drawingGUI.draw();
 	}
 
-	if (renderer.interface.catmullRom_activate) {
+	if (renderer.interface.curve_activate) {
 		curveGui.draw();
 		if (catmullRom_activate) {
 			ofSetColor(255);
@@ -339,6 +345,32 @@ void Application::draw(){
 					ofVec2f p5 = controlPoints[i + 4];
 					ofVec2f p = catmullRom6(t, p0, p1, p2, p3, p4, p5);
 					ofDrawCircle(p, 2);
+				}
+			}
+		}
+		if (hermite_activate) {
+			ofSetColor(255);
+			for (auto& p : controlPoints) {
+				ofDrawCircle(p, 5);
+			}
+
+			ofSetColor(255, 0, 0);
+			for (auto& p : controlPoints) {
+				ofDrawCircle(p, 2);
+			}
+
+			ofSetColor(255, 0, 0);
+			for (int i = 0; i < controlPoints.size() - 4; i++) { 
+				for (int j = 0; j <= segments; j++) {
+					float t = (float)j / segments;
+					ofVec2f p0 = controlPoints[i];
+					ofVec2f p1 = controlPoints[i + 1];
+					ofVec2f p2 = controlPoints[i + 2];
+					ofVec2f p3 = controlPoints[i + 3];
+					ofVec2f p4 = controlPoints[i + 4];
+					float x, y;
+					hermite(t, p0, p1, p2, p3, p4, x, y);
+					ofDrawCircle(x, y, 2);
 				}
 			}
 		}
@@ -857,7 +889,7 @@ void Application::mouseReleased(int x, int y, int button){
 				break;
 			case 6:
 				renderer.interface.toggleCurveOptions();
-				renderer.interface.catmullRom_activate = !renderer.interface.catmullRom_activate;
+				renderer.interface.curve_activate = !renderer.interface.curve_activate;
 				break;
 		}
 	}
@@ -1214,6 +1246,7 @@ void Application::reset(bool& value) {
 		sphereTextureButton = false;
 		catmullRomButton = false;
 		catmullRom_activate = false;
+		hermiteButton = false;
 	}
 }
 
@@ -1374,6 +1407,8 @@ void Application::button_catmullRom(bool& value) {
 		catmullRom_activate = true;
 		catmullRomButton6 = false;
 		catmullRom6_activate = false;
+		hermiteButton = false;
+		hermite_activate = false;
 	}
 }
 
@@ -1383,17 +1418,23 @@ void Application::button_catmullRom6(bool& value) {
 		catmullRom6_activate = true;
 		catmullRomButton = false;
 		catmullRom_activate = false;
+		hermiteButton = false;
+		hermite_activate = false;
 	}
 }
 
-/*
-void Application::hermite(
-	float t,
-	float p1x, float p1y, float p1z,
-	float p2x, float p2y, float p2z,
-	float p3x, float p3y, float p3z,
-	float p4x, float p4y, float p4z,
-	float& x, float& y, float& z)
+void Application::button_hermite(bool& value) {
+	hermite_activate = value;
+	if (value) {
+		hermite_activate = true;
+		catmullRomButton6 = false;
+		catmullRom6_activate = false;
+		catmullRomButton = false;
+		catmullRom_activate = false;
+	}
+}
+
+void Application::hermite(float t, const ofVec2f& p0, const ofVec2f& p1, const ofVec2f& p2, const ofVec2f& p3, const ofVec2f& p4, float& x, float& y)
 {
 	float u = 1 - t;
 	float uu = u * u;
@@ -1401,10 +1442,9 @@ void Application::hermite(
 	float tt = t * t;
 	float ttt = tt * t;
 
-	x = (2 * ttt - 3 * tt + 1) * p1x + (ttt - 2 * tt + t) * p2x + (ttt - tt) * p3x + (-2 * ttt + 3 * tt) * p4x;
-	y = (2 * ttt - 3 * tt + 1) * p1y + (ttt - 2 * tt + t) * p2y + (ttt - tt) * p3y + (-2 * ttt + 3 * tt) * p4y;
-	z = (2 * ttt - 3 * tt + 1) * p1z + (ttt - 2 * tt + t) * p2z + (ttt - tt) * p3z + (-2 * ttt + 3 * tt) * p4z;
-}*/
+	x = (2 * ttt - 3 * tt + 1) * p1.x + (ttt - 2 * tt + t) * p2.x + (ttt - tt) * p3.x + (-2 * ttt + 3 * tt) * p4.x;
+	y = (2 * ttt - 3 * tt + 1) * p1.y + (ttt - 2 * tt + t) * p2.y + (ttt - tt) * p3.y + (-2 * ttt + 3 * tt) * p4.y;
+}
 
 ofVec2f Application::catmullRom(float t, const ofVec2f& p0, const ofVec2f& p1, const ofVec2f& p2, const ofVec2f& p3, const ofVec2f& p4) {
 	float t2 = t * t;
@@ -1415,7 +1455,7 @@ ofVec2f Application::catmullRom(float t, const ofVec2f& p0, const ofVec2f& p1, c
 	float b2 = 0.5f * (-3 * t3 + 4 * t2 + t);
 	float b3 = 0.5f * (t3 - t2);
 
-	return p0 * b0 + p1 * b1 + p2 * b2 + p3 * b3 + p4 * b3; 
+	return p0 * b0 + p1 * b1 + p2 * b2 + p3 * b3 + p4 * b3;
 }
 
 ofVec2f Application::catmullRom6(float t, const ofVec2f& p0, const ofVec2f& p1, const ofVec2f& p2, const ofVec2f& p3, const ofVec2f& p4, const ofVec2f& p5) {

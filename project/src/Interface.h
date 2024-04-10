@@ -70,7 +70,7 @@ class Interface {
 
 		bool mesh_activate;
 		bool noise_activate;
-		bool catmullRom_activate;
+		bool curve_activate;
 
 		void setup();
 		void draw();
