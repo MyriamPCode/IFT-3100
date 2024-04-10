@@ -23,13 +23,15 @@ public:
 
     ofMesh mesh;
     int size = 96; // Taille de la maille
-    ofImage textureImage;
-    ofTexture textu;
+
     list<ofImage> imageList; //Liste d'images import�es
     list<vector<int>> imgPosList; //Positions x et y des images import�es
 
     ofxAssimpModelLoader teapotOrtho;
     ofxAssimpModelLoader teapotMultiple;
+    ofxAssimpModelLoader model1;
+    ofxAssimpModelLoader model2;
+    ofxAssimpModelLoader model3;
     //MeshRenderMode typeRender;
 
 
@@ -112,26 +114,6 @@ public:
     ofParameter <int> uiAmount; // Total de la liste formes 
 
     ofxInputField<int> inputIndex;
-
-    ofVec3f* selected_ctrl_point;
-
-    ofVec3f ctrl_point1;
-    ofVec3f ctrl_point2;
-    ofVec3f ctrl_point3;
-    ofVec3f ctrl_point4;
-    ofVec3f ctrl_point5;
-
-    ofVec3f initial_position1;
-    ofVec3f initial_position2;
-    ofVec3f initial_position3;
-    ofVec3f initial_position4;
-    ofVec3f initial_position5;
-    ofVec3f initial_position6;
-
-    ofVec3f position;
-
-    ofVec3f tangent1;
-    ofVec3f tangent2;
 
 private:
     ofxPanel gui;

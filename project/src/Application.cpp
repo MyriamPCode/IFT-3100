@@ -83,13 +83,6 @@ void Application::setup(){
 	rotationButton.addListener(this, &Application::button_rotation);
 	drawingGUI.add(&animationGroupe);
 
-	meshGroupe.setup("Maille geomÃƒÂ©trique");
-	meshGroupe.add(meshButton.setup("Maille", false));
-	meshButton.addListener(this, &Application::button_mesh);
-	meshGroupe.add(meshAnimationButton.setup("Animation", false));
-	meshAnimationButton.addListener(this, &Application::button_noise);
-	drawingGUI.add(&meshGroupe);
-
 	curveGui.setup("Curve");
 	curveGui.loadFont("roboto/Roboto-Regular.ttf", 10);
 	curveGui.setPosition(600, 50);
