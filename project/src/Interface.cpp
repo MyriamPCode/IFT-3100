@@ -212,6 +212,10 @@ void Interface::enableFill(bool& value) {
 	fillEnabled = !fillEnabled;
 }
 
+void Interface::enableTextureFill(bool& value) {
+	textureFill = !textureFill;
+}
+
 void Interface::toggleCamOptions() {
 	camPressed = !camPressed;
 }
@@ -379,10 +383,12 @@ void Interface::setupOutilsGuiOptions() {
 	outilsGui.add(color_picker_background);
 	outilsGui.add(color_picker_stroke);
 	outilsGui.add(fillButton.setup("Remplissage de forme", false));
+	outilsGui.add(textureFillButton.setup("Ajout d'une texture", false));
 	outilsGui.add(colorPickerFill);
 	outilsGui.add(slider_stroke_weight);
 
 	fillButton.addListener(this, &Interface::enableFill);
+	textureFillButton.addListener(this, &Interface::enableFill);
 
 	outilsGui.setFillColor(backgroundInteractionColor);
 	outilsGui.setTextColor(backgroundInteractionColor);
