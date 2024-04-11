@@ -60,9 +60,11 @@ void Renderer::setup() {
 		}
 	}
 
-	param_sumR = nullptr;
-	param_sumG = nullptr;
-	param_sumB = nullptr;
+	kernel_type = ConvolutionKernel::identity;
+	kernel_name = "identité";
+
+	filter();
+
 }
 
 
@@ -545,43 +547,85 @@ void Renderer::captureImage() {
 	ofSaveScreen(ofToString(frameCounter) + ".png");
 }
 
-/*
-void Renderer::updateSharpenEffect() {
-	if (param_sumR && param_sumG && param_sumB) {
-		for (ofImage& img : imageList) {
-			// Convertir l'image en niveau de gris
-			ofPixels pixels = img.getPixels();
-			int w = img.getWidth();
-			int h = img.getHeight();
+void Renderer::filter() {
+	const int kernel_size = 3;
+	const int kernel_offset = kernel_size / 2;
+	const int color_component_count = 3;
 
-			// Appliquer un filtre de convolution pour l'effet de netteté
-			float kernel[9] = { -1, -1, -1, -1, 9, -1, -1, -1, -1 }; // Noyau de filtre pour l'effet de netteté
-			ofPixels sharpenedPixels;
-			sharpenedPixels.allocate(w, h, OF_PIXELS_RGB);
+	int x, y;
+	int i, j;
+	int xi, yj;
+	int c;
 
-			for (int y = 1; y < h - 1; y++) {
-				for (int x = 1; x < w - 1; x++) {
-					float sumR = 0;
-					float sumG = 0;
-					float sumB = 0;
-					int index = 0;
-					for (int j = -1; j <= 1; j++) {
-						for (int i = -1; i <= 1; i++) {
-							ofColor color = pixels.getColor(x + i, y + j);
-							sumR += color.r * kernel[index];
-							sumG += color.g * kernel[index];
-							sumB += color.b * kernel[index];
-							index++;
-						}
+	int pixel_index_img_src;
+	int pixel_index_img_dst;
+	int kernel_index;
+	float kernel_value;
+
+	ofPixels pixel_array_src = image.getPixels(); // Utilisation de l'image de Renderer
+	ofPixels pixel_array_dst = image.getPixels();
+
+	ofColor pixel_color_src;
+	ofColor pixel_color_dst;
+
+	float sum[color_component_count];
+
+	for (y = 0; y < image.getHeight(); ++y) { // Utilisation de getHeight() de l'image de Renderer
+		for (x = 0; x < image.getWidth(); ++x) { // Utilisation de getWidth() de l'image de Renderer
+			for (c = 0; c < color_component_count; ++c)
+				sum[c] = 0;
+
+			pixel_index_img_dst = (image.getWidth() * y + x) * color_component_count;
+
+			for (j = -kernel_offset; j <= kernel_offset; ++j) {
+				for (i = -kernel_offset; i <= kernel_offset; ++i) {
+					xi = x - i;
+					yj = y - j;
+
+					if (xi < 0 || xi >= image.getWidth() || yj < 0 || yj >= image.getHeight())
+						continue;
+
+					pixel_index_img_src = (image.getWidth() * yj + xi) * color_component_count;
+					pixel_color_src = pixel_array_src.getColor(pixel_index_img_src);
+
+					kernel_index = kernel_size * (j + kernel_offset) + (i + kernel_offset);
+
+					switch (kernel_type) {
+					case ConvolutionKernel::identity:
+						kernel_value = convolution_kernel_identity.at(kernel_index);
+						break;
+					case ConvolutionKernel::emboss:
+						kernel_value = convolution_kernel_emboss.at(kernel_index);
+						break;
+					case ConvolutionKernel::sharpen:
+						kernel_value = convolution_kernel_sharpen.at(kernel_index);
+						break;
+					case ConvolutionKernel::edge_detect:
+						kernel_value = convolution_kernel_edge_detect.at(kernel_index);
+						break;
+					case ConvolutionKernel::blur:
+						kernel_value = convolution_kernel_blur.at(kernel_index);
+						break;
+					default:
+						kernel_value = convolution_kernel_identity.at(kernel_index);
+						break;
 					}
-					// Ajuster les valeurs avec les paramètres
-					sumR = ofClamp(sumR + float_sumR, 0, 255);
-					sumG = ofClamp(sumG + float_sumG, 0, 255);
-					sumB = ofClamp(sumB + float_sumB, 0, 255);
-					sharpenedPixels.setColor(x, y, ofColor(sumR, sumG, sumB));
+
+					for (c = 0; c < color_component_count; ++c) {
+						sum[c] = sum[c] + kernel_value * pixel_color_src[c];
+					}
 				}
 			}
-			img.setFromPixels(sharpenedPixels);
+
+			for (c = 0; c < color_component_count; ++c) {
+				pixel_color_dst[c] = (int)ofClamp(sum[c], 0, 255);
+			}
+
+			pixel_array_dst.setColor(pixel_index_img_dst, pixel_color_dst);
 		}
 	}
-} */
+
+	image.setFromPixels(pixel_array_dst);
+
+	ofLog() << "<filtre de convolution complété (" << kernel_name << ")>";
+}

@@ -10,20 +10,12 @@ using namespace std;
 
 enum class Camera { front, back, left, right, top, down };
 
-const std::array<float, 9> convolution_kernel_emboss
-{
- -2.0f, -1.0f,  0.0f,
- -1.0f,  1.0f,  1.0f,
-  0.0f,  1.0f,  2.0f
-};
-
 class Application : public ofBaseApp{
 	public:
 
-		struct OriginalImage {
+		struct OriginalPixels {
 			ofPixels pixels;
-			int width;
-			int height;
+			bool initialized = false;
 		};
 
 		Renderer renderer;
@@ -134,9 +126,6 @@ class Application : public ofBaseApp{
 		ofParameter<bool> grayButton = false;;
 		ofParameter<bool> sharpenButton = false;
 		ofxGuiGroup sharpenGroupe;
-		ofParameter<float> param_sumR;
-		ofParameter<float> param_sumG;
-		ofParameter<float> param_sumB;
 		ofParameter<bool> embossButton = false;
 
 		bool gray_activate;
@@ -183,10 +172,7 @@ class Application : public ofBaseApp{
 				undoStack.push(move(redoAction));
 			}
 		}
-
-		void storeOriginalImages();
-		void restoreOriginalImages();
-		void applyConvolution(const std::array<float, 9>& kernel);
+		std::map<ofImage*, OriginalPixels> originalImagePixels;
 
 private:
 	stack<function<void()>> undoStack;

@@ -101,9 +101,6 @@ void Application::setup(){
 	filterGroupe.add(sharpenButton);
 	sharpenButton.setName("Sharpen");
 	sharpenButton.addListener(this, &Application::button_sharpen);
-	filterGUI.add(param_sumR.set("sumR", 0, 0, 255));
-	filterGUI.add(param_sumG.set("sumG", 0, 0, 255));
-	filterGUI.add(param_sumB.set("sumB", 0, 0, 255));
 	filterGroupe.add(embossButton);
 	embossButton.setName("Emboss");
 	embossButton.addListener(this, &Application::button_emboss);
@@ -1277,88 +1274,124 @@ void Application::setupCamera() {
 
 void Application::button_blackAndWhite(bool& value) {
     gray_activate = value;
-	cout << "gray_activate: " << gray_activate << endl; // Débogage
-	for (ofImage& img : renderer.imageList) {
-		if (gray_activate) {
-			cout << "Converting image to grayscale" << endl; // Débogage
-			img.setImageType(OF_IMAGE_GRAYSCALE);
-		}
-		else {
-			cout << "Converting image to color" << endl; // Débogage
-			img.setImageType(OF_IMAGE_COLOR);
+	if (value) {
+		for (ofImage& img : renderer.imageList) {
+			if (!img.isAllocated()) {
+				continue;
+			}
+			if (!originalImagePixels[&img].initialized) {
+				originalImagePixels[&img].pixels = img.getPixels();
+				originalImagePixels[&img].initialized = true;
+			}
+		    img.setImageType(OF_IMAGE_GRAYSCALE);
 		}
 	}
+	else {
+		for (ofImage& img : renderer.imageList) {
+			if (!img.isAllocated()) {
+				continue;
+			}
+			if (originalImagePixels[&img].initialized) {
+				img.setFromPixels(originalImagePixels[&img].pixels);
+				img.update();
+			}
+		}
+	}
+	
 }
 void Application::button_sharpen(bool& value) {
 	sharpen_activate = value;
+
 	if (value) {
 		for (ofImage& img : renderer.imageList) {
-			// Convertir l'image en niveau de gris
-			ofPixels pixels = img.getPixels();
+			if (!img.isAllocated()) {
+				continue;
+			}
+
+			if (!originalImagePixels[&img].initialized) {
+				originalImagePixels[&img].pixels = img.getPixels();
+				originalImagePixels[&img].initialized = true;
+			}
+			ofPixels sharpenedPixels = originalImagePixels[&img].pixels;
 			int w = img.getWidth();
 			int h = img.getHeight();
 
-			// Appliquer un filtre de convolution pour l'effet de netteté
-			float kernel[9] = { -1, -1, -1, -1, 9, -1, -1, -1, -1 }; // Noyau de filtre pour l'effet de netteté
-			ofPixels sharpenedPixels;
-			sharpenedPixels.allocate(w, h, OF_PIXELS_RGB);
+			float kernel[3][3] = {
+				{-1, -1, -1},
+				{-1, 9, -1},
+				{-1, -1, -1}
+			};
 
 			for (int y = 1; y < h - 1; y++) {
 				for (int x = 1; x < w - 1; x++) {
-					float sumR = 0;
-					float sumG = 0;
-					float sumB = 0;
-					int index = 0;
-					for (int j = -1; j <= 1; j++) {
-						for (int i = -1; i <= 1; i++) {
-							ofColor color = pixels.getColor(x + i, y + j);
-							sumR += color.r * kernel[index];
-							sumG += color.g * kernel[index];
-							sumB += color.b * kernel[index];
-							index++;
+					float sumR = 0, sumG = 0, sumB = 0;
+					for (int ky = -1; ky <= 1; ky++) {
+						for (int kx = -1; kx <= 1; kx++) {
+							int pixelX = x + kx;
+							int pixelY = y + ky;
+							ofColor color = originalImagePixels[&img].pixels.getColor(pixelX, pixelY);
+							sumR += color.r * kernel[ky + 1][kx + 1];
+							sumG += color.g * kernel[ky + 1][kx + 1];
+							sumB += color.b * kernel[ky + 1][kx + 1];
 						}
 					}
-					// Ajuster les valeurs avec les paramètres
-					sumR = ofClamp(sumR + param_sumR, 0, 255);
-					sumG = ofClamp(sumG + param_sumG, 0, 255);
-					sumB = ofClamp(sumB + param_sumB, 0, 255);
+					sumR = ofClamp(sumR, 0, 255);
+					sumG = ofClamp(sumG, 0, 255);
+					sumB = ofClamp(sumB, 0, 255);
 					sharpenedPixels.setColor(x, y, ofColor(sumR, sumG, sumB));
 				}
 			}
-			img.setFromPixels(sharpenedPixels);
-		}
 
+			img.setFromPixels(sharpenedPixels);
+			img.update();
+		}
+	}
+	else {
+		for (ofImage& img : renderer.imageList) {
+			if (!img.isAllocated()) {
+				continue;
+			}
+			if (originalImagePixels[&img].initialized) {
+				img.setFromPixels(originalImagePixels[&img].pixels);
+				img.update();
+			}
+		}
 	}
 }
-
 
 void Application::button_emboss(bool& value) {
 	emboss_activate = value;
 
 	if (value) {
 		for (ofImage& img : renderer.imageList) {
-			ofPixels pixels = img.getPixels();
-			int w = img.getWidth();
-			int h = img.getHeight();
-
-			ofPixels embossedPixels;
-			embossedPixels.allocate(w, h, OF_PIXELS_RGB);
-
-			// Appliquer l'effet de bosselage en parcourant tous les pixels de l'image
-			for (int y = 0; y < h; y++) {
-				for (int x = 0; x < w; x++) {
-					// Calculer la différence de luminosité entre les pixels voisins
-					int pixelBrightness = pixels.getColor(x, y).getBrightness();
-					int neighborBrightness = pixels.getColor(ofClamp(x + 1, 0, w - 1), ofClamp(y + 1, 0, h - 1)).getBrightness();
+			if (!img.isAllocated()) {
+				continue;
+			}
+			if (!originalImagePixels[&img].initialized) {
+				originalImagePixels[&img].pixels = img.getPixels();
+				originalImagePixels[&img].initialized = true;
+			}
+			for (int y = 0; y < img.getHeight(); y++) {
+				for (int x = 0; x < img.getWidth(); x++) {
+					int pixelBrightness = originalImagePixels[&img].pixels.getColor(x, y).getBrightness();
+					int neighborBrightness = originalImagePixels[&img].pixels.getColor(ofClamp(x + 1, 0, img.getWidth() - 1), ofClamp(y + 1, 0, img.getHeight() - 1)).getBrightness();
 					int diff = neighborBrightness - pixelBrightness;
-
-					// Ajuster la couleur du pixel en fonction de la différence de luminosité
 					int grayValue = ofClamp(128 + diff, 0, 255);
-					embossedPixels.setColor(x, y, ofColor(grayValue));
+					img.setColor(x, y, ofColor(grayValue));
 				}
 			}
-
-			img.setFromPixels(embossedPixels);
+			img.update();
 		}
-	} 
+	}
+	else {
+		for (ofImage& img : renderer.imageList) {
+			if (!img.isAllocated()) {
+				continue;
+			}
+			if (originalImagePixels[&img].initialized) {
+				img.setFromPixels(originalImagePixels[&img].pixels);
+				img.update();
+			}
+		}
+	}
 }

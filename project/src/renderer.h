@@ -6,6 +6,7 @@
 #include "Forme.h"
 #include <memory>
 #include "ofxGui.h"
+#include <array>
 
 #include "ofxAssimpModelLoader.h"
 
@@ -13,10 +14,55 @@
 using namespace std;
 
 //enum class MeshRenderMode { fill, wireframe, vertex };
+enum class ConvolutionKernel {identity, emboss, sharpen, edge_detect, blur};
+
+const std::array<float, 9> convolution_kernel_identity
+{
+  0.0f,  0.0f,  0.0f,
+  0.0f,  1.0f,  0.0f,
+  0.0f,  0.0f,  0.0f
+};
+
+// kernel de convolution (3x3) : aiguiser
+const std::array<float, 9> convolution_kernel_sharpen
+{
+  0.0f, -1.0f,  0.0f,
+ -1.0f,  5.0f, -1.0f,
+  0.0f, -1.0f,  0.0f
+};
+
+// kernel de convolution (3x3) : détection de bordure
+const std::array<float, 9> convolution_kernel_edge_detect
+{
+  0.0f,  1.0f,  0.0f,
+  1.0f, -4.0f,  1.0f,
+  0.0f,  1.0f,  0.0f
+};
+
+// kernel de convolution (3x3) : bosseler
+const std::array<float, 9> convolution_kernel_emboss
+{
+ -2.0f, -1.0f,  0.0f,
+ -1.0f,  1.0f,  1.0f,
+  0.0f,  1.0f,  2.0f
+};
+
+// kernel de convolution (3x3) : flou
+const std::array<float, 9> convolution_kernel_blur
+{
+  1.0f / 9.0f,  1.0f / 9.0f,  1.0f / 9.0f,
+  1.0f / 9.0f,  1.0f / 9.0f,  1.0f / 9.0f,
+  1.0f / 9.0f,  1.0f / 9.0f,  1.0f / 9.0f
+};
 
 class Renderer {
 public:
     Interface interface;
+
+    ConvolutionKernel kernel_type;
+
+    string kernel_name;
+
     ofImage image;
 
     ofShader shader;
@@ -116,15 +162,7 @@ public:
     ofParameter <ofVec3f> uiRotate;
     ofParameter <int> uiAmount; // Total de la liste formes 
 
-    ofParameter<float>* param_sumR;
-    ofParameter<float>* param_sumG;
-    ofParameter<float>* param_sumB;
-    //ofParameter<float> float_sumR;
-    //ofParameter<float> float_sumG;
-    //ofParameter<float> float_sumB;
-
-
-    //void updateSharpenEffect();
+    void filter();
 
     ofxInputField<int> inputIndex; 
 
