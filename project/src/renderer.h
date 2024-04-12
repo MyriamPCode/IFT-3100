@@ -116,6 +116,8 @@ public:
     ofxInputField<int> inputIndex; 
 
     private:
+        ofMaterial material_teapot;
+
         ofxPanel gui;
         ofParameter<string> nameField;
         ofParameter<bool> visible = false;

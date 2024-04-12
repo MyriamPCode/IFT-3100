@@ -18,6 +18,13 @@ void Renderer::setup() {
 	gui.add(exportButton);
 	gui.setPosition(200, 40);
 
+	// configurer le matériau du teapot
+	material_teapot.setAmbientColor(ofColor(63, 63, 63));
+	material_teapot.setDiffuseColor(ofColor(63, 0, 63));
+	material_teapot.setEmissiveColor(ofColor(0, 0, 31));
+	material_teapot.setSpecularColor(ofColor(191, 191, 191));
+	material_teapot.setShininess(8.0f);
+
 	teapotMultiple.loadModel("models/teapot.obj");
 	teapotMultiple.setPosition(0, 0, 0);
 
@@ -122,14 +129,25 @@ void Renderer::draw() {
 
 	//////////////////////////////////////////////////////////////////
 	if (interface.getShowModel()) {
+
+
 		if (interface.getRenderType() == MeshRenderMode::wireframe) {
 			teapotMultiple.draw(OF_MESH_WIREFRAME);
 			teapotOrtho.draw(OF_MESH_WIREFRAME);
 		}
 		else if (interface.getRenderType() == MeshRenderMode::fill) {
+			// désactiver le matériau par défaut du modèle
+			teapotMultiple.disableMaterials();
+			teapotOrtho.disableMaterials();
+
+			// activer le matériau
+			material_teapot.begin();
 
 			teapotMultiple.draw(OF_MESH_FILL);
 			teapotOrtho.draw(OF_MESH_FILL);
+
+			// désactiver le matériau
+			material_teapot.end();
 		}
 		else if (interface.getRenderType() == MeshRenderMode::vertex) {
 			teapotMultiple.draw(OF_MESH_POINTS);
