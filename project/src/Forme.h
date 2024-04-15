@@ -102,9 +102,12 @@ public:
 
     TypeForme getType() const { return type; }
 
+    void setTexture(const ofTexture& tex) { texture = tex; }
+
 
 private:
     TypeForme type;
+    ofTexture texture;
     
     float x1, y1, x2, y2, x3, y3; // Pour le triangle
     float xC, yC, xR, yR, width, height, rayon; // Pour le cercle et le rectangle

@@ -27,12 +27,12 @@ public:
     list<ofImage> imageList; //Liste d'images import�es
     list<vector<int>> imgPosList; //Positions x et y des images import�es
 
-        ofxAssimpModelLoader teapotOrtho;
-        ofxAssimpModelLoader teapotMultiple;
-        ofxAssimpModelLoader model1;
-        ofxAssimpModelLoader model2;
-        ofxAssimpModelLoader model3;
-        //MeshRenderMode typeRender;
+    ofxAssimpModelLoader teapotOrtho;
+    ofxAssimpModelLoader teapotMultiple;
+    ofxAssimpModelLoader model1;
+    ofxAssimpModelLoader model2;
+    ofxAssimpModelLoader model3;
+    //MeshRenderMode typeRender;
 
 
     int mouse_press_x;
@@ -55,37 +55,37 @@ public:
     void newImage(string filePath, int posX, int posY);
     void draw_cursor(float x, float y) const;
 
-      Forme forme; 
-        vector<unique_ptr<Forme>>* v_formes_ptr;
-        vector<unique_ptr<Forme>> v_formes;
-        void setup(vector<unique_ptr<Forme>>& v_formes);
-        bool okDessiner; 
-        void dessinerTriangle();
-        vector<ofColor> triangleColors = {}; // Contient les couleurs du dessin
-        bool triangleFill = false; // Indique si l'interieur de la forme doit etre colore
-        float triangleStroke; // Taille du outline
-        void dessinerCercle(); 
-        vector<ofColor> cercleColors = {}; // Contient les couleurs du dessin
-        bool cercleFill = false; // Indique si l'interieur de la forme doit etre colore
-        float cercleStroke; // Taille du outline
-        void dessinerRectangle(); 
-        vector<ofColor> rectangleColors = {}; // Contient les couleurs du dessin
-        bool rectangleFill = false; // Indique si l'interieur de la forme doit etre colore
-        float rectangleStroke; // Taille du outline
-        void dessinerLigne(); 
-        ofColor ligneColor; // Contient la couleur du dessin
-        float ligneStroke; // Taille du outline
-        void dessinerEllipse();
-        vector<ofColor> ellipseColors = {}; // Contient les couleurs du dessin
-        bool ellipseFill = false; // Indique si l'interieur de la forme doit etre colore
-        float ellipseStroke; // Taille du outline
-        void dessinerBezier();
-        vector<ofColor> bezierColors = {}; // Contient les couleurs du dessin
-        bool bezierFill = false; // Indique si l'interieur de la forme doit etre colore
-        float bezierStroke; // Taille du outline
+    Forme forme;
+    vector<unique_ptr<Forme>>* v_formes_ptr;
+    vector<unique_ptr<Forme>> v_formes;
+    void setup(vector<unique_ptr<Forme>>& v_formes);
+    bool okDessiner;
+    void dessinerTriangle();
+    vector<ofColor> triangleColors = {}; // Contient les couleurs du dessin
+    bool triangleFill = false; // Indique si l'interieur de la forme doit etre colore
+    float triangleStroke; // Taille du outline
+    void dessinerCercle();
+    vector<ofColor> cercleColors = {}; // Contient les couleurs du dessin
+    bool cercleFill = false; // Indique si l'interieur de la forme doit etre colore
+    float cercleStroke; // Taille du outline
+    void dessinerRectangle();
+    vector<ofColor> rectangleColors = {}; // Contient les couleurs du dessin
+    bool rectangleFill = false; // Indique si l'interieur de la forme doit etre colore
+    float rectangleStroke; // Taille du outline
+    void dessinerLigne();
+    ofColor ligneColor; // Contient la couleur du dessin
+    float ligneStroke; // Taille du outline
+    void dessinerEllipse();
+    vector<ofColor> ellipseColors = {}; // Contient les couleurs du dessin
+    bool ellipseFill = false; // Indique si l'interieur de la forme doit etre colore
+    float ellipseStroke; // Taille du outline
+    void dessinerBezier();
+    vector<ofColor> bezierColors = {}; // Contient les couleurs du dessin
+    bool bezierFill = false; // Indique si l'interieur de la forme doit etre colore
+    float bezierStroke; // Taille du outline
 
     void dessinerSphere();
-    void dessinerCube(); 
+    void dessinerCube();
 
     vector<unique_ptr<Forme>>* getVecteurFormesPtr() {
         return &v_formes;
@@ -105,22 +105,22 @@ public:
     void captureImage();
     int frameCounter, captureInterval, compteur;
     bool isRecording;
-  
-      void toggleExportGUI();
-        void toggleColorWheelGUI();
+
+    void toggleExportGUI();
+    void toggleColorWheelGUI();
 
     ofParameter<ofVec2f> uiPosition, uiStep, uiShift, uiSize;
     ofParameter <ofVec3f> uiRotate;
     ofParameter <int> uiAmount; // Total de la liste formes 
 
-    ofxInputField<int> inputIndex; 
+    ofxInputField<int> inputIndex;
 
-    private:
-        ofxPanel gui;
-        ofParameter<string> nameField;
-        ofParameter<bool> visible = false;
-        ofParameter<bool> exportButton = false;
+private:
+    ofxPanel gui;
+    ofParameter<string> nameField;
+    ofParameter<bool> visible = false;
+    ofParameter<bool> exportButton = false;
 
-        void image_export(const string name, const string extension) const;
+    void image_export(const string name, const string extension) const;
 
 };

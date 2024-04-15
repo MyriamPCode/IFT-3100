@@ -45,6 +45,7 @@ void Application::setup(){
 	drawSphere.addListener(this, &Application::button_sphere); 
 	drawCube.addListener(this, &Application::button_cube);
 
+
 	drawingGUI.add(&primitivesGroupe);
 	drawingGUI.add(renderer.uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
 	drawingGUI.add(renderer.uiAmount.set("amount", 1, 0, 5));
@@ -68,8 +69,9 @@ void Application::setup(){
 	rotation_activate = false;
 	mesh_activate = false;
 	noise_activate = false;
-
-
+	catmullRom_activate = false;
+	catmullRom6_activate = false;
+	hermite_activate = false;
 
 	reinitialisationGroupe.setup("Reinitialisation");
 	reinitialisationGroupe.add(resetButton.setup("Reset", false));
@@ -81,12 +83,23 @@ void Application::setup(){
 	rotationButton.addListener(this, &Application::button_rotation);
 	drawingGUI.add(&animationGroupe);
 
-	meshGroupe.setup("Maille geomÃƒÂ©trique");
-	meshGroupe.add(meshButton.setup("Maille", false));
-	meshButton.addListener(this, &Application::button_mesh);
-	meshGroupe.add(meshAnimationButton.setup("Animation", false));
-	meshAnimationButton.addListener(this, &Application::button_noise);
-	drawingGUI.add(&meshGroupe);
+	curveGui.setup("Curve");
+	curveGui.loadFont("roboto/Roboto-Regular.ttf", 10);
+	curveGui.setPosition(600, 50);
+	curveGui.add(segments.set("Segments", 150, 150, 400));
+	catmullRomGroupe.setup("Catmull-Rom's curve");
+	catmullRomButton.setName("5 points");
+	catmullRomGroupe.add(catmullRomButton);
+	catmullRomButton.addListener(this, &Application::button_catmullRom);
+	catmullRomButton6.setName("6 points");
+	catmullRomGroupe.add(catmullRomButton6);
+	catmullRomButton6.addListener(this, &Application::button_catmullRom6);
+	curveGui.add(&catmullRomGroupe);
+	hermiteGroupe.setup("Hermite's curve");
+	hermiteButton.setName("3 curves");
+	hermiteGroupe.add(hermiteButton);
+	hermiteButton.addListener(this, &Application::button_hermite);
+	curveGui.add(&hermiteGroupe);
 
 	// CrÃƒÂ©ation de la maille
 	for (int x = 0; x < size; x++) {
@@ -126,6 +139,22 @@ void Application::setup(){
 	guiScene.setPosition(0, 40);
 
 	addAction([this]() { undo(); }, [this]() { redo(); });
+
+	controlPoints.push_back(ofVec2f(100, 300));
+	controlPoints.push_back(ofVec2f(200, 100));
+	controlPoints.push_back(ofVec2f(300, 500));
+	controlPoints.push_back(ofVec2f(400, 200));
+	controlPoints.push_back(ofVec2f(500, 400));
+	controlPoints.push_back(ofVec2f(600, 100));
+	controlPoints.push_back(ofVec2f(700, 300));
+	controlPoints.push_back(ofVec2f(800, 200));
+	controlPoints.push_back(ofVec2f(900, 200));
+	controlPoints.push_back(ofVec2f(1000, 100));
+	controlPoints.push_back(ofVec2f(1100, 100));
+	controlPoints.push_back(ofVec2f(1200, 200));
+
+	// Aucun point de contrôle n'est sélectionné au début
+	selectedPointIndex = -1;
 }
 
 void Application::update()
@@ -227,6 +256,15 @@ void Application::draw(){
 		}
 	}
 
+	if (renderer.interface.import_activate) {
+		filterGUI.setup();
+		filterGUI.setPosition(800, 40);
+		textureGroupe.setup("Filtres");
+		textureGroupe.add(sphereTextureButton.setup("Sphere", false));
+		sphereTextureButton.addListener(this, &Application::button_sphereTexture);
+		filterGUI.add(&textureGroupe);
+	}
+
 	renderer.interface.backgroundLine();
 
 	renderer.draw();
@@ -249,6 +287,88 @@ void Application::draw(){
 	if (drawingGUIPressed) {
 		drawingGUI.draw();
 	}
+
+	if (renderer.interface.curve_activate) {
+		curveGui.draw();
+		if (catmullRom_activate) {
+			ofSetColor(255);
+			for (auto& p : controlPoints) {
+				ofDrawCircle(p, 5);
+			}
+
+			ofSetColor(255, 0, 0);
+			for (auto& p : controlPoints) {
+				ofDrawCircle(p, 2);
+			}
+
+			ofSetColor(255, 0, 0);
+			for (unsigned int i = 0; i < controlPoints.size() - 4; i ++) { 
+				for (int j = 0; j <= segments; j++) {
+					float t = (float)j / segments;
+					ofVec2f p0 = controlPoints[i];
+					ofVec2f p1 = controlPoints[i + 1];
+					ofVec2f p2 = controlPoints[i + 2];
+					ofVec2f p3 = controlPoints[i + 3];
+					ofVec2f p4 = controlPoints[i + 4];
+					ofVec2f p = catmullRom(t, p0, p1, p2, p3, p4);
+					ofDrawCircle(p, 2);
+			    }
+		    }
+		}
+		if (catmullRom6_activate) {
+			ofSetColor(255);
+			for (auto& p : controlPoints) {
+				ofDrawCircle(p, 5);
+			}
+
+			ofSetColor(255, 0, 0);
+			for (auto& p : controlPoints) {
+				ofDrawCircle(p, 2);
+			}
+
+			ofSetColor(255, 0, 0);
+			for (unsigned int i = 1; i < controlPoints.size() - 4; i ++) {
+				for (int j = 0; j <= segments; j++) {
+					float t = (float)j / segments;
+					ofVec2f p0 = controlPoints[i - 1];
+					ofVec2f p1 = controlPoints[i];
+					ofVec2f p2 = controlPoints[i + 1];
+					ofVec2f p3 = controlPoints[i + 2];
+					ofVec2f p4 = controlPoints[i + 3];
+					ofVec2f p5 = controlPoints[i + 4];
+					ofVec2f p = catmullRom6(t, p0, p1, p2, p3, p4, p5);
+					ofDrawCircle(p, 2);
+				}
+			}
+		}
+		if (hermite_activate) {
+			ofSetColor(255);
+			for (auto& p : controlPoints) {
+				ofDrawCircle(p, 5);
+			}
+
+			ofSetColor(255, 0, 0);
+			for (auto& p : controlPoints) {
+				ofDrawCircle(p, 2);
+			}
+
+			ofSetColor(255, 0, 0);
+			for (int i = 0; i < controlPoints.size() - 4; i++) { 
+				for (int j = 0; j <= segments; j++) {
+					float t = (float)j / segments;
+					ofVec2f p0 = controlPoints[i];
+					ofVec2f p1 = controlPoints[i + 1];
+					ofVec2f p2 = controlPoints[i + 2];
+					ofVec2f p3 = controlPoints[i + 3];
+					ofVec2f p4 = controlPoints[i + 4];
+					float x, y;
+					hermite(t, p0, p1, p2, p3, p4, x, y);
+					ofDrawCircle(x, y, 2);
+				}
+			}
+		}
+	}
+
 	guiScene.draw();
 }
 
@@ -451,6 +571,11 @@ void Application::mouseDragged(int x, int y, int button){
 	{
 		renderer.ligne.addVertex(renderer.interface.mouse_drag_x, renderer.interface.mouse_drag_y);
 	}
+
+	if (selectedPointIndex != -1) {
+		controlPoints[selectedPointIndex].set(x, y);
+	}
+
 }
 
 
@@ -510,6 +635,14 @@ void Application::mousePressed(int x, int y, int button){
 			}
 			++imgPos;
 			imgDistFromMax++;
+		}
+	}
+
+	for (int i = 0; i < controlPoints.size(); i++) {
+		float distance = ofDist(x, y, controlPoints[i].x, controlPoints[i].y);
+		if (distance < 5) {
+			selectedPointIndex = i;
+			break;
 		}
 	}
 
@@ -717,6 +850,8 @@ void Application::mouseReleased(int x, int y, int button){
 		imgDistFromMax = 0;
 	}
 
+	selectedPointIndex = -1;
+
 	if (button == 0 && y < INTERACTION_BAR_HEIGHT) {
 		int index = static_cast<int>(floor(x / (iconWidth)));
 		switch (index) {
@@ -744,6 +879,10 @@ void Application::mouseReleased(int x, int y, int button){
 				break;
 			case 5:
 				renderer.interface.toggleCamOptions();
+				break;
+			case 6:
+				renderer.interface.toggleCurveOptions();
+				renderer.interface.curve_activate = !renderer.interface.curve_activate;
 				break;
 		}
 	}
@@ -857,6 +996,7 @@ void Application::button_triangle(bool& value)
 		}
 	}
 }
+
 void Application::drawTriangle() 
 {
 	cout << "drawTriangle 2 \n";
@@ -1056,6 +1196,17 @@ void Application::button_sphere(bool& value) {
 	}
 }
 
+void Application::button_sphereTexture(bool& value) {
+	if (value)
+	{
+		draw_sphereTexture = !draw_sphereTexture;
+		draw_circle = draw_rectangle = draw_line = draw_ellipse = draw_bezier = draw_sphere = draw_cube = draw_triangle = false;
+		draw_sphere = draw_cube = false;
+
+	}
+}
+
+
 void Application::button_cube(bool& value) {
 	if (value) {
 		draw_cube = !draw_cube; 
@@ -1073,6 +1224,8 @@ void Application::reset(bool& value) {
 		renderer.uiShift.set(ofVec2f(0));
 		renderer.uiSize.set(ofVec2f(6));
 
+		draw_sphere = false;
+		draw_cube = false;
 		draw_triangle = false;
 		draw_circle = false;
 		draw_rectangle = false;
@@ -1083,6 +1236,10 @@ void Application::reset(bool& value) {
 		meshButton = false;
 		noise_activate = false;
 		meshAnimationButton = false;
+		sphereTextureButton = false;
+		catmullRomButton = false;
+		catmullRom_activate = false;
+		hermiteButton = false;
 	}
 }
 
@@ -1151,6 +1308,7 @@ void Application::button_noise(bool& value) {
 		noise_activate = true;
 	}
 }
+
 
 void Application::camera_setup_perspective(float width, float height, float fov, float n, float f)
 {
@@ -1236,3 +1394,71 @@ void Application::setupCamera() {
 		camera->setOrientation(camera_orientation);
 }
 
+void Application::button_catmullRom(bool& value) {
+	catmullRom_activate = value;
+	if (value) {
+		catmullRom_activate = true;
+		catmullRomButton6 = false;
+		catmullRom6_activate = false;
+		hermiteButton = false;
+		hermite_activate = false;
+	}
+}
+
+void Application::button_catmullRom6(bool& value) {
+	catmullRom6_activate = value;
+	if (value) {
+		catmullRom6_activate = true;
+		catmullRomButton = false;
+		catmullRom_activate = false;
+		hermiteButton = false;
+		hermite_activate = false;
+	}
+}
+
+void Application::button_hermite(bool& value) {
+	hermite_activate = value;
+	if (value) {
+		hermite_activate = true;
+		catmullRomButton6 = false;
+		catmullRom6_activate = false;
+		catmullRomButton = false;
+		catmullRom_activate = false;
+	}
+}
+
+void Application::hermite(float t, const ofVec2f& p0, const ofVec2f& p1, const ofVec2f& p2, const ofVec2f& p3, const ofVec2f& p4, float& x, float& y)
+{
+	float u = 1 - t;
+	float uu = u * u;
+	float uuu = uu * u;
+	float tt = t * t;
+	float ttt = tt * t;
+
+	x = (2 * ttt - 3 * tt + 1) * p1.x + (ttt - 2 * tt + t) * p2.x + (ttt - tt) * p3.x + (-2 * ttt + 3 * tt) * p4.x;
+	y = (2 * ttt - 3 * tt + 1) * p1.y + (ttt - 2 * tt + t) * p2.y + (ttt - tt) * p3.y + (-2 * ttt + 3 * tt) * p4.y;
+}
+
+ofVec2f Application::catmullRom(float t, const ofVec2f& p0, const ofVec2f& p1, const ofVec2f& p2, const ofVec2f& p3, const ofVec2f& p4) {
+	float t2 = t * t;
+	float t3 = t2 * t;
+
+	float b0 = 0.5f * (-t3 + 2 * t2 - t);
+	float b1 = 0.5f * (3 * t3 - 5 * t2 + 2);
+	float b2 = 0.5f * (-3 * t3 + 4 * t2 + t);
+	float b3 = 0.5f * (t3 - t2);
+
+	return p0 * b0 + p1 * b1 + p2 * b2 + p3 * b3 + p4 * b3;
+}
+
+ofVec2f Application::catmullRom6(float t, const ofVec2f& p0, const ofVec2f& p1, const ofVec2f& p2, const ofVec2f& p3, const ofVec2f& p4, const ofVec2f& p5) {
+	float t2 = t * t;
+	float t3 = t2 * t;
+
+	float b0 = 0.5f * (-t3 + 2 * t2 - t);
+	float b1 = 0.5f * (3 * t3 - 5 * t2 + 2);
+	float b2 = 0.5f * (-3 * t3 + 4 * t2 + t);
+	float b3 = 0.5f * (t3 - t2);
+
+	return p0 * b0 + p1 * b1 + p2 * b2 + p3 * b3 + p4 * b3 + p5 * b3; 
+}
