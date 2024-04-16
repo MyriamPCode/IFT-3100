@@ -335,7 +335,6 @@ void Application::draw(){
 	renderer.interface.draw();
 	drawingGUI.draw();
 	//cam.end();
-	ofPopMatrix();
 
 	renderer.interface.draw();
 
@@ -1030,7 +1029,7 @@ void Application::mouseReleased(int x, int y, int button){
 				renderer.interface.toggleCurveOptions();
 				renderer.interface.curve_activate = !renderer.interface.curve_activate;
 				break;
-			case 6:
+			case 7:
 				renderer.interface.toggleLightOptions();
 				break;
 		}

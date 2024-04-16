@@ -267,6 +267,7 @@ void Renderer::draw() {
 	{
 		if (interface.textureFillButton) {
 			shader.load("filters/colors.vert", "filters/colors.frag");
+
 			shader.begin();
 			shader.setUniform1f("u_time", ofGetElapsedTimef());
 			shader.setUniform2f("u_resolution", ofGetWidth(), ofGetHeight());
@@ -701,6 +702,7 @@ void Renderer::dessinerRectangle() {
 						ofDrawRectangle(formeCourante->getXR(), formeCourante->getYR(),
 							formeCourante->getWidth(), formeCourante->getHeight());
 					}
+					ofPopMatrix();
 				//}
 				
 			}
