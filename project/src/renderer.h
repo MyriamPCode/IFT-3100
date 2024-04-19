@@ -14,6 +14,8 @@ using namespace std;
 
 //enum class MeshRenderMode { fill, wireframe, vertex };
 
+enum class ShaderType { color_fill, lambert, gouraud, phong, blinn_phong };
+
 class Renderer {
 public:
     Interface interface;
@@ -114,6 +116,26 @@ public:
     ofParameter <int> uiAmount; // Total de la liste formes 
 
     ofxInputField<int> inputIndex;
+
+    //Modele Illumination 
+    void reset(); 
+    ShaderType shader_active;
+    ofShader shader_color_fill, shader_lambert, shader_gouraud, shader_phong, shader_blinn_phong;
+    ofShader* shader_illumination; 
+    ofLight light; 
+    ofxAssimpModelLoader modele_illumination1, modele_illumination2;
+    ofVec3f position_cube, position_sphere, position_modele_ill_1, position_modele_ill_2; 
+    string shader_name; 
+    float oscillation, oscillation_frequency, oscillation_amplitude; 
+    float scale_cube, scale_sphere, scale_modele_ill_1, scale_modele_ill_2; 
+    float speed_motion; 
+    float offset_x, offset_z; 
+    float delta_x, delta_z; 
+    float initial_x, initial_z; 
+    float center_x, center_y; 
+    float oscillate(float time, float frequency, float amplitude); 
+    void activer_Illumination();
+    bool isModeIllumination; 
 
 private:
     ofxPanel gui;

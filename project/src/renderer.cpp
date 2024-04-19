@@ -54,9 +54,71 @@ void Renderer::setup() {
 			mesh.addIndex(x + (y + 1) * size);
 		}
 	}
+	//////////////////////////////////////
+	// Parametres pour modele illumination 
+	isModeIllumination = true;  /// mettre a false pour desactiver au lancement 
+	oscillation_amplitude = 32.0f;
+	oscillation_frequency = 7500.0f;
+	speed_motion = 150.0f;
+	initial_x = 0.0f;
+	initial_z = -100.0f;
+	scale_cube = 100.0f;
+	scale_sphere = 80.0f;
+	scale_modele_ill_1 = 0.618f;
+	scale_modele_ill_2 = 0.618f; 
+	offset_x = initial_x;
+	offset_z = initial_z;
+	delta_x = speed_motion;
+	delta_z = speed_motion;
+	modele_illumination1.loadModel("models/teapot.obj");
+	modele_illumination2.loadModel("models/pomu.obj"); 
+	modele_illumination1.disableMaterials(); 
+	modele_illumination2.disableMaterials(); 
+	shader_color_fill.load(
+		"shader/color_fill_330_vs.glsl",
+		"shader/color_fill_330_fs.glsl");
 
+	shader_lambert.load(
+		"shader/lambert_330_vs.glsl",
+		"shader/lambert_330_fs.glsl");
+
+	shader_gouraud.load(
+		"shader/gouraud_330_vs.glsl",
+		"shader/gouraud_330_fs.glsl");
+
+	shader_phong.load(
+		"shader/phong_330_vs.glsl",
+		"shader/phong_330_fs.glsl");
+
+	shader_blinn_phong.load(
+		"shader/blinn_phong_330_vs.glsl",
+		"shader/blinn_phong_330_fs.glsl");
+	// shader actif au lancement de la scène
+	shader_active = ShaderType::blinn_phong;
+	//////////////////////////////////////
+	// initialisation de la scène
+	reset();
 }
+void Renderer::reset()
+{
+	/// Modele illumination
+	// centre du framebuffer
+	center_x = ofGetWidth() / 2.0f;
+	center_y = ofGetHeight() / 2.0f;
 
+	// caméra à sa position initiale
+	offset_x = initial_x;
+	offset_z = initial_z;
+
+	// déterminer la position des géométries
+	//position_cube.set(-ofGetWidth() * (1.0f / 4.0f), 0.0f, 0.0f);
+	position_modele_ill_2.set(-ofGetWidth() * (1.0f / 4.0f), 0.0f, 0.0f);
+	position_sphere.set(0.0f, 0.0f, 0.0f);
+	position_modele_ill_1.set(ofGetWidth() * (1.0f / 4.0f), 50.0f, 0.0f);
+	//////////////////////////////////////
+
+	ofLog() << "<reset>";
+}
 
 void Renderer::setup(vector<unique_ptr<Forme>>& v_formes) 
 {
@@ -98,18 +160,29 @@ void Renderer::draw() {
 	{
 		if (interface.textureFillButton) {
 			shader.load("filters/colors.vert", "filters/wood.frag");
-
 			shader.begin();
 			shader.setUniform1f("u_time", ofGetElapsedTimef());
 			shader.setUniform2f("u_resolution", ofGetWidth(), ofGetHeight());
 			ofRect(0, 0, ofGetWidth(), ofGetHeight());
 		}
 
+		if (isModeIllumination) {
+			ofEnableLighting();
+			light.enable(); 
+			ofPushMatrix;
+			shader_illumination->begin(); 
+			dessinerSphere();
+			ofPopMatrix();
+			shader_illumination->end();
+			light.disable();
+			ofDisableLighting();
+		}
+
 		dessinerTriangle();
 		dessinerCercle();
 		dessinerRectangle();
 		dessinerEllipse();
-		dessinerSphere();
+		//dessinerSphere();
 		dessinerCube();
 
 		if (interface.textureFillButton) {
@@ -140,10 +213,106 @@ void Renderer::draw() {
 	// Afficher un message si l'enregistrement est activé
 	if (isRecording) {
 		ofDrawBitmapString("Enregistrement enmouse cours...", 20, 20);
-
 	}
+
+	/// Modele illumination
+	// Load les 2 modeles 3D et un sphere au milieu
+	//activer_Illumination(); 
 }
 
+void Renderer::activer_Illumination() {
+	// activer l'éclairage dynamique
+	ofEnableLighting();
+
+	// activer la lumière dynamique
+	light.enable();
+
+	ofPushMatrix();
+
+	// transformer l'origine de la scène au milieu de la fenêtre d'affichage
+	ofTranslate(center_x + offset_x, center_y, offset_z);
+
+	ofPushMatrix();
+
+	//// positionnner le cube
+	//ofTranslate(
+	//	position_cube.x,
+	//	position_cube.y,
+	//	position_cube.z);
+	//// rotation locale
+	//ofRotateDeg(45.0f, 1.0f, 0.0f, 0.0f);
+	// 
+	// positionner pomudachi
+	modele_illumination2.setPosition(
+		position_modele_ill_2.x,
+		position_modele_ill_2.y + 15.0f,
+		position_modele_ill_2.z);
+
+	// dimension pomudachi
+	modele_illumination2.setScale(
+		scale_modele_ill_2,
+		scale_modele_ill_2,
+		scale_modele_ill_2);
+
+	// activer le shader
+	shader_illumination->begin();
+
+	// dessiner un cube
+	//ofDrawBox(0.0f, 0.0f, 0.0f, scale_cube);
+	// dessiner pomudachi 
+	modele_illumination2.draw(OF_MESH_FILL);
+
+	ofPopMatrix();
+
+	ofPushMatrix();
+
+	// positionner la sphère
+	ofTranslate(
+		position_sphere.x,
+		position_sphere.y,
+		position_sphere.z);
+
+	// dessiner une sphère
+	ofDrawSphere(0.0f, 0.0f, 0.0f, scale_sphere);
+
+	ofPopMatrix();
+
+	ofPushMatrix();
+
+	// positionner le teapot
+	modele_illumination1.setPosition(
+		position_modele_ill_1.x,
+		position_modele_ill_1.y + 15.0f,
+		position_modele_ill_1.z);
+
+	// dimension du teapot
+	modele_illumination1.setScale(
+		scale_modele_ill_1,
+		scale_modele_ill_1,
+		scale_modele_ill_1);
+
+	// dessiner un teapot 
+	modele_illumination1.draw(OF_MESH_FILL);
+	
+
+	ofPopMatrix();
+
+	ofPopMatrix();
+
+	// désactiver le shader
+	shader_illumination->end();
+
+	// désactiver la lumière
+	light.disable();
+
+	// désactiver l'éclairage dynamique
+	ofDisableLighting();
+}
+// fonction d'oscillation
+float Renderer::oscillate(float time, float frequency, float amplitude)
+{
+	return sinf(time * 2.0f * PI / frequency) * amplitude;
+}
 
 void Renderer::dessinerSphere(){
 	ofSetLineWidth(1);
@@ -515,6 +684,76 @@ void Renderer::update()
 			}
 		}
 	}
+
+	/// Modele illumination 
+	// transformer la lumière
+	light.setGlobalPosition(
+		ofMap(ofGetMouseX() / (float)ofGetWidth(), 0.0f, 1.0f, -ofGetWidth() / 2.0f, ofGetWidth() / 2.0f),
+		ofMap(ofGetMouseY() / (float)ofGetHeight(), 0.0f, 1.0f, -ofGetHeight() / 2.0f, ofGetHeight() / 2.0f),
+		-offset_z * 1.5f);
+	// mise à jour d'une valeur numérique animée par un oscillateur
+	float oscillation = oscillate(ofGetElapsedTimeMillis(), oscillation_frequency, oscillation_amplitude) + oscillation_amplitude;
+	// passer les attributs uniformes au shader de sommets
+	switch (shader_active)
+	{
+	case ShaderType::color_fill:
+		shader_name = "Color Fill";
+		shader_illumination = &shader_color_fill;
+		shader_illumination->begin();
+		shader_illumination->setUniform3f("color", 1.0f, 1.0f, 0.0f);
+		shader_illumination->end();
+		break;
+
+	case ShaderType::lambert:
+		shader_name = "Lambert";
+		shader_illumination = &shader_lambert;
+		shader_illumination->begin();
+		shader_illumination->setUniform3f("color_ambient", 0.1f, 0.1f, 0.1f);
+		shader_illumination->setUniform3f("color_diffuse", 0.6f, 0.6f, 0.6f);
+		shader_illumination->setUniform3f("light_position", light.getGlobalPosition());
+		shader_illumination->end();
+		break;
+
+	case ShaderType::gouraud:
+		shader_name = "Gouraud";
+		shader_illumination = &shader_gouraud;
+		shader_illumination->begin();
+		shader_illumination->setUniform3f("color_ambient", 0.1f, 0.1f, 0.1f);
+		shader_illumination->setUniform3f("color_diffuse", 0.6f, 0.6f, 0.0f);
+		shader_illumination->setUniform3f("color_specular", 1.0f, 1.0f, 0.0f);
+		shader_illumination->setUniform1f("brightness", oscillation);
+		shader_illumination->setUniform3f("light_position", light.getGlobalPosition());
+		shader_illumination->end();
+		break;
+
+	case ShaderType::phong:
+		shader_name = "Phong";
+		shader_illumination = &shader_phong;
+		shader_illumination->begin();
+		shader_illumination->setUniform3f("color_ambient", 0.1f, 0.1f, 0.1f);
+		shader_illumination->setUniform3f("color_diffuse", 0.6f, 0.0f, 0.6f);
+		shader_illumination->setUniform3f("color_specular", 1.0f, 1.0f, 0.0f);
+		shader_illumination->setUniform1f("brightness", oscillation);
+		shader_illumination->setUniform3f("light_position", light.getGlobalPosition());
+		shader_illumination->end();
+		break;
+
+	case ShaderType::blinn_phong:
+		shader_name = "Blinn-Phong";
+		shader_illumination = &shader_blinn_phong;
+		shader_illumination->begin();
+		shader_illumination->setUniform3f("color_ambient", 0.1f, 0.1f, 0.1f);
+		shader_illumination->setUniform3f("color_diffuse", 0.0f, 0.6f, 0.6f);
+		shader_illumination->setUniform3f("color_specular", 1.0f, 1.0f, 0.0f);
+		shader_illumination->setUniform1f("brightness", oscillation);
+		shader_illumination->setUniform3f("light_position", light.getGlobalPosition());
+		shader_illumination->end();
+		break;
+
+	default:
+		break;
+	}
+	//////////////////////////////////////
 }
 
 void Renderer::toggleColorWheelGUI() {
