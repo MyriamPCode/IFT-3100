@@ -109,6 +109,28 @@ class Application : public ofBaseApp{
 		ofxToggle meshButton;
 		ofxToggle meshAnimationButton; // Bouton pour l'animation sur la maille géométrique 
 
+		ofxPanel textureGUI;
+		ofxGuiGroup textureGroupe;
+		ofxToggle sphereTextureButton;
+
+		ofxPanel curveGui;
+		ofxGuiGroup catmullRomGroupe;
+		ofxGuiGroup hermiteGroupe;
+		ofParameter<bool> catmullRomButton = false;
+		ofParameter<bool> catmullRomButton6 = false;
+		ofParameter<bool> hermiteButton = false;
+		void button_catmullRom(bool& value);
+		void button_catmullRom6(bool& value);
+		void button_hermite(bool& value);
+		void hermite(float t, const ofVec2f& p0, const ofVec2f& p1, const ofVec2f& p2, const ofVec2f& p3, const ofVec2f& p4, float& x, float& y);
+
+		vector<ofVec2f> controlPoints;
+		ofParameter<int> segments;
+		int selectedPointIndex;
+		ofVec2f Application::catmullRom(float t, const ofVec2f& p0, const ofVec2f& p1, const ofVec2f& p2, const ofVec2f& p3, const ofVec2f& p4);
+		ofVec2f catmullRom6(float t, const ofVec2f& p0, const ofVec2f& p1, const ofVec2f& p2, const ofVec2f& p3, const ofVec2f& p4, const ofVec2f& p5);
+
+
 		bool drawingGUIPressed;
 		bool draw_triangle;
 		bool draw_circle;
@@ -118,6 +140,10 @@ class Application : public ofBaseApp{
 		bool mesh_activate;
 		bool noise_activate;
 		bool draw_sphere, draw_cube;
+		bool draw_sphereTexture;
+		bool catmullRom_activate;
+		bool catmullRom6_activate;
+		bool hermite_activate;
 
 		ofxPanel filterGUI;
 		ofxGuiGroup filterGroupe;
@@ -217,5 +243,6 @@ private:
 		void button_rotation(bool& value);
 		void button_mesh(bool& value);
 		void button_noise(bool& value);
+		void button_sphereTexture(bool& value);
 
 };

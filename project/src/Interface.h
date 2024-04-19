@@ -20,9 +20,11 @@ class Interface {
 		ofParameter<ofColor> color_picker_background;
 		ofParameter<ofColor> color_picker_stroke;
 		ofxToggle fillButton;
+		ofxToggle textureFillButton;
 		ofParameter<ofColor> colorPickerFill;
 		ofParameter<float> slider_stroke_weight;
 		bool fillEnabled = false;
+		bool textureFill = false;
 
 		string camera_name;
 
@@ -70,6 +72,7 @@ class Interface {
 
 		bool mesh_activate;
 		bool noise_activate;
+		bool curve_activate;
 
 		void setup();
 		void draw();
@@ -82,10 +85,12 @@ class Interface {
 		void backgroundLine();
 		void toggleCamOptions();
 		void toggleMailleGUI();
+		void toggleCurveOptions();
 
 	private:
 		bool outilsPressed = false;
 		bool camPressed = false;
+		bool curvePressed = false;
 		
 		bool modelsPressed = false;
 		bool showModels = false;
@@ -106,6 +111,7 @@ class Interface {
 		ofImage imgEllipse;
 		ofImage imgMesh;
 		ofImage imgCamera;
+		ofImage imgCurve;
 
 		ofColor backgroundLineColor = ofColor(217, 217, 217);
 		ofColor backgroundInteractionColor = ofColor(4, 3, 77);
@@ -116,8 +122,8 @@ class Interface {
 		ofxPanel outilsGui;
 		ofxPanel modelsGui;
 		ofxPanel cameraGui;
-
 		ofxPanel mailleGui;
+
 		bool mailleVisible = false;
 		ofParameter<bool> meshButton = false;
 		ofParameter<bool> meshAnimationButton = false;
@@ -137,6 +143,7 @@ class Interface {
 		void showOutils(bool& value);
 		void showMaille();
 		void enableFill(bool& value);
+		void enableTextureFill(bool& value);
 		void enableOrtho(bool& value);
 		void enableAngle(bool& value);
 		void orthoSelect(bool& value);

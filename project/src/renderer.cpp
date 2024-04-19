@@ -60,11 +60,6 @@ void Renderer::setup() {
 		}
 	}
 
-	kernel_type = ConvolutionKernel::identity;
-	kernel_name = "identité";
-
-	filter();
-
 }
 
 
@@ -116,6 +111,15 @@ void Renderer::draw() {
 	//////////////////////////////////////////////////////////////////
 	if (okDessiner)
 	{
+		if (interface.textureFillButton) {
+			shader.load("filters/colors.vert", "filters/wood.frag");
+
+			shader.begin();
+			shader.setUniform1f("u_time", ofGetElapsedTimef());
+			shader.setUniform2f("u_resolution", ofGetWidth(), ofGetHeight());
+			ofRect(0, 0, ofGetWidth(), ofGetHeight());
+		}
+
 		dessinerTriangle();
 		dessinerCercle(); 
 		dessinerRectangle();
@@ -124,6 +128,13 @@ void Renderer::draw() {
 		dessinerBezier(); 
 		dessinerSphere(); 
 		dessinerCube();
+
+		if (interface.textureFillButton) {
+			shader.end();
+		}
+
+		dessinerLigne();
+		dessinerBezier();
 	}
 	//////////////////////////////////////////////////////////////////
 	if (interface.getShowModel()) {
@@ -547,85 +558,3 @@ void Renderer::captureImage() {
 	ofSaveScreen(ofToString(frameCounter) + ".png");
 }
 
-void Renderer::filter() {
-	const int kernel_size = 3;
-	const int kernel_offset = kernel_size / 2;
-	const int color_component_count = 3;
-
-	int x, y;
-	int i, j;
-	int xi, yj;
-	int c;
-
-	int pixel_index_img_src;
-	int pixel_index_img_dst;
-	int kernel_index;
-	float kernel_value;
-
-	ofPixels pixel_array_src = image.getPixels(); // Utilisation de l'image de Renderer
-	ofPixels pixel_array_dst = image.getPixels();
-
-	ofColor pixel_color_src;
-	ofColor pixel_color_dst;
-
-	float sum[color_component_count];
-
-	for (y = 0; y < image.getHeight(); ++y) { // Utilisation de getHeight() de l'image de Renderer
-		for (x = 0; x < image.getWidth(); ++x) { // Utilisation de getWidth() de l'image de Renderer
-			for (c = 0; c < color_component_count; ++c)
-				sum[c] = 0;
-
-			pixel_index_img_dst = (image.getWidth() * y + x) * color_component_count;
-
-			for (j = -kernel_offset; j <= kernel_offset; ++j) {
-				for (i = -kernel_offset; i <= kernel_offset; ++i) {
-					xi = x - i;
-					yj = y - j;
-
-					if (xi < 0 || xi >= image.getWidth() || yj < 0 || yj >= image.getHeight())
-						continue;
-
-					pixel_index_img_src = (image.getWidth() * yj + xi) * color_component_count;
-					pixel_color_src = pixel_array_src.getColor(pixel_index_img_src);
-
-					kernel_index = kernel_size * (j + kernel_offset) + (i + kernel_offset);
-
-					switch (kernel_type) {
-					case ConvolutionKernel::identity:
-						kernel_value = convolution_kernel_identity.at(kernel_index);
-						break;
-					case ConvolutionKernel::emboss:
-						kernel_value = convolution_kernel_emboss.at(kernel_index);
-						break;
-					case ConvolutionKernel::sharpen:
-						kernel_value = convolution_kernel_sharpen.at(kernel_index);
-						break;
-					case ConvolutionKernel::edge_detect:
-						kernel_value = convolution_kernel_edge_detect.at(kernel_index);
-						break;
-					case ConvolutionKernel::blur:
-						kernel_value = convolution_kernel_blur.at(kernel_index);
-						break;
-					default:
-						kernel_value = convolution_kernel_identity.at(kernel_index);
-						break;
-					}
-
-					for (c = 0; c < color_component_count; ++c) {
-						sum[c] = sum[c] + kernel_value * pixel_color_src[c];
-					}
-				}
-			}
-
-			for (c = 0; c < color_component_count; ++c) {
-				pixel_color_dst[c] = (int)ofClamp(sum[c], 0, 255);
-			}
-
-			pixel_array_dst.setColor(pixel_index_img_dst, pixel_color_dst);
-		}
-	}
-
-	image.setFromPixels(pixel_array_dst);
-
-	ofLog() << "<filtre de convolution complété (" << kernel_name << ")>";
-}

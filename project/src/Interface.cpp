@@ -18,6 +18,8 @@ void Interface::setup() {
 	iconTopBar.push_back(imgModele);
 	imgCamera.load("img/camera.png");
 	iconTopBar.push_back(imgCamera);
+	imgCurve.load("img/curve.png");
+	iconTopBar.push_back(imgCurve);
 
 	//same here but for the side bar
 	imgColorWheel.load("img/color-wheel.png");
@@ -42,6 +44,7 @@ void Interface::setup() {
 	is_mouse_button_dragged = false;
 	import_activate = false;
 	export_activate = false;
+	curve_activate = false;
 
 	typeRender = MeshRenderMode::wireframe;
 	mouse_current_x = mouse_current_y = mouse_press_x = mouse_press_y = mouse_drag_x = mouse_drag_y = 0;
@@ -73,6 +76,9 @@ void Interface::draw() {
 			noise_activate = true;
 		}
 		else noise_activate = false;
+	}
+	if (curvePressed) {
+		curve_activate = true;
 	}
 
 	int gridSize = 50; // Espacement de la grille
@@ -205,6 +211,10 @@ void Interface::enableFill(bool& value) {
 	fillEnabled = !fillEnabled;
 }
 
+void Interface::enableTextureFill(bool& value) {
+	textureFill = !textureFill;
+}
+
 void Interface::toggleCamOptions() {
 	camPressed = !camPressed;
 }
@@ -215,6 +225,10 @@ void Interface::toggleMailleGUI() {
 
 void Interface::showMaille() {
 	mailleVisible = !mailleVisible;
+}
+
+void Interface::toggleCurveOptions() {
+	curvePressed = !curvePressed;
 }
 
 void Interface::enableOrtho(bool& value) {
@@ -368,10 +382,12 @@ void Interface::setupOutilsGuiOptions() {
 	outilsGui.add(color_picker_background);
 	outilsGui.add(color_picker_stroke);
 	outilsGui.add(fillButton.setup("Remplissage de forme", false));
+	outilsGui.add(textureFillButton.setup("Ajout d'une texture", false));
 	outilsGui.add(colorPickerFill);
 	outilsGui.add(slider_stroke_weight);
 
 	fillButton.addListener(this, &Interface::enableFill);
+	textureFillButton.addListener(this, &Interface::enableFill);
 
 	outilsGui.setFillColor(backgroundInteractionColor);
 	outilsGui.setTextColor(backgroundInteractionColor);
@@ -443,6 +459,7 @@ void Interface::setupCameraOptions() {
 
 void Interface::setupMeshOptions() {
 	mailleGui.setup("Mesh");
+	mailleGui.loadFont("roboto/Roboto-Regular.ttf", 10);
 	mailleGui.setPosition(200, 40);
 	meshButton.setName("Mesh");
 	mailleGui.add(meshButton);
