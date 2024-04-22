@@ -73,6 +73,10 @@ void Application::setup(){
 	catmullRom6_activate = false;
 	hermite_activate = false;
 
+	gray_activate = false;
+	sharpen_activate = false;
+	emboss_activate = false;
+
 	reinitialisationGroupe.setup("Reinitialisation");
 	reinitialisationGroupe.add(resetButton.setup("Reset", false));
 	resetButton.addListener(this, &Application::reset);
@@ -100,6 +104,22 @@ void Application::setup(){
 	hermiteGroupe.add(hermiteButton);
 	hermiteButton.addListener(this, &Application::button_hermite);
 	curveGui.add(&hermiteGroupe);
+
+	filterGUI.setup();
+	filterGUI.setPosition(700, 70);
+	filterGroupe.setup("Filtres");
+	filterGUI.add(color_picker.set("teinte", renderer.tint, ofColor(0, 0), ofColor(255, 255)));
+	filterGUI.add(slider.set("mix", renderer.mix_factor, 0.0f, 1.0f));
+	filterGroupe.add(grayButton);
+	grayButton.setName("Black and white");
+	grayButton.addListener(this, &Application::button_blackAndWhite);
+	filterGroupe.add(sharpenButton);
+	sharpenButton.setName("Sharpen");
+	sharpenButton.addListener(this, &Application::button_sharpen);
+	filterGroupe.add(embossButton);
+	embossButton.setName("Emboss");
+	embossButton.addListener(this, &Application::button_emboss);
+	filterGUI.add(&filterGroupe);
 
 	// CrÃƒÂ©ation de la maille
 	for (int x = 0; x < size; x++) {
@@ -163,6 +183,8 @@ void Application::update()
 	rotate++;
 
 	renderer.update();
+	renderer.tint = color_picker;
+	renderer.mix_factor = slider;
 	
 	if (renderer.isRecording) {
 		// Mettez Ã¯Â¿Â½ jour et capturez l'image Ã¯Â¿Â½ intervalles rÃ¯Â¿Â½guliers
@@ -200,7 +222,12 @@ void Application::draw(){
 	if (isImportable) {
 		renderer.interface.import_activate = true;
 		ofDrawBitmapString("Please drag an image to import it.", 30, 70);
+		ofSetColor(renderer.tint);
+		ofEnableBlendMode(OF_BLENDMODE_MULTIPLY);
 	}
+	ofDisableBlendMode();
+
+
 	//cam.begin(); //TODO: ***TROUVER UN MOYEN DE RELIER LES DEUX CAMERA POUR PASSER DU CIRCUIT A CELLE ORTHOGRAPHIQUE***
 	if (renderer.interface.orthoIsActive) {
 		if (renderer.interface.orthoRendering) {
@@ -257,6 +284,13 @@ void Application::draw(){
 	}
 
 	if (renderer.interface.import_activate) {
+		textureGUI.setup();
+		textureGUI.setPosition(800, 40);
+		textureGroupe.setup("Filtres");
+		textureGroupe.add(sphereTextureButton.setup("Sphere", false));
+		sphereTextureButton.addListener(this, &Application::button_sphereTexture);
+		textureGUI.add(&textureGroupe);
+
 		filterGUI.setup();
 		filterGUI.setPosition(800, 40);
 		textureGroupe.setup("Filtres");
@@ -266,6 +300,10 @@ void Application::draw(){
 	}
 
 	renderer.interface.backgroundLine();
+
+	if (renderer.interface.import_activate) {
+		filterGUI.draw();
+	}
 
 	renderer.draw();
 	
@@ -302,6 +340,7 @@ void Application::draw(){
 			}
 
 			ofSetColor(255, 0, 0);
+
 			for (unsigned int i = 0; i < controlPoints.size() - 4; i ++) { 
 				for (int j = 0; j <= segments; j++) {
 					float t = (float)j / segments;
@@ -312,8 +351,9 @@ void Application::draw(){
 					ofVec2f p4 = controlPoints[i + 4];
 					ofVec2f p = catmullRom(t, p0, p1, p2, p3, p4);
 					ofDrawCircle(p, 2);
-			    }
-		    }
+
+				}
+			}
 		}
 		if (catmullRom6_activate) {
 			ofSetColor(255);
@@ -327,6 +367,7 @@ void Application::draw(){
 			}
 
 			ofSetColor(255, 0, 0);
+      
 			for (unsigned int i = 1; i < controlPoints.size() - 4; i ++) {
 				for (int j = 0; j <= segments; j++) {
 					float t = (float)j / segments;
@@ -353,6 +394,7 @@ void Application::draw(){
 			}
 
 			ofSetColor(255, 0, 0);
+
 			for (int i = 0; i < controlPoints.size() - 4; i++) { 
 				for (int j = 0; j <= segments; j++) {
 					float t = (float)j / segments;
@@ -405,7 +447,6 @@ void Application::deleteShapeSelected()
 		}
 
 	}
-
 
 	if (!buttonsToDelete.empty())
 	{
@@ -575,7 +616,6 @@ void Application::mouseDragged(int x, int y, int button){
 	if (selectedPointIndex != -1) {
 		controlPoints[selectedPointIndex].set(x, y);
 	}
-
 }
 
 
@@ -1206,7 +1246,6 @@ void Application::button_sphereTexture(bool& value) {
 	}
 }
 
-
 void Application::button_cube(bool& value) {
 	if (value) {
 		draw_cube = !draw_cube; 
@@ -1240,6 +1279,12 @@ void Application::reset(bool& value) {
 		catmullRomButton = false;
 		catmullRom_activate = false;
 		hermiteButton = false;
+		grayButton = false;
+		gray_activate = false;
+		sharpen_activate = false;
+		sharpenButton = false;
+		embossButton = false;
+		emboss_activate = false;
 	}
 }
 
@@ -1459,6 +1504,133 @@ ofVec2f Application::catmullRom6(float t, const ofVec2f& p0, const ofVec2f& p1, 
 	float b1 = 0.5f * (3 * t3 - 5 * t2 + 2);
 	float b2 = 0.5f * (-3 * t3 + 4 * t2 + t);
 	float b3 = 0.5f * (t3 - t2);
+  
+	return p0 * b0 + p1 * b1 + p2 * b2 + p3 * b3 + p4 * b3 + p5 * b3;
+}
 
+void Application::button_blackAndWhite(bool& value) {
+    gray_activate = value;
+	if (value) {
+		for (ofImage& img : renderer.imageList) {
+			if (!img.isAllocated()) {
+				continue;
+			}
+			if (!originalImagePixels[&img].initialized) {
+				originalImagePixels[&img].pixels = img.getPixels();
+				originalImagePixels[&img].initialized = true;
+			}
+		    img.setImageType(OF_IMAGE_GRAYSCALE);
+		}
+	}
+	else {
+		for (ofImage& img : renderer.imageList) {
+			if (!img.isAllocated()) {
+				continue;
+			}
+			if (originalImagePixels[&img].initialized) {
+				img.setFromPixels(originalImagePixels[&img].pixels);
+				img.update();
+			}
+		}
+	}
+	
+}
+void Application::button_sharpen(bool& value) {
+	sharpen_activate = value;
+
+	if (value) {
+		for (ofImage& img : renderer.imageList) {
+			if (!img.isAllocated()) {
+				continue;
+			}
+
+			if (!originalImagePixels[&img].initialized) {
+				originalImagePixels[&img].pixels = img.getPixels();
+				originalImagePixels[&img].initialized = true;
+			}
+			ofPixels sharpenedPixels = originalImagePixels[&img].pixels;
+			int w = img.getWidth();
+			int h = img.getHeight();
+
+			float kernel[3][3] = {
+				{-1, -1, -1},
+				{-1, 9, -1},
+				{-1, -1, -1}
+			};
+
+			for (int y = 1; y < h - 1; y++) {
+				for (int x = 1; x < w - 1; x++) {
+					float sumR = 0, sumG = 0, sumB = 0;
+					for (int ky = -1; ky <= 1; ky++) {
+						for (int kx = -1; kx <= 1; kx++) {
+							int pixelX = x + kx;
+							int pixelY = y + ky;
+							ofColor color = originalImagePixels[&img].pixels.getColor(pixelX, pixelY);
+							sumR += color.r * kernel[ky + 1][kx + 1];
+							sumG += color.g * kernel[ky + 1][kx + 1];
+							sumB += color.b * kernel[ky + 1][kx + 1];
+						}
+					}
+					sumR = ofClamp(sumR, 0, 255);
+					sumG = ofClamp(sumG, 0, 255);
+					sumB = ofClamp(sumB, 0, 255);
+					sharpenedPixels.setColor(x, y, ofColor(sumR, sumG, sumB));
+				}
+			}
+
+			img.setFromPixels(sharpenedPixels);
+			img.update();
+		}
+	}
+	else {
+		for (ofImage& img : renderer.imageList) {
+			if (!img.isAllocated()) {
+				continue;
+			}
+			if (originalImagePixels[&img].initialized) {
+				img.setFromPixels(originalImagePixels[&img].pixels);
+				img.update();
+			}
+		}
+	}
+}
+
+void Application::button_emboss(bool& value) {
+	emboss_activate = value;
+
+	if (value) {
+		for (ofImage& img : renderer.imageList) {
+			if (!img.isAllocated()) {
+				continue;
+			}
+			if (!originalImagePixels[&img].initialized) {
+				originalImagePixels[&img].pixels = img.getPixels();
+				originalImagePixels[&img].initialized = true;
+			}
+			for (int y = 0; y < img.getHeight(); y++) {
+				for (int x = 0; x < img.getWidth(); x++) {
+					int pixelBrightness = originalImagePixels[&img].pixels.getColor(x, y).getBrightness();
+					int neighborBrightness = originalImagePixels[&img].pixels.getColor(ofClamp(x + 1, 0, img.getWidth() - 1), ofClamp(y + 1, 0, img.getHeight() - 1)).getBrightness();
+					int diff = neighborBrightness - pixelBrightness;
+					int grayValue = ofClamp(128 + diff, 0, 255);
+					img.setColor(x, y, ofColor(grayValue));
+				}
+			}
+			img.update();
+		}
+	}
+	else {
+		for (ofImage& img : renderer.imageList) {
+			if (!img.isAllocated()) {
+				continue;
+			}
+			if (originalImagePixels[&img].initialized) {
+				img.setFromPixels(originalImagePixels[&img].pixels);
+				img.update();
+			}
+		}
+	}
+}
 	return p0 * b0 + p1 * b1 + p2 * b2 + p3 * b3 + p4 * b3 + p5 * b3; 
 }
+

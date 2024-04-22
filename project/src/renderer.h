@@ -17,9 +17,13 @@ using namespace std;
 class Renderer {
 public:
     Interface interface;
+
     ofImage image;
 
     ofShader shader;
+
+    float mix_factor;
+    ofColor tint;
 
     ofMesh mesh;
     int size = 96; // Taille de la maille

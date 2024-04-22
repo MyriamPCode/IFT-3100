@@ -77,6 +77,9 @@ void Interface::draw() {
 		}
 		else noise_activate = false;
 	}
+	if (curvePressed) {
+		curve_activate = true;
+	}
 
 	if (curvePressed) {
 		curve_activate = true;

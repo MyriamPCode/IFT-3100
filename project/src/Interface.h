@@ -94,6 +94,7 @@ class Interface {
 		
 		bool modelsPressed = false;
 		bool showModels = false;
+		
 		MeshRenderMode typeRender;
 
 		ofTrueTypeFont buttonFont;

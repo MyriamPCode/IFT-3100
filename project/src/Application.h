@@ -12,6 +12,12 @@ enum class Camera { front, back, left, right, top, down };
 
 class Application : public ofBaseApp{
 	public:
+
+		struct OriginalPixels {
+			ofPixels pixels;
+			bool initialized = false;
+		};
+
 		Renderer renderer;
 		Forme forme;
 		ofColor backgroundColor = ofColor(178, 184, 194);
@@ -96,7 +102,6 @@ class Application : public ofBaseApp{
 		void button_sphere(bool& value); 
 		void button_cube(bool& value);
 
-
 		ofxGuiGroup animationGroupe;
 		ofxToggle rotationButton; // Bouton pour l'animation de rotation
 
@@ -104,7 +109,7 @@ class Application : public ofBaseApp{
 		ofxToggle meshButton;
 		ofxToggle meshAnimationButton; // Bouton pour l'animation sur la maille géométrique 
 
-		ofxPanel filterGUI;
+		ofxPanel textureGUI;
 		ofxGuiGroup textureGroupe;
 		ofxToggle sphereTextureButton;
 
@@ -138,6 +143,23 @@ class Application : public ofBaseApp{
 		bool catmullRom_activate;
 		bool catmullRom6_activate;
 		bool hermite_activate;
+
+		ofxPanel filterGUI;
+		ofxGuiGroup filterGroupe;
+		ofParameter<ofColor> color_picker;
+		ofParameter<float> slider;
+		ofParameter<bool> grayButton = false;;
+		ofParameter<bool> sharpenButton = false;
+		ofxGuiGroup sharpenGroupe;
+		ofParameter<bool> embossButton = false;
+
+		bool gray_activate;
+		bool sharpen_activate;
+		bool emboss_activate;
+
+		void button_blackAndWhite(bool& value);
+		void button_sharpen(bool& value);
+		void button_emboss(bool& value);
 
 		float rotate;
 
@@ -175,6 +197,7 @@ class Application : public ofBaseApp{
 				undoStack.push(move(redoAction));
 			}
 		}
+		std::map<ofImage*, OriginalPixels> originalImagePixels;
 
 private:
 	stack<function<void()>> undoStack;
@@ -220,7 +243,5 @@ private:
 		void button_mesh(bool& value);
 		void button_noise(bool& value);
 		void button_sphereTexture(bool& value);
-
-
 
 };
