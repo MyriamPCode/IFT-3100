@@ -130,7 +130,6 @@ class Application : public ofBaseApp{
 		ofVec2f Application::catmullRom(float t, const ofVec2f& p0, const ofVec2f& p1, const ofVec2f& p2, const ofVec2f& p3, const ofVec2f& p4);
 		ofVec2f catmullRom6(float t, const ofVec2f& p0, const ofVec2f& p1, const ofVec2f& p2, const ofVec2f& p3, const ofVec2f& p4, const ofVec2f& p5);
 
-
 		bool drawingGUIPressed;
 		bool draw_triangle;
 		bool draw_circle;

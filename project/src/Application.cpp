@@ -45,6 +45,7 @@ void Application::setup(){
 	drawSphere.addListener(this, &Application::button_sphere); 
 	drawCube.addListener(this, &Application::button_cube);
 
+
 	drawingGUI.add(&primitivesGroupe);
 	drawingGUI.add(renderer.uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
 	drawingGUI.add(renderer.uiAmount.set("amount", 1, 0, 5));
@@ -85,13 +86,6 @@ void Application::setup(){
 	animationGroupe.add(rotationButton.setup("Rotation", false));
 	rotationButton.addListener(this, &Application::button_rotation);
 	drawingGUI.add(&animationGroupe);
-
-	meshGroupe.setup("Maille geomÃƒÂ©trique");
-	meshGroupe.add(meshButton.setup("Maille", false));
-	meshButton.addListener(this, &Application::button_mesh);
-	meshGroupe.add(meshAnimationButton.setup("Animation", false));
-	meshAnimationButton.addListener(this, &Application::button_noise);
-	drawingGUI.add(&meshGroupe);
 
 	curveGui.setup("Curve");
 	curveGui.loadFont("roboto/Roboto-Regular.ttf", 10);
@@ -296,6 +290,13 @@ void Application::draw(){
 		textureGroupe.add(sphereTextureButton.setup("Sphere", false));
 		sphereTextureButton.addListener(this, &Application::button_sphereTexture);
 		textureGUI.add(&textureGroupe);
+
+		filterGUI.setup();
+		filterGUI.setPosition(800, 40);
+		textureGroupe.setup("Filtres");
+		textureGroupe.add(sphereTextureButton.setup("Sphere", false));
+		sphereTextureButton.addListener(this, &Application::button_sphereTexture);
+		filterGUI.add(&textureGroupe);
 	}
 
 	renderer.interface.backgroundLine();
@@ -339,7 +340,8 @@ void Application::draw(){
 			}
 
 			ofSetColor(255, 0, 0);
-			for (unsigned int i = 0; i < controlPoints.size() - 4; i++) {
+
+			for (unsigned int i = 0; i < controlPoints.size() - 4; i ++) { 
 				for (int j = 0; j <= segments; j++) {
 					float t = (float)j / segments;
 					ofVec2f p0 = controlPoints[i];
@@ -349,6 +351,7 @@ void Application::draw(){
 					ofVec2f p4 = controlPoints[i + 4];
 					ofVec2f p = catmullRom(t, p0, p1, p2, p3, p4);
 					ofDrawCircle(p, 2);
+
 				}
 			}
 		}
@@ -364,7 +367,8 @@ void Application::draw(){
 			}
 
 			ofSetColor(255, 0, 0);
-			for (unsigned int i = 1; i < controlPoints.size() - 4; i++) {
+      
+			for (unsigned int i = 1; i < controlPoints.size() - 4; i ++) {
 				for (int j = 0; j <= segments; j++) {
 					float t = (float)j / segments;
 					ofVec2f p0 = controlPoints[i - 1];
@@ -390,7 +394,8 @@ void Application::draw(){
 			}
 
 			ofSetColor(255, 0, 0);
-			for (int i = 0; i < controlPoints.size() - 4; i++) {
+
+			for (int i = 0; i < controlPoints.size() - 4; i++) { 
 				for (int j = 0; j <= segments; j++) {
 					float t = (float)j / segments;
 					ofVec2f p0 = controlPoints[i];
@@ -1031,6 +1036,7 @@ void Application::button_triangle(bool& value)
 		}
 	}
 }
+
 void Application::drawTriangle() 
 {
 	cout << "drawTriangle 2 \n";
@@ -1257,6 +1263,8 @@ void Application::reset(bool& value) {
 		renderer.uiShift.set(ofVec2f(0));
 		renderer.uiSize.set(ofVec2f(6));
 
+		draw_sphere = false;
+		draw_cube = false;
 		draw_triangle = false;
 		draw_circle = false;
 		draw_rectangle = false;
@@ -1277,7 +1285,6 @@ void Application::reset(bool& value) {
 		sharpenButton = false;
 		embossButton = false;
 		emboss_activate = false;
-		
 	}
 }
 
@@ -1346,6 +1353,7 @@ void Application::button_noise(bool& value) {
 		noise_activate = true;
 	}
 }
+
 
 void Application::camera_setup_perspective(float width, float height, float fov, float n, float f)
 {
@@ -1496,7 +1504,7 @@ ofVec2f Application::catmullRom6(float t, const ofVec2f& p0, const ofVec2f& p1, 
 	float b1 = 0.5f * (3 * t3 - 5 * t2 + 2);
 	float b2 = 0.5f * (-3 * t3 + 4 * t2 + t);
 	float b3 = 0.5f * (t3 - t2);
-
+  
 	return p0 * b0 + p1 * b1 + p2 * b2 + p3 * b3 + p4 * b3 + p5 * b3;
 }
 
@@ -1623,3 +1631,6 @@ void Application::button_emboss(bool& value) {
 		}
 	}
 }
+	return p0 * b0 + p1 * b1 + p2 * b2 + p3 * b3 + p4 * b3 + p5 * b3; 
+}
+

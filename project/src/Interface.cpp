@@ -81,6 +81,10 @@ void Interface::draw() {
 		curve_activate = true;
 	}
 
+	if (curvePressed) {
+		curve_activate = true;
+	}
+
 	int gridSize = 50; // Espacement de la grille
 	// Obtenir les coordonnées de la souris
 	int mouseX = ofGetMouseX();

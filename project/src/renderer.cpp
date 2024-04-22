@@ -109,6 +109,7 @@ void Renderer::draw() {
 	//model3.setPosition(800, 1000, -600);
 
 	//////////////////////////////////////////////////////////////////
+
 	if (okDessiner)
 	{
 		if (interface.textureFillButton) {
@@ -121,12 +122,10 @@ void Renderer::draw() {
 		}
 
 		dessinerTriangle();
-		dessinerCercle(); 
+		dessinerCercle();
 		dessinerRectangle();
-		dessinerLigne(); 
-		dessinerEllipse(); 
-		dessinerBezier(); 
-		dessinerSphere(); 
+		dessinerEllipse();
+		dessinerSphere();
 		dessinerCube();
 
 		if (interface.textureFillButton) {
@@ -136,6 +135,7 @@ void Renderer::draw() {
 		dessinerLigne();
 		dessinerBezier();
 	}
+
 	//////////////////////////////////////////////////////////////////
 	if (interface.getShowModel()) {
 		if (interface.getRenderType() == MeshRenderMode::wireframe) {
@@ -154,11 +154,10 @@ void Renderer::draw() {
 	}
 
 	// Afficher un message si l'enregistrement est activé
-	if (isRecording)
+	if (isRecording) {
 		ofDrawBitmapString("Enregistrement enmouse cours...", 20, 20);
 
-
-
+	}
 }
 
 
@@ -326,12 +325,20 @@ void Renderer::dessinerRectangle() {
 						ofTranslate(uiShift->x, uiShift->y);
 						ofScale(uiSize->x, uiSize->y,1);
 						if (formeCourante->getIsFilled()) { // Remplissage
+						/*	if (interface.textureFillButton) {
+								shader.begin();
+
+								shader.setUniform2f("u_resolution", formeCourante->getWidth(), formeCourante->getHeight());
+							}*/
+
 							ofFill();
 							ofSetColor(formeCourante->getColors()[1]);
 							ofBeginShape();
 							ofDrawRectangle(formeCourante->getXR(), formeCourante->getYR(),
 								formeCourante->getWidth(), formeCourante->getHeight());
+
 							ofEndShape();
+							//shader.end();
 						}
 						ofNoFill();
 						ofBeginShape(); 
