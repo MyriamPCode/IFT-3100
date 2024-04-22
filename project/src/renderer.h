@@ -28,6 +28,7 @@ class Renderer {
         ofColor tint;
 
     ofShader shader;
+    ofShader shaderLight;
 
     ofMesh mesh;
     int size = 96; // Taille de la maille

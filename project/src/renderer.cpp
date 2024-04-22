@@ -32,7 +32,7 @@ void Renderer::setup() {
 	teapotMultiple.loadModel("models/teapot.obj");
 	teapotMultiple.setPosition(0, 0, 0);
 
-	teapotOrtho.loadModel("models/teapot.obj");
+	teapotOrtho.loadModel("models/teapotOrtho.obj");
 	teapotOrtho.setPosition(800, 700, 0);
 
 	okDessiner = false; 
@@ -153,6 +153,10 @@ void Renderer::lightSetup() {
 	lightSpot.setSpotConcentration(2);
 	lightSpot.setSpotlightCutOff(30);
 	lightSpot.setSpotlight();
+
+	//shaderLight.load("shaders/color_fill_330_vs.glsl","shaders/color_fill_330_fs.glsl"); //Implementer en suivant EX02 du module 7
+	//shaderLight.setUniform3f("color", 230.0f, 145.0f, 200.0f);
+	shaderLight.load("shaders/lambert_330_vs.glsl", "shaders/lambert_330_fs.glsl");
 }
 // a ete ajoute avec le mode Illumination 
 void Renderer::reset()
@@ -179,6 +183,82 @@ void Renderer::reset()
 void Renderer::setup(vector<unique_ptr<Forme>>& v_formes) 
 {
 	v_formes_ptr = &v_formes;
+}
+
+void Renderer::update()
+{
+	if (isRecording)
+	{
+		frameCounter++;
+		//captureInterval++; 
+		//compteur++;
+		if (frameCounter == captureInterval)
+		{
+			ofSaveScreen(ofToString(frameCounter / captureInterval) + ".png");
+			//ofSaveScreen(ofToString(frameCounter) + ".png");
+			frameCounter = 0;
+			//captureInterval -= compteur;
+		}
+	}
+
+	if (interface.noise_activate) {
+		int count = 0;
+		for (int x = 0; x < size; x++) {
+			for (int y = 0; y < size; y++) {
+				ofVec3f vertex = mesh.getVertex(count);
+				vertex.z = ofMap(ofNoise(count, ofGetElapsedTimef()), 0, 1, 0, 30);
+				mesh.setVertex(count, vertex);
+				count++;
+			}
+		}
+	}
+	if (interface.showAmbientLight) {
+		lightAmbient.set(interface.ambientLightColor);
+	}
+	if (interface.showAreaLight) {
+		lightArea.setDiffuseColor(ofColor(interface.areaLightColor));
+		lightArea.setSpecularColor(ofColor(interface.areaLightColor));
+		lightArea.setPosition(ofVec3f(interface.areaLightPositionX, interface.areaLightPositionY,
+			interface.areaLightPositionZ));
+		lightArea.setOrientation(ofVec3f(interface.areaLightOrientationX, interface.areaLightOrientationY,
+			interface.areaLightOrientationZ));
+		lightArea.setAreaLight(interface.areaLightWidth, interface.areaLightHeight);
+	}
+	if (interface.showDirectionnalLight)
+	{
+		lightDirectionnal.setDiffuseColor(ofColor(interface.directionnalLightColor));
+		lightDirectionnal.setSpecularColor(ofColor(interface.directionnalLightColor));
+		lightDirectionnal.setPosition(ofVec3f(interface.directionnalLightPositionX, interface.directionnalLightPositionY, 
+			interface.directionnalLightPositionZ));
+		lightDirectionnal.setOrientation(ofVec3f(interface.directionnalLightOrientationX, interface.directionnalLightOrientationY,
+			interface.directionnalLightOrientationZ));
+	}
+
+	if (interface.showPointLight)
+	{
+		lightPoint.setDiffuseColor(ofColor(interface.pointLightColor));
+		lightPoint.setSpecularColor(ofColor(interface.pointLightColor));
+		lightPoint.setPosition(ofVec3f(interface.pointLightPositionX, interface.pointLightPositionY,
+			interface.pointLightPositionZ));
+	}
+
+	if (interface.showSpotLight)
+	{
+		// configurer la lumière projecteur
+		lightSpot.setDiffuseColor(ofColor(interface.spotLightColor));
+		lightSpot.setSpecularColor(ofColor(interface.spotLightColor));
+		lightSpot.setOrientation(ofVec3f(interface.spotLightOrientationX, interface.spotLightOrientationY,
+			interface.spotLightOrientationZ));
+		lightSpot.setPosition(ofVec3f(interface.spotLightPositionX, interface.spotLightPositionY,
+			interface.spotLightPositionZ));
+	}
+
+	shaderLight.begin();
+	shaderLight.setUniform3f("color_ambient", 0.1f, 0.1f, 0.1f);
+	shaderLight.setUniform3f("color_diffuse", 0.6f, 0.6f, 0.6f);
+	shaderLight.setUniform3f("pointLightPosition", lightPoint.getPosition());
+	shaderLight.setUniform3f("spotLightPosition", lightSpot.getPosition());
+	shaderLight.end();
 }
 
 void Renderer::draw() {
@@ -213,7 +293,6 @@ void Renderer::draw() {
 	}
 	ofEnableLighting();
 	drawLighting();
-
 	ofEnableDepthTest();
 
 	textu.bind();
@@ -300,8 +379,9 @@ void Renderer::draw() {
 
 		dessinerLigne();
 		dessinerBezier();
-	}
-
+	} 
+	ofPushMatrix();
+	shaderLight.begin();
 	//////////////////////////////////////////////////////////////////
 	if (interface.getShowModel()) {
 
@@ -320,9 +400,11 @@ void Renderer::draw() {
 			teapotOrtho.draw(OF_MESH_WIREFRAME);
 		}
 		else if (interface.getRenderType() == MeshRenderMode::fill) {
+			teapotMultiple.disableMaterials();
 			teapotMultiple.draw(OF_MESH_FILL);
 			textu.generateMipmap();
 			textu.bind();
+			//teapotOrtho.disableMaterials();
 			teapotOrtho.draw(OF_MESH_FILL);
 			textu.unbind();
 		}
@@ -330,6 +412,9 @@ void Renderer::draw() {
 			teapotMultiple.draw(OF_MESH_POINTS);
 			teapotOrtho.draw(OF_MESH_POINTS);
 		}
+	}
+	ofPopMatrix();
+	shaderLight.end();
 
 		if (interface.showTeapotMaterials) {
 			// désactiver le matériau
