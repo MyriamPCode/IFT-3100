@@ -1262,7 +1262,6 @@ void Application::drawEllipse()
 	}
 }
 
-
 void Application::button_bezier(bool& value)
 {
 	if (value)
@@ -1602,8 +1601,8 @@ void Application::button_blackAndWhite(bool& value) {
 			}
 		}
 	}
-	
 }
+
 void Application::button_sharpen(bool& value) {
 	sharpen_activate = value;
 

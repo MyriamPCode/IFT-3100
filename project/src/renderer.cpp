@@ -570,24 +570,26 @@ void Renderer::captureImage() {
 }
 
 void Renderer::boxInit() {
-	std::cout << "scene setup" << std::endl;
 
 	constexpr double anchor = 1e5;
 	constexpr double wall_radius = anchor;
 
-	constexpr double box_size_x = 100.0;
-	constexpr double box_size_y = 81.6;
+	constexpr double box_size_x = 200.0;
+	constexpr double box_size_y = 200.0;
 	constexpr double box_size_z = 81.6;
 
-	constexpr double box_x_min = 0.0;
-	constexpr double box_x_max = box_size_x;
-	constexpr double box_y_min = 0.0;
-	constexpr double box_y_max = box_size_y;
-	constexpr double box_z_min = 0.0;
-	constexpr double box_z_max = box_size_z;
+	constexpr double window_width = 1800; 
+	constexpr double window_height = 1000; 
 
-	constexpr double box_center_x = (box_x_max - box_x_min) / 2.0;
-	constexpr double box_center_y = (box_y_max - box_y_min) / 2.0;
-	constexpr double box_center_z = (box_z_max - box_z_min) / 2.0;
+	double window_center_x = window_width / 2.0;
+	double window_center_y = window_height / 2.0;
+
+	// Décaler le centre de la boîte en fonction des dimensions de la fenêtre
+	double box_center_x = window_center_x;
+	double box_center_y = window_center_y;
+	double box_center_z = 0.0; 
+
+	// Dessiner la boîte au centre de la fenêtre
+	ofDrawBox(box_center_x, box_center_y, box_center_z, box_size_x, box_size_y, box_size_z);
 }
 
