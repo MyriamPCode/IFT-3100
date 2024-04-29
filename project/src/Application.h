@@ -5,10 +5,92 @@
 #include "Renderer.h"
 #include "Forme.h"
 
+#define _USE_MATH_DEFINES 
+#include <cmath>
+#include <vector>
+
+struct Vector
+{
+	double x, y, z;
+
+	// construction
+	constexpr Vector() : x(0.0), y(0.0), z(0.0) {}
+	constexpr Vector(double x) : x(x), y(0.0), z(0.0) {}
+	constexpr Vector(double x, double y) : x(x), y(y), z(0.0) {}
+	constexpr Vector(double x, double y, double z) : x(x), y(y), z(z) {}
+
+	// produit scalaire (dot product)
+	double dot(const Vector& v) const
+	{
+		return x * v.x + y * v.y + z * v.z;
+	}
+
+	// produit vectoriel (cross product)
+	Vector cross(const Vector& v) const
+	{
+		return Vector(
+			y * v.z - z * v.y,
+			z * v.x - x * v.z,
+			x * v.y - y * v.x);
+	}
+
+	// multiplication vectorielle
+	Vector multiply(const Vector& v) const
+	{
+		return Vector(
+			x * v.x,
+			y * v.y,
+			z * v.z);
+	}
+
+	// multiplication scalaire
+	Vector operator*(double s) const
+	{
+		return Vector(
+			x * s,
+			y * s,
+			z * s);
+	}
+
+	// addition vectorielle
+	Vector operator+(const Vector& v) const
+	{
+		return Vector(
+			x + v.x,
+			y + v.y,
+			z + v.z);
+	}
+
+	// soustraction vectorielle
+	Vector operator-(const Vector& v) const
+	{
+		return Vector(
+			x - v.x,
+			y - v.y,
+			z - v.z);
+	}
+
+	// normalisation
+	Vector& normalize()
+	{
+		return *this = *this * (1.0 / sqrt(x * x + y * y + z * z));
+	}
+};
+
+struct Ray
+{
+	Vector origin;
+	Vector direction;
+
+	Ray(Vector o, Vector d) : origin(o), direction(d) {}
+};
 
 using namespace std;
 
 enum class Camera { front, back, left, right, top, down };
+
+// types de matériau
+enum class SurfaceType { diffuse, specular, refraction };
 
 class Application : public ofBaseApp{
 	public:

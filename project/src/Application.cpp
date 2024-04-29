@@ -1631,6 +1631,4 @@ void Application::button_emboss(bool& value) {
 		}
 	}
 }
-	return p0 * b0 + p1 * b1 + p2 * b2 + p3 * b3 + p4 * b3 + p5 * b3; 
-}
 
