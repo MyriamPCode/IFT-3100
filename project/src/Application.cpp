@@ -1,1238 +1,526 @@
-﻿#include "Application.h"
-#include "Constants.h"
-#include <cmath>
-#include <iostream>
+﻿#define _USE_MATH_DEFINES 
+#include "Application.h"
 
-using namespace std;
+// paramètres du programme
+const int max_depth = 5;
+const double camera_fov = 0.5135; // ~30 degrés
+constexpr double gamma_correction = 1 / 2.2;
 
-void Application::setup(){
-	ofSetWindowTitle("BIBO");
-	ofBackground(backgroundColor);
-	renderer.setup();
+// orientation initiale de la caméra
+Vector camera_orientation(Vector(0, -0.042612, -1).normalize());
 
-	//toggleDraw, toggleTransform
-	drawingGUI.setup();
-	drawingGUI.setPosition(300, 40);
-	primitivesMode.setup("Mode");
-	primitivesMode.add(toggleDraw.setup("Drawing", false));
-	primitivesMode.add(toggleTransform.setup("Transformation", false));
-	renderer.inputIndex.setup("Index de la liste: ", 0);
-	drawingGUI.add(&renderer.inputIndex);
-	//gui.add(renderer.uiIndex.set("Index de la liste: ", int(0))); 
-	toggleDraw.addListener(this, &Application::button_modeDraw);
-	toggleTransform.addListener(this, &Application::button_modeTransform);
-	drawingGUI.add(&primitivesMode);
+// position initiale de la caméra
+constexpr Vector camera_position(50, 50, 300);
 
-	primitivesGroupe.setup("Primitives");
+// déclaration de la caméra utilisée pour rendre la scène
+Camera camera(camera_position, camera_orientation);
 
-	// Ajout des boutons pour les primitives
-	primitivesGroupe.add(toggleDrawTriangle.setup("Triangle",false));
-	primitivesGroupe.add(toggleDrawCircle.setup("Circle",false));
-	primitivesGroupe.add(toggleDrawRectangle.setup("Rectangle",false));
-	primitivesGroupe.add(toggleDrawLine.setup("Line", false));
-	primitivesGroupe.add(toggleDrawEllipse.setup("Ellipse", false));
-	primitivesGroupe.add(toggleDrawBezier.setup("Bezier", false));
-	primitivesGroupe.add(drawSphere.setup("Sphere", false)); 
-	primitivesGroupe.add(drawCube.setup("Cube", false));
-	
-	// Associer des fonctions de rappel aux boutons
-	toggleDrawTriangle.addListener(this, &Application::button_triangle);
-	toggleDrawCircle.addListener(this, &Application::button_circle);
-	toggleDrawRectangle.addListener(this, &Application::button_rectangle);
-	toggleDrawLine.addListener(this, &Application::button_line);
-	toggleDrawEllipse.addListener(this, &Application::button_ellipse);
-	toggleDrawBezier.addListener(this, &Application::button_bezier);
-	drawSphere.addListener(this, &Application::button_sphere); 
-	drawCube.addListener(this, &Application::button_cube);
-
-	drawingGUI.add(&primitivesGroupe);
-	drawingGUI.add(renderer.uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
-	drawingGUI.add(renderer.uiAmount.set("amount", 1, 0, 5));
-	drawingGUI.add(renderer.uiStep.set("step", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
-	drawingGUI.add(renderer.uiRotate.set("rotate", ofVec3f(0), ofVec3f(-180), ofVec3f(180))); // La rotation des primitives
-	drawingGUI.add(renderer.uiShift.set("shift", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
-	drawingGUI.add(renderer.uiSize.set("size", ofVec2f(1), ofVec2f(1), ofVec2f(10)));
-
-
-	camera_setup_perspective(WIDTH, HEIGHT, 60.0f, 0.0f, 0.0f);
-	cam.enableOrtho();
-	orthoEnabled = true;
-	reset_cam();
-	setupCamera();
-	is_visible_camera = true;
-	
-
-	draw_triangle = false;
-	draw_circle = false;
-	draw_rectangle = false;
-	rotation_activate = false;
-	mesh_activate = false;
-	noise_activate = false;
-
-
-
-	reinitialisationGroupe.setup("Reinitialisation");
-	reinitialisationGroupe.add(resetButton.setup("Reset", false));
-	resetButton.addListener(this, &Application::reset);
-	drawingGUI.add(&reinitialisationGroupe);
-
-	animationGroupe.setup("Animations");
-	animationGroupe.add(rotationButton.setup("Rotation", false));
-	rotationButton.addListener(this, &Application::button_rotation);
-	drawingGUI.add(&animationGroupe);
-
-	meshGroupe.setup("Maille geomÃƒÂ©trique");
-	meshGroupe.add(meshButton.setup("Maille", false));
-	meshButton.addListener(this, &Application::button_mesh);
-	meshGroupe.add(meshAnimationButton.setup("Animation", false));
-	meshAnimationButton.addListener(this, &Application::button_noise);
-	drawingGUI.add(&meshGroupe);
-
-	// CrÃƒÂ©ation de la maille
-	for (int x = 0; x < size; x++) {
-		for (int y = 0; y < size; y++) {
-			mesh.addVertex(ofPoint(x - size / 2, y - size / 2));
-		}
-	}
-
-	for (int y = 0; y < size - 1; y++) {
-		for (int x = 0; x < size - 1; x++) {
-			mesh.addIndex(x + y * size);
-			mesh.addIndex((x + 1) + y * size);
-			mesh.addIndex(x + (y + 1) * size);
-			mesh.addIndex((x + 1) + y * size);
-			mesh.addIndex((x + 1) + (y + 1) * size);
-			mesh.addIndex(x + (y + 1) * size);
-		}
-	}
-
-	renderer.setup(renderer.v_formes);
-	forme.setup();
-	diffX = (abs(forme.getX2() - forme.getX3())) / 2;
-	diffY = abs(forme.getY1() - forme.getY2());
-	newX2 = 0;
-	newY2 = 0;
-	newX3 = 0;
-	newY3 = 0;
-
-	// état par défaut des bool
-	draw_triangle = draw_circle = draw_rectangle =
-		draw_line = draw_ellipse = draw_bezier = draw_sphere = false;
-	
-
-	shapeBool = false; 
-	v_buttons_ptr = &v_buttons;
-	guiScene.setup();
-	guiScene.setPosition(0, 40);
-
-	addAction([this]() { undo(); }, [this]() { redo(); });
-}
-
-void Application::update()
+struct Sphere
 {
-	// Rotations des primitives vectorielles
-	rotate++;
+    double radius;   // rayon de la sphère
+    Vector position; // position du centre de la sphère
+    Vector emission; // couleur émissive de la sphère
+    Vector color;    // couleur diffuse de la sphère
 
-	renderer.update();
-	
-	if (renderer.isRecording) {
-		// Mettez Ã¯Â¿Â½ jour et capturez l'image Ã¯Â¿Â½ intervalles rÃ¯Â¿Â½guliers
-		renderer.captureImage();
-	}
+    SurfaceType material; // type de réflexion de la sphère
 
+    // constructeur
+    Sphere(double r, Vector p, Vector e, Vector c, SurfaceType m) : radius(r), position(p), emission(e), color(c), material(m) {}
 
-	if (moveCameraLeft) {
-		cam.move(-1, 0, 0); // DÃ©placer la camÃ©ra vers la gauche
-	}
+    // fonction d'intersection entre la sphère et un rayon
+    double intersect(const Ray& ray) const
+    {
+        // distance de l'intersection la plus près si elle existe
+        double distance;
 
-	if (moveCameraRight) {
-		cam.move(1, 0, 0); // DÃ©placer la camÃ©ra vers la droite
-	}
+        // seuil de tolérance numérique du test d'intersection
+        double epsilon = 1e-4;
 
-	if (moveCameraUp) {
-		cam.move(0, 1, 0); // DÃ©placer la camÃ©ra vers le haut
-	}
+        // distance du point d'intersection
+        double t;
 
-	if (moveCameraDown) {
-		cam.move(0, -1, 0); // DÃ©placer la camÃ©ra vers le bas
-	}
-	if (moveCameraNear) {
-		cam.move(0, 0, 1); // DÃ©placer la camÃ©ra en s'approchant
-	}
+        // vecteur entre le centre de la sphère et l'origine du rayon
+        Vector delta = position - ray.origin;
 
-	if (moveCameraFar) {
-		cam.move(0, 0, -1); // DÃ©placer la camÃ©ra en s'eloignant
-	}
+        // calculer a
+        double a = delta.dot(delta);
+
+        // calculer b
+        double b = delta.dot(ray.direction);
+
+        // calculer c
+        double c = radius * radius;
+
+        // calculer le discriminant de l'équation quadratique
+        double discriminant = b * b - a + c;
+
+        // valider si le discriminant est négatif
+        if (discriminant < 0)
+        {
+            // il n'y a pas d'intersection avec cette sphère
+            return distance = 0;
+        }
+
+        // calculer la racine carrée du discriminant seulement si non négatif
+        discriminant = sqrt(discriminant);
+
+        // déterminer la distance de la première intersection
+        t = b - discriminant;
+
+        // valider si la distance de la première intersection est dans le seuil de tolérance
+        if (t > epsilon)
+            distance = t;
+        else
+        {
+            // déterminer la distance de la première intersection
+            t = b + discriminant;
+
+            // valider si la distance de la seconde intersection est dans le seuil de tolérance
+            if (t > epsilon)
+                distance = t;
+            else
+                distance = 0;
+        }
+
+        // retourner la distance du point d'intersection
+        return distance;
+    }
+};
+
+// déclaration du graphe de scène
+std::vector<Sphere> scene;
+
+//--------------------------------------------------------------
+void ofApp::setup() {
+    //rayonGui.setup();
+
 }
 
+//--------------------------------------------------------------
+void ofApp::update() {
+    auto t1 = std::chrono::high_resolution_clock::now();
 
-void Application::draw(){
-	renderer.interface.drawBackground();
-	if (isImportable) {
-		renderer.interface.import_activate = true;
-		ofDrawBitmapString("Please drag an image to import it.", 30, 70);
-	}
-	//cam.begin(); //TODO: ***TROUVER UN MOYEN DE RELIER LES DEUX CAMERA POUR PASSER DU CIRCUIT A CELLE ORTHOGRAPHIQUE***
-	if (renderer.interface.orthoIsActive) {
-		if (renderer.interface.orthoRendering) {
-			cam.enableOrtho();
-		}
-		else if (renderer.interface.perspRendering) {
-			cam.disableOrtho();
-		}
-		cam.begin();
-	}
-	else if (renderer.interface.angleIsActive) {
-		if (renderer.interface.frontCamRendering) {
-			camera_active = Camera::front;
-			setupCamera();
-		}
-		else if (renderer.interface.backCamRendering) {
-			camera_active = Camera::back;
-			setupCamera();
-		}
-		else if (renderer.interface.leftCamRendering) {
-			camera_active = Camera::left;
-			setupCamera();
-		}
-		else if (renderer.interface.rightCamRendering) {
-			camera_active = Camera::right;
-			setupCamera();
-		}
-		else if (renderer.interface.topCamRendering) {
-			camera_active = Camera::top;
-			setupCamera();
-		}
-		else if (renderer.interface.bottomCamRendering) {
-			camera_active = Camera::down;
-			setupCamera();
-		}
+    // rendu de la scène
+    render();
 
-		camera->begin();
+    auto t2 = std::chrono::high_resolution_clock::now();
 
-		if (is_visible_camera)
-		{
-			if (camera_active != Camera::front)
-				camFront.draw();
-			if (camera_active != Camera::back)
-				camBack.draw();
-			if (camera_active != Camera::left)
-				camLeft.draw();
-			if (camera_active != Camera::right)
-				camRight.draw();
-			if (camera_active != Camera::top)
-				camTop.draw();
-			if (camera_active != Camera::down)
-				camBottom.draw();
-		}
-	}
+    // temps de calcul
+    auto render_time = t2 - t1;
 
-	renderer.interface.backgroundLine();
-
-	renderer.draw();
-	
-	//ofPopMatrix();
-	if (renderer.interface.orthoIsActive) {
-		cam.end();
-	}
-	else if (renderer.interface.angleIsActive) {
-		camera->end();
-	}
-
-	renderer.interface.draw();
-	drawingGUI.draw();
-	//cam.end();
-	ofPopMatrix();
-
-	renderer.interface.draw();
-
-	if (drawingGUIPressed) {
-		drawingGUI.draw();
-	}
-	guiScene.draw();
+    std::cout << "render time : " << std::chrono::duration_cast<std::chrono::seconds>(render_time).count() << "s" << std::endl;
 }
 
-void Application::toggleDrawingGUI(Forme::TypeForme drawingShape) {
-	if (lastShape == drawingShape) {
-		drawingGUIPressed = !drawingGUIPressed;
-	}
-	else {
-		lastShape = drawingShape;
-		drawingGUIPressed = true;
-	}
+//--------------------------------------------------------------
+void ofApp::draw() {
+
+    // initialisation de la scène
+    init();
+
+    // faire un rendu de la scène par lancer de rayons
+    update();
+
+    // procédure post-rendu (sauvegarde de l'image et désallocation de la mémoire)
+    post_render();
 }
 
+//--------------------------------------------------------------
+void ofApp::keyPressed(int key) {
 
-// a modifier ou effacer 
-void Application::deleteShapeSelected()
+}
+
+//--------------------------------------------------------------
+void ofApp::keyReleased(int key) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseMoved(int x, int y) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseDragged(int x, int y, int button) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mousePressed(int x, int y, int button) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseReleased(int x, int y, int button) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseEntered(int x, int y) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseExited(int x, int y) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::windowResized(int w, int h) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::gotMessage(ofMessage msg) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::dragEvent(ofDragInfo dragInfo) {
+
+}
+
+// fonction pour borner une valeur numérique entre 0 et 1
+double ofApp::clamp(double x)
 {
-	// Vecteur temporaire pour stocker les indices des boutons Ã¯Â¿Â½ supprimer
-	vector<int> buttonsToDelete;
-	// Vecteur pour stocker l'Ã¯Â¿Â½tat de chaque bouton
-	vector<bool> buttonStates;
-
-	for (const auto& b : *v_buttons_ptr)
-	{
-		for (int i = 0; i < v_buttons.size(); ++i)
-		{
-			// VÃ¯Â¿Â½rifier si le bouton est en Ã¯Â¿Â½tat TRUE
-			if (i == shapeBool) // v_buttons[i] AccÃ¯Â¿Â½der Ã¯Â¿Â½ l'Ã¯Â¿Â½tat boolÃ¯Â¿Â½en du bouton
-			{
-				//cout << "Il est cense avoir " << i << " forme a effacer" << endl;
-				// Ajouter l'index du bouton Ã¯Â¿Â½ supprimer dans le vecteur temporaire
-				buttonsToDelete.push_back(i);
-			}
-		}
-
-	}
-
-
-	if (!buttonsToDelete.empty())
-	{
-		//cout << "Deletion is possible! " << endl;
-		//cout << "Size of the deletion list is " << buttonsToDelete.size() << endl;
-	}
-
+    return x < 0 ? 0 : x > 1 ? 1 : x;
 }
 
-void Application::keyPressed(int key) 
+// traitement de la couleur d'un pixel
+int ofApp::format_color_component(double value)
 {
+    // appliquer la correction gamma
+    value = pow(clamp(value), gamma_correction);
 
-	// Pour tester les pointeurs 
-	if (key == 'f') 
-	{
-		for (const auto& ptr : *renderer.v_formes_ptr) 
-		{
-			//cout << "Adresse du pointeur : " << &ptr << endl;
-			//cout << "Adresse de l'objet Forme : " << ptr.get() << endl; // Obtenir l'adresse de l'objet pointé
-			//cout << "Valeur de l'objet Forme : " << ptr << endl;
-			//cout << endl;
-		}		
-	}
+    // convertir la valeur dans l'espace de couleur
+    value = value * 255 + 0.5;
 
-	// DÃ¯Â¿Â½marrer/arrÃ¯Â¿Â½ter l'enregistrement lors de l'appui sur la touche 'r'
-	if (key == 'r') 
-	{
-		renderer.isRecording = !renderer.isRecording;
-		if (renderer.isRecording) 
-		{
-			renderer.frameCounter = 0; // RÃ¯Â¿Â½initialiser le compteur de frames lors du dÃ¯Â¿Â½marrage de l'enregistrement
-			std::cout << "Enregistrement demarrer." << endl;
-			//renderer.update();
-			//renderer.captureImage();
-		}
-		else {
-			std::cout << "Enregistrement arreter." << endl;
-		}
-	}
-
-
-	if(key == 'z')
-	{ 
-		if(!v_buttons.empty() && !renderer.v_formes.empty())
-		{ 
-			//undo();
-		}
-	}
-	if(key == 'x')
-	{ 
-		if (!v_buttons.empty() && !renderer.v_formes.empty())
-		{
-			//redo(); 
-		}
-	}
-
-	if (key == OF_KEY_LEFT) {
-		moveCameraLeft = true;
-	}
-	if (key == OF_KEY_RIGHT) {
-		moveCameraRight = true;
-	}
-	if (key == OF_KEY_UP) {
-		moveCameraUp = true;
-	}
-	if (key == OF_KEY_DOWN) {
-		moveCameraDown = true;
-	}
-	if (key == 49) {
-		moveCameraNear = true;
-	}
-	if (key == 50) {
-		moveCameraFar = true;
-	}
+    // conversion numérique de réel vers entier
+    return static_cast<int>(value);
 }
 
-void Application::keyReleased(int key){
-	if (key == 105) { // 105 = key "i"
-		isImportable = !isImportable;
-		renderer.interface.import_activate = !renderer.interface.import_activate;
-	}
-	if (key == OF_KEY_LEFT) {
-		moveCameraLeft = false;
-	}
-	if (key == OF_KEY_RIGHT) {
-		moveCameraRight = false;
-	}
-	if (key == OF_KEY_UP) {
-		moveCameraUp = false;
-	}
-	if (key == OF_KEY_DOWN) {
-		moveCameraDown = false;
-	}
-	if (key == 49) { // 49 = touche 1
-		moveCameraNear = false;
-	}
-	if (key == 50) { // 50 = touche 2
-		moveCameraFar = false;
-	}
-	/*if (key == 'n') {
-		if (orthoEnabled) {
-			cam.disableOrtho();
-			orthoEnabled = false;
-		}
-		else {
-			cam.enableOrtho();
-			orthoEnabled = true;
-		}
-	}
-	switch (key) {
-		case 51: // touche 3
-			camera_active = Camera::front;
-			setupCamera();
-			break;
-
-		case 52: // touche 4
-			camera_active = Camera::back;
-			setupCamera();
-			break;
-
-		case 53: // touche 5
-			camera_active = Camera::left;
-			setupCamera();
-			break;
-
-		case 54: // touche 6
-			camera_active = Camera::right;
-			setupCamera();
-			break;
-
-		case 55: // touche 7
-			camera_active = Camera::top;
-			setupCamera();
-			break;
-
-		case 56: // touche 8
-			camera_active = Camera::down;
-			setupCamera();
-			break;
-
-		default:
-			break;
-
-	}*/
-}
-
-void Application::mouseMoved(int x, int y ){
-	renderer.interface.mouse_current_x = x;
-	renderer.interface.mouse_current_y = y;
-}
-
-void Application::mouseDragged(int x, int y, int button){
-	renderer.interface.mouse_current_x = x;
-	renderer.interface.mouse_current_y = y;
-
-	renderer.interface.mouse_drag_x = x;
-	renderer.interface.mouse_drag_y = y;
-
-	renderer.interface.is_mouse_button_dragged = true;
-	renderer.interface.is_mouse_button_pressed = false;
-
-	if (draw_line)
-	{
-		renderer.ligne.addVertex(renderer.interface.mouse_drag_x, renderer.interface.mouse_drag_y);
-	}
-}
-
-
-void Application::showButtonsList(){
-	if(v_buttons_ptr)
-	{ 
-	// Parcourir la liste des boutons
-		for (size_t i = 0; i < v_buttons.size(); ++i) {
-			auto& button = v_buttons[i];
-			auto& forme = *renderer.v_formes[i];
-
-			// Déterminer le type de forme
-			string formeType;
-			switch (forme.getType()) {
-			case Forme::TRIANGLE:
-				formeType = "TRIANGLE";
-				break;
-			case Forme::CERCLE:
-				formeType = "CERCLE";
-				break;
-			case Forme::RECTANGLE:
-				formeType = "RECTANGLE";
-				break;
-				//case Forme::LIGNE:
-				//	formeType = "LIGNE";
-				//	break;
-			case Forme::ELLIPSE:
-				formeType = "ELLIPSE";
-				break;
-			case Forme::BEZIER:
-				formeType = "BEZIER";
-				break;
-				// Ajoutez d'autres cas pour les autres types de forme
-			default:
-				formeType = "INCONNU";
-				break;
-			}
-		
-			// Créer l'étiquette en fonction du type et de l'index de la forme
-			string label = to_string(i) + " " + formeType;
-
-			// Ajouter le bouton avec l'étiquette dynamique
-			guiScene.add(button->setup(label, false));
-		}
-	}
-}
-
-void Application::mousePressed(int x, int y, int button){
-	
-	if (isImportable && !isRepositioning) { //Si l'importation d'image est active
-		list<vector<int>>::reverse_iterator imgPos = renderer.imgPosList.rbegin();
-		for (list<ofImage>::reverse_iterator iter = renderer.imageList.rbegin(); iter != renderer.imageList.rend(); ++iter) {
-			vector temp = *imgPos;
-			if (ofGetMouseX() > temp[0] && ofGetMouseX() < temp[0] + iter->getWidth() && ofGetMouseY() > temp[1] && ofGetMouseY() < temp[1] + iter->getHeight()) {
-				isRepositioning = true;
-				break;
-			}
-			++imgPos;
-			imgDistFromMax++;
-		}
-	}
-
-	renderer.interface.is_mouse_button_pressed = true;
-	renderer.interface.is_mouse_button_dragged = false;
-	renderer.interface.mouse_current_x = x;
-	renderer.interface.mouse_current_y = y;
-	renderer.interface.mouse_press_x = x;
-	renderer.interface.mouse_press_y = y;
-
-	// Pour les spheres et cubes, peuvent etre ameliore plus tard
-	renderer.interface.mouse_press_x = x;
-	renderer.interface.mouse_press_y = y;
-
-	if(draw_triangle) {
-		// A partir du mouse click, calcul des 2 autres sommets 
-		newX2 = renderer.interface.mouse_press_x - diffX;
-		newY2 = renderer.interface.mouse_press_y + diffY;
-		newX3 = renderer.interface.mouse_press_x + diffX;
-		newY3 = renderer.interface.mouse_press_y + diffY;
-		forme.setX1(x);
-		forme.setY1(y);
-		forme.setX2(newX2);
-		forme.setY2(newY2);
-		forme.setX3(newX3);
-		forme.setY3(newY3);
-		forme.setColors(renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill);
-		forme.setIsFilled(renderer.interface.fillEnabled);
-		forme.setOutlineWeight(renderer.interface.slider_stroke_weight);
-
-		renderer.v_formes.push_back(make_unique<Forme>(Forme::TRIANGLE, forme.getX1(), forme.getY1(),
-			forme.getX2(), forme.getY2(),
-			forme.getX3(), forme.getY3(), forme.getColors(), forme.getIsFilled(), forme.getOutlineWeight()));
-
-		renderer.okDessiner = true;
-		renderer.triangleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
-		renderer.triangleFill = renderer.interface.fillEnabled;
-		renderer.triangleStroke = renderer.interface.slider_stroke_weight;
-		//ofxToggle button;
-		auto button = make_unique<ofxToggle>();
-		//guiScene.add(button->setup("TRIANGLE", shapeBool)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton ï¿½ la liste des boutons
-		guiScene.add(triangle);
-	}
-
-	if(draw_circle)
-	{ 
-		forme.setXC(renderer.interface.mouse_press_x);
-		forme.setYC(renderer.interface.mouse_press_y);
-		forme.setColors(renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill);
-		forme.setIsFilled(renderer.interface.fillEnabled);
-		forme.setOutlineWeight(renderer.interface.slider_stroke_weight);
-		renderer.v_formes.push_back(make_unique<Forme>(Forme::CERCLE, forme.getXC(), forme.getYC(), forme.getRayon(), 
-			forme.getColors(), forme.getIsFilled(), forme.getOutlineWeight()));
-		//ofSetCircleResolution(55);
-		renderer.okDessiner = true; 
-		renderer.cercleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
-		renderer.cercleFill = renderer.interface.fillEnabled;
-		renderer.cercleStroke = renderer.interface.slider_stroke_weight;
-		//ofxToggle button;
-		auto button = make_unique<ofxToggle>();
-		//guiScene.add(button->setup("CERCLE", false)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton ï¿½ la liste des boutons
-
-		guiScene.add(circle);
-	}
-
-	if(draw_rectangle)
-	{ 
-		forme.setXR(renderer.interface.mouse_current_x);
-		forme.setYR(renderer.interface.mouse_current_y);
-		forme.setColors(renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill);
-		forme.setIsFilled(renderer.interface.fillEnabled);
-		forme.setOutlineWeight(renderer.interface.slider_stroke_weight);
-		renderer.v_formes.push_back(make_unique<Forme>(Forme::RECTANGLE, forme.getXR(), forme.getYR(), forme.getWidth(), forme.getHeight(),
-			forme.getColors(), forme.getIsFilled(), forme.getOutlineWeight()));
-		renderer.okDessiner = true;
-		renderer.rectangleColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
-		renderer.rectangleFill = renderer.interface.fillEnabled;
-		renderer.rectangleStroke = renderer.interface.slider_stroke_weight;
-		//ofxToggle button;
-		auto button = make_unique<ofxToggle>();
-		//guiScene.add(button->setup("RECTANGLE", false)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton ï¿½ la liste des boutons
-		
-		guiScene.add(rectangle);
-	}
-
-	if (draw_line)
-	{
-		//renderer.vecteur_lignes_ptr->emplace_back(make_unique<ofPolyline>());
-		//auto& polyline = renderer.vecteur_lignes_ptr->back();
-		//polyline->addVertex(renderer.mouse_press_x, renderer.mouse_press_y);
-
-		renderer.ligne.addVertex(renderer.interface.mouse_press_x, renderer.interface.mouse_press_y);
-		renderer.okDessiner = true;
-		renderer.ligneColor = renderer.interface.color_picker_stroke; // Ajuste les parametres
-		renderer.ligneStroke = renderer.interface.slider_stroke_weight;
-		auto button = make_unique<ofxToggle>();
-		//guiScene.add(button->setup("LIGNE", false)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton ï¿½ la liste des boutons
-		
-		guiScene.add(line);
-	}
-
-	if (draw_ellipse)
-	{
-		forme.setXR(renderer.interface.mouse_press_x);
-		forme.setYR(renderer.interface.mouse_press_y);
-		forme.setColors(renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill);
-		forme.setIsFilled(renderer.interface.fillEnabled);
-		forme.setOutlineWeight(renderer.interface.slider_stroke_weight);
-		renderer.v_formes.push_back(make_unique<Forme>(Forme::ELLIPSE, forme.getXR(), forme.getYR(), forme.getWidth(), forme.getHeight(),
-			forme.getColors(), forme.getIsFilled(), forme.getOutlineWeight()));
-		renderer.okDessiner = true;
-		renderer.ellipseColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
-		renderer.ellipseFill = renderer.interface.fillEnabled;
-		renderer.ellipseStroke = renderer.interface.slider_stroke_weight;
-		auto button = make_unique<ofxToggle>();
-		//guiScene.add(button->setup("ELLIPSE", false)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton ï¿½ la liste des boutons
-		
-		guiScene.add(ellipse);
-	}
-
-	if(draw_bezier)
-	{
-		float x1 = renderer.interface.mouse_press_x;
-		float y1 = renderer.interface.mouse_press_y;
-		float x4 = x1; 
-		float y4 = y1 + 50; 
-		float x2, y2, x3, y3;
-		x2 = x1 * 0.75; 
-		y2 = y1 * 0.75; 
-		x3 = x4 * 0.75;
-		y3 = y4 * 0.75;
-		forme.setX1(x1); 
-		forme.setY1(y1); 
-		forme.setX2(x4);
-		forme.setY2(y4); 
-		forme.setXB1(x2);
-		forme.setYB1(y2);
-		forme.setXB2(x3);
-		forme.setYB2(y3);
-		forme.setColors(renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill);
-		forme.setIsFilled(renderer.interface.fillEnabled);
-		forme.setOutlineWeight(renderer.interface.slider_stroke_weight);
-
-		renderer.v_formes.push_back(make_unique<Forme>(Forme::BEZIER, forme.getX1(), forme.getY1(), forme.getXB1(), forme.getYB1(),
-			forme.getXB2(), forme.getYB2(), forme.getX2(), forme.getY2(), forme.getColors(), forme.getIsFilled(), forme.getOutlineWeight()));
-		renderer.okDessiner = true;
-		renderer.bezierColors = { renderer.interface.color_picker_stroke, renderer.interface.colorPickerFill }; // Ajuste les parametres
-		renderer.bezierFill = renderer.interface.fillEnabled;
-		renderer.bezierStroke = renderer.interface.slider_stroke_weight;
-		auto button = make_unique<ofxToggle>();
-		//guiScene.add(button->setup("BEZIER", false)); // Nom du bouton
-		v_buttons.push_back(move(button)); // Ajoutez le bouton ï¿½ la liste des boutons
-		
-		guiScene.add(bezier);
-	}
-  
-		if (draw_sphere) //  && drawSphere
-		{
-			float x = renderer.interface.mouse_press_x / 1.00;
-			float y = renderer.interface.mouse_press_y / 1.00;
-			ofVec3f viktor(x, y, 0);
-			forme.setVSphere(viktor); 
-			//forme.setXS(x);
-			//forme.setYS(y);
-			renderer.v_formes.push_back(make_unique<Forme>(Forme::SPHERE, forme.getVSphere(), forme.getSphereRad()));
-			//renderer.v_formes.push_back(make_unique<Forme>(Forme::SPHERE, forme.getXS(), forme.getYS(), 0, forme.getSphereRad()));
-			renderer.okDessiner = true; 
-			auto button = make_unique<ofxToggle>(); 
-			//guiScene.add(button->setup("SPHERE", false)); 
-			v_buttons.push_back(move(button)); 
-
-			guiScene.add(sphere);
-		}
-
-		if (draw_cube) //  && drawCube
-		{
-			float x = renderer.interface.mouse_press_x;
-			float y = renderer.interface.mouse_press_y;
-			ofVec3f viktor(x, y, 0);
-			forme.setVSphere(viktor);
-			forme.setSizeCube(150);
-			renderer.v_formes.push_back(make_unique<Forme>(Forme::CUBE, forme.getVSphere(), forme.getSizeCube()));
-			renderer.okDessiner = true;
-			auto button = make_unique<ofxToggle>();
-			//guiScene.add(button->setup("CUBE", false));
-			v_buttons.push_back(move(button));
-
-			guiScene.add(cube);
-		}
-}
-
-void Application::mouseReleased(int x, int y, int button){
-	if (isRepositioning) { //Si une image est en repositionnement
-		isRepositioning = false;
-		list<vector<int>>::reverse_iterator imgPos = renderer.imgPosList.rbegin();
-		for (int i = imgDistFromMax; i > 0; i--) {
-			++imgPos;
-		}
-		*imgPos = {ofGetMouseX(), ofGetMouseY()};
-		imgDistFromMax = 0;
-	}
-
-	if (button == 0 && y < INTERACTION_BAR_HEIGHT) {
-		int index = static_cast<int>(floor(x / (iconWidth)));
-		switch (index) {
-			case 0:
-				//call to import image method
-				isImportable = !isImportable;
-				renderer.interface.import_activate = !renderer.interface.import_activate;
-				break;
-			case 1:
-				//call to export method
-				renderer.toggleExportGUI();
-				break;
-			case 2:
-				//call to animation method
-				cout << "animation \n";
-				break;
-			case 3:
-				//call to mesh
-				cout << "mesh \n";
-				renderer.interface.toggleMailleGUI();
-				break;
-			case 4:
-				renderer.interface.toggleModelOptions();
-				cout << "modele \n";
-				break;
-			case 5:
-				renderer.interface.toggleCamOptions();
-				break;
-		}
-	}
-
-	if (button == 0 && x > WIDTH - INTERACTION_BAR_HEIGHT) {
-		switch (static_cast<int>(floor((y / iconWidth)) - 1)) {
-		case 0:
-			//call to color wheel
-			renderer.toggleColorWheelGUI();
-			break;
-		case 1:
-			//call to pen method
-			toggleDrawingGUI(forme.LIGNE);
-			drawLine();
-			break;
-		case 2:
-			//call to ellipse method
-			toggleDrawingGUI(forme.CERCLE);
-			drawCircle();
-			break;
-		case 3:
-			//call to rectangle method
-			toggleDrawingGUI(forme.RECTANGLE);
-			drawRectangle();
-			break;
-		case 4:
-			//call to triangle method
-			toggleDrawingGUI(forme.TRIANGLE);
-			drawTriangle();
-			break;
-		case 5:
-			//call to ellipse method
-			toggleDrawingGUI(forme.ELLIPSE);
-			drawEllipse();
-			break;
-		}
-	}
-
-	renderer.interface.mouse_current_x = x;
-	renderer.interface.mouse_current_y = y;
-
-
-	renderer.mouse_current_x = x;
-	renderer.mouse_current_y = y;
-
-
-	if (draw_line)
-
-	{
-		renderer.interface.is_mouse_button_dragged = true;
-		renderer.ligne.addVertex(x, y);
-		renderer.vecteur_lignes.push_back(renderer.ligne);
-		renderer.okDessiner = true;
-		renderer.ligne.clear();
-	}
-
-	renderer.interface.is_mouse_button_pressed = false;
-	renderer.interface.is_mouse_button_dragged = false;
-}
-
-
-void Application::mouseEntered(int x, int y){
-	renderer.interface.mouse_current_x = x;
-	renderer.interface.mouse_current_y = y;
-}
-
-void Application::mouseExited(int x, int y){
-
-	renderer.interface.mouse_current_x = x;
-	renderer.interface.mouse_current_y = y;
-}
-
-void Application::windowResized(int w, int h){
-	WIDTH = w;
-	HEIGHT = h;
-}
-
-void Application::gotMessage(ofMessage msg){
-	//ofEasyCam cam;
-
-}
-
-void Application::dragEvent(ofDragInfo dragInfo) {
-	if (isImportable) {
-		vector<string> imgTypes = { ".png", ".jpg", ".gif" }; //Verifie si le fichier dragged dans la fenetre de l'application est une image
-		for (int i = 0; i < dragInfo.files.size(); i++) {
-			if (find(imgTypes.begin(), imgTypes.end(), dragInfo.files.at(i).substr(dragInfo.files.at(i).size() - 4, dragInfo.files.at(i).size() - 1)) != imgTypes.end()) {
-				renderer.newImage(dragInfo.files.at(i), ofGetMouseX(), ofGetMouseY());
-			}
-		}
-	}
-}
-
-void Application::button_triangle(bool& value) 
-{ 
-	if (value)
-	{
-		draw_triangle = !draw_triangle;
-		draw_circle = draw_rectangle = draw_line = draw_ellipse = draw_bezier = draw_sphere = draw_cube = false;
-		draw_sphere = draw_cube = false;
-		//drawCircle = drawRectangle = drawLine = drawEllipse = drawBezier = drawSphere = drawCube = false;
-		if (!renderer.triangleColors.empty())
-		{ // Conserve les parametres de la forme pour la reselection
-			renderer.interface.colorPickerFill = renderer.triangleColors[1];
-			renderer.interface.color_picker_stroke = renderer.triangleColors[0];
-			if (renderer.interface.fillButton != renderer.triangleFill)
-			{
-				renderer.interface.fillButton = renderer.triangleFill;
-			}
-			renderer.interface.slider_stroke_weight = renderer.triangleStroke;
-		}
-	}
-}
-void Application::drawTriangle() 
+// fonction qui valide s'il y a intersection entre un rayon et les géométries de la scène
+// retourne l'intersection la plus près de la caméra (distance et index de l'élément)
+bool ofApp::raycast(const Ray& ray, double& distance, int& id)
 {
-	cout << "drawTriangle 2 \n";
-	draw_triangle = !draw_triangle;
-	draw_circle = draw_rectangle = draw_line = draw_ellipse = draw_bezier = false;
-	draw_sphere = draw_cube = false;
-	if (!renderer.triangleColors.empty()) 
-	{ // Conserve les parametres de la forme pour la reselection
-		renderer.interface.colorPickerFill = renderer.triangleColors[1];
-		renderer.interface.color_picker_stroke = renderer.triangleColors[0];
-		if (renderer.interface.fillButton != renderer.triangleFill) 
-		{
-			renderer.interface.fillButton = renderer.triangleFill;
+    // variable temporaire pour la distance d'une intersection entre un rayon et une sphère
+    double d;
 
-		}
-		renderer.interface.slider_stroke_weight = renderer.triangleStroke;
-	}
+    // initialiser la distance à une valeur suffisamment éloignée pour qu'on la considère comme l'infinie
+    double infinity = distance = 1e20;
+
+    // nombre d'éléments dans la scène
+    int n = static_cast<int>(scene.size());
+
+    // parcourir tous les éléments de la scène
+    for (int index = 0; index < n; ++index)
+    {
+        // test d'intersection entre le rayon et la géométrie à cet index
+        d = scene[index].intersect(ray);
+
+        // valider s'il y a eu intersection et si la distance est inférieure aux autres intersections
+        if (d && d < distance)
+        {
+            // nouvelle valeur courante de la distance et l'index de l'intersection la plus rapprochée de la caméra
+            distance = d;
+            id = index;
+        }
+    }
+
+    // il y a eu intersection si la distance est plus petite que l'infini
+    if (distance < infinity)
+        return true;
+    else
+        return false;
 }
 
-void Application::button_circle(bool& value)
+// fonction récursive qui calcule la radiance
+Vector ofApp::compute_radiance(const Ray& ray, int depth)
 {
-	if (value)
-	{
-		draw_circle = !draw_circle;
-		draw_triangle = draw_rectangle = draw_line = draw_ellipse = draw_bezier = draw_sphere = draw_cube = false;
-		draw_sphere = draw_cube = false;
-		//drawTriangle = drawRectangle = drawLine = drawEllipse = drawBezier = drawSphere = drawCube = false;
-		if (!renderer.cercleColors.empty())
-		{// Conserve les parametres de la forme pour la reselection
-			renderer.interface.colorPickerFill = renderer.cercleColors[1];
-			renderer.interface.color_picker_stroke = renderer.cercleColors[0];
-			if (renderer.interface.fillButton != renderer.cercleFill) {
-				renderer.interface.fillButton = renderer.cercleFill;
-			}
-			renderer.interface.slider_stroke_weight = renderer.cercleStroke;
-		}
-	}
+    // valeur de la radiance
+    Vector radiance;
+
+    // distance de l'intersection
+    double distance;
+
+    // identifiant de la géométrie en intersection
+    int id = 0;
+
+    // valider s'il n'y a pas intersection
+    if (!raycast(ray, distance, id))
+        return Vector(); // couleur par défault (noir)
+
+    // référence sur une géométrie en intersection avec un rayon
+    const Sphere& obj = scene[id];
+
+    // calculer les coordonnées du point d'intersection
+    Vector x = ray.origin + ray.direction * distance;
+
+    // calculer la normale au point d'intersection
+    Vector n = (x - obj.position).normalize();
+
+    // ajustement de la direction de la normale
+    Vector na = n.dot(ray.direction) < 0 ? n : n * -1;
+
+    // isoler la composante de couleur la plus puissante
+    Vector f = obj.color;
+    double threshold = f.x > f.y && f.x > f.z ? f.x : f.y > f.z ? f.y : f.z;
+
+    // valider si la limite du nombre de récursions est atteinte
+    if (++depth > max_depth)
+    {
+        // test de probabilité
+        if (random01(rng) < threshold)
+            f = f * (1 / threshold);
+        else
+            return obj.emission;
+    }
+
+    if (obj.material == SurfaceType::diffuse)
+    {
+        // matériau avec réflexion diffuse
+
+        double r1 = 2 * M_PI * random01(rng);
+        double r2 = random01(rng);
+        double r2s = sqrt(r2);
+
+        Vector w = na;
+        Vector u = ((fabs(w.x) > 0.1 ? Vector(0, 1) : Vector(1)).cross(w)).normalize();
+        Vector v = w.cross(u);
+        Vector d = (u * cos(r1) * r2s + v * sin(r1) * r2s + w * sqrt(1 - r2)).normalize();
+
+        radiance = obj.emission + f.multiply(compute_radiance(Ray(x, d), depth));
+
+        return radiance;
+    }
+    else if (obj.material == SurfaceType::specular)
+    {
+        // matériau avec réflexion spéculaire
+
+        radiance = obj.emission + f.multiply(compute_radiance(Ray(x, ray.direction - n * 2.0 * n.dot(ray.direction)), depth));
+
+        return radiance;
+    }
+    else if (obj.material == SurfaceType::refraction)
+    {
+        // matériau avec réflexion réfraction
+
+        Ray reflection_ray(x, ray.direction - n * 2.0 * n.dot(ray.direction));
+
+        bool into = n.dot(na) > 0;
+
+        double ior = 1.5; // indice de réfraction du verre
+        double nc = 1.0;
+        double nt = ior;
+        double nnt = into ? nc / nt : nt / nc;
+        double ddn = ray.direction.dot(na);
+        double cos2t;
+
+        if ((cos2t = 1.0 - nnt * nnt * (1.0 - ddn * ddn)) < 0.0)
+        {
+            radiance = obj.emission + f.multiply(compute_radiance(reflection_ray, depth));
+
+            return radiance;
+        }
+
+        Vector tdir = (ray.direction * nnt - n * ((into ? 1.0 : -1.0) * (ddn * nnt + sqrt(cos2t)))).normalize();
+
+        // effet de fresnel
+        double a = nt - nc;
+        double b = nt + nc;
+        double r0 = a * a / (b * b);
+        double c = 1.0 - (into ? -ddn : tdir.dot(n));
+        double re = r0 + (1.0 - r0) * c * c * c * c * c;
+        double tr = 1 - re;
+        double p = 0.25 + 0.5 * re;
+        double rp = re / p;
+        double tp = tr / (1.0 - p);
+
+        radiance = obj.emission + f.multiply(depth > 2 ? (random01(rng) < p ?
+            compute_radiance(reflection_ray, depth) * rp : compute_radiance(Ray(x, tdir), depth) * tp) :
+            compute_radiance(reflection_ray, depth) * re + compute_radiance(Ray(x, tdir), depth) * tr);
+
+        return radiance;
+    }
+    else
+    {
+        return radiance;
+    }
 }
 
-void Application::drawCircle() 
+// fonction d'initialisation de la scène
+void ofApp::init()
 {
-	draw_circle = !draw_circle;
-	draw_triangle = draw_rectangle = draw_line = draw_ellipse = draw_bezier = false;
-	draw_sphere = draw_cube = false;
-	if (!renderer.cercleColors.empty()) 
-	{// Conserve les parametres de la forme pour la reselection
-		renderer.interface.colorPickerFill = renderer.cercleColors[1];
-		renderer.interface.color_picker_stroke = renderer.cercleColors[0];
-		if (renderer.interface.fillButton != renderer.cercleFill) 
-		{
-			renderer.interface.fillButton = renderer.cercleFill;
+    std::cout << "scene setup" << std::endl;
 
-		}
-		renderer.interface.slider_stroke_weight = renderer.cercleStroke;
-	}
+    constexpr double anchor = 1e5;
+    constexpr double wall_radius = anchor;
+
+    constexpr double box_size_x = 100.0;
+    constexpr double box_size_y = 81.6;
+    constexpr double box_size_z = 81.6;
+
+    constexpr double box_x_min = 0.0;
+    constexpr double box_x_max = box_size_x;
+    constexpr double box_y_min = 0.0;
+    constexpr double box_y_max = box_size_y;
+    constexpr double box_z_min = 0.0;
+    constexpr double box_z_max = box_size_z;
+
+    constexpr double box_center_x = (box_x_max - box_x_min) / 2.0;
+    constexpr double box_center_y = (box_y_max - box_y_min) / 2.0;
+    constexpr double box_center_z = (box_z_max - box_z_min) / 2.0;
+
+    // vider la scène de son contenu
+    scene.clear();
+
+    // génération du contenu de la scène
+    scene.insert(scene.begin(), {
+
+        // approximation d'une boîte de Cornell avec des sphères surdimensionnées qui simulent des surfaces planes
+        Sphere(wall_radius, Vector(box_center_x,  anchor,            box_size_z),   Vector(), Vector(0.75, 0.75, 0.75), SurfaceType::diffuse),    // plancher
+        Sphere(wall_radius, Vector(box_center_x, -anchor + box_size_y, box_size_z),   Vector(), Vector(0.75, 0.75, 0.75), SurfaceType::diffuse),    // plafond
+        Sphere(wall_radius, Vector(anchor + 1,      box_center_y,      box_size_z),   Vector(), Vector(0.75, 0.25, 0.25), SurfaceType::diffuse),    // mur gauche
+        Sphere(wall_radius, Vector(box_center_x,  box_center_y,      anchor),       Vector(), Vector(0.25, 0.75, 0.25), SurfaceType::diffuse),    // mur arrière
+        Sphere(wall_radius, Vector(-anchor + 99,     box_center_y,      box_size_z),   Vector(), Vector(0.25, 0.25, 0.75), SurfaceType::diffuse),    // mur droit
+        Sphere(wall_radius, Vector(box_center_x,  box_center_y,     -anchor + 170),   Vector(), Vector(0.0,  0.0,  0.0),  SurfaceType::diffuse),    // mur avant
+
+        // ensemble des sphères situées à l'intérieur de la boîte de Cornell
+        Sphere(22.5,        Vector(30,            30,                40),           Vector(), Vector(1.0, 1.0, 1.0),    SurfaceType::specular),   // sphère mirroir
+        Sphere(17.5,        Vector(75,            40,                75),           Vector(), Vector(1.0, 1.0, 1.0),    SurfaceType::refraction), // sphère de verre
+
+        Sphere(600,  Vector(box_center_x, 600.0 + box_size_z - 0.27, box_size_z), Vector(15, 15, 15), Vector(0.0, 0.0, 0.0), SurfaceType::diffuse) // sphère lumineuse
+        });
+
+    // allocation de la mémoire de l'image en fonction des paramètres du programme
+    image.resize(image_width, image_height);
+
+    std::cout << "image resize to " << image.width << "x" << image.height << " (" << image.count << " pixels, " << image.size << " MB)" << std::endl;
+
+    // calibration de la caméra
+    camera.viewport_width = image.width;
+    camera.viewport_height = image.height;
+    camera.fov = camera_fov;
+    camera.calibrate();
 }
 
-
-void Application::button_rectangle(bool& value)
+// fonction appelée quand le rendu de la scène est terminée
+void ofApp::post_render()
 {
-	if (value)
-	{
-		draw_rectangle = !draw_rectangle;
-		draw_triangle = draw_circle = draw_line = draw_ellipse = draw_bezier = draw_sphere = draw_cube = false;
-		draw_sphere = draw_cube = false;
-		//drawTriangle = drawCircle = drawLine = drawEllipse = drawBezier = drawSphere = drawCube = false;
-		if (!renderer.rectangleColors.empty())
-		{ // Conserve les parametres de la forme pour la reselection
-			renderer.interface.colorPickerFill = renderer.rectangleColors[1];
-			renderer.interface.color_picker_stroke = renderer.rectangleColors[0];
-			if (renderer.interface.fillButton != renderer.rectangleFill) {
-				renderer.interface.fillButton = renderer.rectangleFill;
-			}
-			renderer.interface.slider_stroke_weight = renderer.rectangleStroke;
-		}
-	}
+    // écrire les pixels dans un fichier image
+    //save_image_file(image.width, image.height, ray_per_pixel, image.pixel);
+
+    std::cout << "raytracer task is done" << std::endl;
 }
 
-void Application::drawRectangle() 
+// fonction de rendu de la scène
+void ofApp::render()
 {
-	draw_rectangle = !draw_rectangle;
-	draw_triangle = draw_circle = draw_line = draw_ellipse = draw_bezier = false;
-	draw_sphere = draw_cube = false;
-	if (!renderer.rectangleColors.empty()) 
-	{ // Conserve les parametres de la forme pour la reselection
-		renderer.interface.colorPickerFill = renderer.rectangleColors[1];
-		renderer.interface.color_picker_stroke = renderer.rectangleColors[0];
-		if (renderer.interface.fillButton != renderer.rectangleFill) 
-		{
-			renderer.interface.fillButton = renderer.rectangleFill;
-		}
-		renderer.interface.slider_stroke_weight = renderer.rectangleStroke;
-	}
+    std::cout << "render start" << std::endl;
+
+    unsigned short x = 0;
+
+    int index, y, s, sx, sy = 0;
+
+    float progression = 0.0f;
+
+    double r1, r2 = 0.0;
+    double dx, dy = 0.0;
+
+    Vector radiance;
+
+    Vector distance;
+
+    cout << "avant boucle for" << endl;
+    cout << "image height" << image_height << endl;
+
+    // itération sur les rangées de pixels
+    for (y = 0; y < image_height; ++y)
+    {
+        cout << "dans boucle for" << endl;
+        // calculer le pourcentage de progression
+        progression = 100.0f * y / (image_height - 1.0f);
+
+        // afficher le pourcentage de progression du rendu dans la console
+        fprintf(stderr, "\rraytracing (%d rays per pixel) : %4.1f %%", ray_per_pixel, progression);
+        cout << "raytracing % :" << ray_per_pixel << "progression : " << progression << endl;
+
+        // itération sur les colonnes de pixels
+        for (x = 0; x < image_width; ++x)
+        {
+            // déterminer l'index du pixel
+            index = (image_height - y - 1) * image_width + x;
+
+            // itération sur les rangées du bloc de 2x2 échantillons
+            for (sy = 0; sy < 2; ++sy)
+            {
+                // itération sur les colonnes du bloc de 2x2 échantillons
+                for (sx = 0; sx < 2; ++sx)
+                {
+                    // initialiser la radiance
+                    radiance = Vector();
+
+                    // itération des sur les rayons par pixel
+                    for (s = 0; s < ray_per_pixel; ++s)
+                    {
+                        // filtre de la tente
+                        r1 = 2.0 * random01(rng);
+                        dx = r1 < 1.0 ? sqrt(r1) - 1.0 : 1.0 - sqrt(2.0 - r1);
+
+                        r2 = 2.0 * random01(rng);
+                        dy = r2 < 1.0 ? sqrt(r2) - 1.0 : 1.0 - sqrt(2.0 - r2);
+
+                        // calculer la distance de l'échantillon
+                        distance = camera.axis_x * (((sx + 0.5 + dx) / 2.0 + x) / image_width - 0.5) +
+                            camera.axis_y * (((sy + 0.5 + dy) / 2.0 + y) / image_height - 0.5) + camera.axis_z;
+
+                        // appel récursif du calcul de la radiance
+                        radiance = radiance + compute_radiance(Ray(camera.position + distance * 140, distance.normalize()), 0) * (1.0 / ray_per_pixel);
+                    }
+
+                    image.pixel[index] = image.pixel[index] + Vector(clamp(radiance.x), clamp(radiance.y), clamp(radiance.z)) * 0.25;
+                }
+            }
+        }
+    }
+
+    std::cout << "\nrender done" << std::endl;
 }
 
+/*
 
-void Application::button_line(bool& value) 
+// fonction qui permet de sauvegarder des pixels dans un fichier image (format .ppm)
+void ofApp::save_image_file(int width, int height, int ray_per_pixel, const Vector* pixel)
 {
-	if (value) 
-	{
-		draw_line = !draw_line;
-		draw_triangle = draw_rectangle = draw_circle = draw_ellipse = draw_bezier = draw_sphere = draw_cube = false;
-		draw_sphere = draw_cube = false;
-		//drawTriangle = drawRectangle = drawCircle = drawEllipse = drawBezier = drawSphere = drawCube = false;
-		renderer.interface.color_picker_stroke = renderer.ligneColor;
-		renderer.interface.slider_stroke_weight = renderer.ligneStroke;
-		
-	}
+    // nom du fichier image de type .ppm (portable pixmap)
+    std::stringstream ss;
+    ss << "image" << width << "x" << height << "_" << ray_per_pixel << ".ppm";
+    std::string filename = ss.str();
+
+    // déclaration et ouverture du fichier en mode écriture
+    std::ofstream file;
+    file.open(filename, std::ios::out);
+
+    // entête du ficher pour une image avec un espace de couleur RGB 24 bits (P3 pour pixmap)
+    file << "P3\n";
+
+    // largeur et hauteur de l'image sur la seconde ligne de l'entête
+    file << width << ' ' << height << '\n';
+
+    // valeur maximale de l'espace de couleur sur la troisième ligne de l'entête
+    file << "255\n";
+
+    // écriture des pixels dans le fichier image
+    for (int index = 0; index < width * height; ++index)
+    {
+        // écrire la couleur du pixel dans le fichier image
+        file << static_cast<std::uint32_t>(format_color_component(pixel[index].x)) << " ";
+        file << static_cast<std::uint32_t>(format_color_component(pixel[index].y)) << " ";
+        file << static_cast<std::uint32_t>(format_color_component(pixel[index].z)) << " ";
+    }
+
+    // fermeture du fichier
+    file.close();
 }
 
-void Application::button_ellipse(bool& value)
-{
-	if (value) 
-	{
-		draw_ellipse = !draw_ellipse;
-		draw_triangle = draw_rectangle = draw_circle = draw_line = draw_bezier = draw_sphere = draw_cube = false;
-		draw_sphere = draw_cube = false;
-		//drawTriangle = drawRectangle = drawCircle = drawLine = drawBezier = drawSphere = drawCube = false;
-		if (!renderer.ellipseColors.empty()) 
-		{ // Conserve les parametres de la forme pour la reselection
-			renderer.interface.colorPickerFill = renderer.ellipseColors[1];
-			renderer.interface.color_picker_stroke = renderer.ellipseColors[0];
-			if (renderer.interface.fillButton != renderer.ellipseFill) {
-				renderer.interface.fillButton = renderer.ellipseFill;
-			}
-			renderer.interface.slider_stroke_weight = renderer.ellipseStroke;
-		}
-	}
-}
-
-void Application::drawLine() {
-	draw_line = !draw_line;
-	draw_triangle = draw_rectangle = draw_circle = draw_ellipse = draw_bezier = false;
-	draw_sphere = draw_cube = false;
-	renderer.interface.color_picker_stroke = renderer.ligneColor;
-	renderer.interface.slider_stroke_weight = renderer.ligneStroke;
-}
-
-void Application::drawEllipse() 
-{
-	draw_ellipse = !draw_ellipse;
-	draw_triangle = draw_rectangle = draw_circle = draw_line = draw_bezier = false;
-	draw_sphere = draw_cube = false;
-	if (!renderer.ellipseColors.empty()) 
-	{ // Conserve les parametres de la forme pour la reselection
-		renderer.interface.colorPickerFill = renderer.ellipseColors[1];
-		renderer.interface.color_picker_stroke = renderer.ellipseColors[0];
-		if (renderer.interface.fillButton != renderer.ellipseFill) 
-		{
-			renderer.interface.fillButton = renderer.ellipseFill;
-
-		}
-		renderer.interface.slider_stroke_weight = renderer.ellipseStroke;
-	}
-}
-
-
-void Application::button_bezier(bool& value)
-{
-	if (value)
-	{
-		draw_bezier = !draw_bezier;
-		draw_triangle = draw_rectangle = draw_circle = draw_line = draw_ellipse = draw_cube = false;
-		draw_sphere = draw_cube = false;
-		//drawTriangle = drawRectangle = drawCircle = drawLine = drawEllipse = drawCube = false;
-		if (!renderer.bezierColors.empty()) { // Conserve les parametres de la forme pour la reselection
-			renderer.interface.colorPickerFill = renderer.bezierColors[1];
-			renderer.interface.color_picker_stroke = renderer.bezierColors[0];
-			if (renderer.interface.fillButton != renderer.bezierFill) {
-				renderer.interface.fillButton = renderer.bezierFill;
-			}
-			renderer.interface.slider_stroke_weight = renderer.bezierStroke;
-		}
-	}
-}
-
-void Application::drawBezier() {
-	draw_bezier = !draw_bezier;
-	draw_triangle = draw_rectangle = draw_circle = draw_line = draw_ellipse = false;
-	draw_sphere = draw_cube = false;
-	if (!renderer.bezierColors.empty()) { // Conserve les parametres de la forme pour la reselection
-		renderer.interface.colorPickerFill = renderer.bezierColors[1];
-		renderer.interface.color_picker_stroke = renderer.bezierColors[0];
-		if (renderer.interface.fillButton != renderer.bezierFill) {
-			renderer.interface.fillButton = renderer.bezierFill;
-
-		}
-		renderer.interface.slider_stroke_weight = renderer.bezierStroke;
-	}
-}
-
-void Application::button_sphere(bool& value) {
-	if (value) {
-		draw_sphere = !draw_sphere; 
-		draw_triangle = draw_rectangle = draw_circle = draw_line = draw_ellipse = draw_bezier = draw_cube = false;
-		//drawTriangle = drawRectangle = drawCircle = drawLine = drawEllipse = drawBezier = drawCube = false;
-	}
-}
-
-void Application::button_cube(bool& value) {
-	if (value) {
-		draw_cube = !draw_cube; 
-		draw_triangle = draw_rectangle = draw_circle = draw_line = draw_ellipse = draw_bezier = draw_sphere = false;
-		//drawTriangle = drawRectangle = drawCircle = drawLine = drawEllipse = drawBezier = drawSphere = false;
-	}
-}
-
-void Application::reset(bool& value) {
-	if (value) {
-		renderer.uiPosition.set(ofVec2f(0));
-		renderer.uiAmount.set(1);
-		renderer.uiStep.set(ofVec2f(0));
-		renderer.uiRotate.set(ofVec3f(0));
-		renderer.uiShift.set(ofVec2f(0));
-		renderer.uiSize.set(ofVec2f(6));
-
-		draw_triangle = false;
-		draw_circle = false;
-		draw_rectangle = false;
-		resetButton = false;
-		rotationButton = false;
-		rotation_activate = false;
-		mesh_activate = false;
-		meshButton = false;
-		noise_activate = false;
-		meshAnimationButton = false;
-	}
-}
-
-
-void Application::button_modeDraw(bool& value) {
-	if (value) {
-		renderer.modeDrawState = !renderer.modeDrawState;
-		renderer.modeTransformState = toggleTransform = false;
-	}
-}
-
-void Application::button_modeTransform(bool& value) {
-	if (value) {
-		renderer.modeTransformState = !renderer.modeTransformState;
-		renderer.modeDrawState = toggleDraw = false;
-	}
-}
-
-
-void Application::reset_cam() {
-	offset_camera = 500.0f * 3.5f * -1.0f;
-
-	// position initiale de chaque camÃ©ra
-	camFront.setPosition(0, 0, -offset_camera);
-	camBack.setPosition(0, 0, offset_camera);
-	camLeft.setPosition(-offset_camera, 0, 0);
-	camRight.setPosition(offset_camera, 0, 0);
-	camTop.setPosition(0, offset_camera, 0);
-	camBottom.setPosition(0, -offset_camera, 0);
-
-	// orientation de chaque camÃ©ra
-	camFront.lookAt(camera_target);
-	camBack.lookAt(camera_target);
-	camLeft.lookAt(camera_target);
-	camRight.lookAt(camera_target);
-	camTop.lookAt(camera_target, ofVec3f(1, 0, 0));
-	camBottom.lookAt(camera_target, ofVec3f(1, 0, 0));
-
-	camFront.setVFlip(true);
-	camBack.setVFlip(true);
-	camLeft.setVFlip(true);
-	camRight.setVFlip(true);
-	camTop.setVFlip(true);
-	camBottom.setVFlip(true);
-
-	camera_active = Camera::front;
-}
-
-void Application::button_rotation(bool& value) {
-	rotation_activate = value;
-	if (value) {
-		rotation_activate = true;
-	}
-}
-
-void Application::button_mesh(bool& value) {
-	mesh_activate = value;
-	if (value) {
-		mesh_activate = true;
-	}
-}
-
-void Application::button_noise(bool& value) {
-	noise_activate = value;
-	if (value) {
-		noise_activate = true;
-	}
-}
-
-void Application::camera_setup_perspective(float width, float height, float fov, float n, float f)
-{
-	bool camera_projection_persp_or_ortho = true;
-	bool camera_vertical_flip = true;
-
-	int camera_viewport_x = width;
-	int camera_viewport_y = height;
-	float camera_aspect_ratio = camera_viewport_x / camera_viewport_y;
-
-	float camera_fov = fov;
-	float camera_zoom = compute_zoom_from_fov(camera_fov);
-
-	float minimal_side = std::min(camera_viewport_x, camera_viewport_y);
-	float fov_half = ofDegToRad(camera_fov / 2.0f);
-	float distance = minimal_side / 2.0f / tanf(fov_half);
-
-	glm::vec3 camera_position;
-
-	camera_position.x = camera_viewport_x / 2.0f;
-	camera_position.y = camera_viewport_y / 2.0f;
-	camera_position.z = distance;
-
-	//camera_clip_n = near > 0.0f ? near : distance / 10.0f;
-	//camera_clip_f = far > 0.0f ? far : distance * 10.0f;
-
-	float camera_clip_n = distance / 2.0f;
-	float camera_clip_f = distance * 1.5f;
-
-	float camera_depth_range = camera_clip_f - camera_clip_n;
-
-	// configurer l'instance de camÃ©ra de openFrameworks (ofCamera)
-	cam.setupPerspective(camera_vertical_flip, camera_fov, camera_clip_n, camera_clip_f, ofVec2f(0, 0));
-	cam.setPosition(camera_position.x, camera_position.y, camera_position.z);
-
-	bool camera_state_change = false;
-}
-
-float Application::compute_zoom_from_fov(float fov)
-{
-	return 1.0f / tanf(glm::radians(fov) / 2.0f);;
-}
-
-void Application::setupCamera() {
-	switch (camera_active) {
-		case Camera::front:
-			camera = &camFront;
-			renderer.interface.camera_name = "avant";
-			break;
-
-		case Camera::back:
-			camera = &camBack;
-			renderer.interface.camera_name = "arriÃ¨re";
-			break;
-
-		case Camera::left:
-			camera = &camLeft;
-			renderer.interface.camera_name = "gauche";
-			break;
-
-		case Camera::right:
-			camera = &camRight;
-			renderer.interface.camera_name = "droite";
-			break;
-
-		case Camera::top:
-			camera = &camTop;
-			renderer.interface.camera_name = "haut";
-			break;
-
-		case Camera::down:
-			camera = &camBottom;
-			renderer.interface.camera_name = "bas";
-			break;
-
-		default:
-			break;
-		}
-		camera_position = camera->getPosition();
-		camera_orientation = camera->getOrientationQuat();
-
-		camera->setPosition(camera_position);
-		camera->setOrientation(camera_orientation);
-}
+*/
 
