@@ -34,6 +34,7 @@ class Renderer {
     int size = 96; // Taille de la maille
     ofImage textureImage;
     ofTexture textu;
+    ofTexture textuSphere;
     list<ofImage> imageList; //Liste d'images import�es
     list<vector<int>> imgPosList; //Positions x et y des images import�es
 

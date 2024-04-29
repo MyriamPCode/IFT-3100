@@ -114,8 +114,9 @@ void Renderer::setup() {
 
 	ofDisableArbTex();
 	ofLoadImage(textu, "img/testure.jpg");
+	ofImage tempEarth; tempEarth.load("img/earth_texture.jpg"); tempEarth.mirror(false, true); //S'occupe de bien préparer l'image
+	textuSphere = tempEarth.getTexture();
 	lightSetup();
-
 }
 
 void Renderer::lightSetup() {
@@ -295,25 +296,20 @@ void Renderer::draw() {
 	drawLighting();
 	ofEnableDepthTest();
 
-	textu.bind();
 	if (interface.mesh_activate) {
-		textu.generateMipmap();
 		mesh.draw();
 	}
-	textu.unbind();
 
 	if (interface.texturedSphere) {
 		ofSpherePrimitive sphere;
-		sphere.mapTexCoordsFromTexture(textu);
 		sphere.setPosition(0, 0, 50);
 		sphere.setRadius(200);
-		//textu.generateMipmap();
-
-		sphere.rotateDeg(180, ofVec3f(0, 1, 0));
+		textuSphere.generateMipmap();
+		//sphere.rotateDeg(180, ofVec3f(0, 1, 0));
 		sphere.rotateDeg(180, ofVec3f(1, 0, 0));
-		textu.bind();
+		textuSphere.bind();
 		sphere.draw();
-		textu.unbind();
+		textuSphere.unbind();
 	}
 
 	if (interface.texturedBox) {
