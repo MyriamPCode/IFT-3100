@@ -281,6 +281,8 @@ class Application : public ofBaseApp{
 		}
 		std::map<ofImage*, OriginalPixels> originalImagePixels;
 
+		bool Application::raycast(const Ray& ray, double& distance, int& id);
+
 private:
 	stack<function<void()>> undoStack;
 	stack<function<void()>> redoStack;

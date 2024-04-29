@@ -73,6 +73,7 @@ class Interface {
 		bool mesh_activate;
 		bool noise_activate;
 		bool curve_activate;
+		bool box_activate;
 
 		void setup();
 		void draw();
@@ -86,11 +87,13 @@ class Interface {
 		void toggleCamOptions();
 		void toggleMailleGUI();
 		void toggleCurveOptions();
+		void toggleBoxOptions();
 
 	private:
 		bool outilsPressed = false;
 		bool camPressed = false;
 		bool curvePressed = false;
+		bool boxPressed = false;
 		
 		bool modelsPressed = false;
 		bool showModels = false;
@@ -112,6 +115,7 @@ class Interface {
 		ofImage imgMesh;
 		ofImage imgCamera;
 		ofImage imgCurve;
+		ofImage imgBox;
 
 		ofColor backgroundLineColor = ofColor(217, 217, 217);
 		ofColor backgroundInteractionColor = ofColor(4, 3, 77);

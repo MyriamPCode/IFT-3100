@@ -1,4 +1,5 @@
-﻿#include "Application.h"
+﻿﻿#define _USE_MATH_DEFINES
+#include "Application.h"
 #include "Constants.h"
 #include <cmath>
 #include <iostream>
@@ -1631,4 +1632,40 @@ void Application::button_emboss(bool& value) {
 		}
 	}
 }
+
+// fonction qui valide s'il y a intersection entre un rayon et les géométries de la scène
+// retourne l'intersection la plus près de la caméra (distance et index de l'élément)
+bool Application::raycast(const Ray& ray, double& distance, int& id)
+{
+	// variable temporaire pour la distance d'une intersection entre un rayon et une sphère
+	double d;
+
+	// initialiser la distance à une valeur suffisamment éloignée pour qu'on la considère comme l'infinie
+	double infinity = distance = 1e20;
+
+	// nombre d'éléments dans la scène
+	int n = static_cast<int>(scene.size());
+
+	// parcourir tous les éléments de la scène
+	for (int index = 0; index < n; ++index)
+	{
+		// test d'intersection entre le rayon et la géométrie à cet index
+		d = scene[index].intersect(ray);
+
+		// valider s'il y a eu intersection et si la distance est inférieure aux autres intersections
+		if (d && d < distance)
+		{
+			// nouvelle valeur courante de la distance et l'index de l'intersection la plus rapprochée de la caméra
+			distance = d;
+			id = index;
+		}
+	}
+
+	// il y a eu intersection si la distance est plus petite que l'infini
+	if (distance < infinity)
+		return true;
+	else
+		return false;
+}
+
 

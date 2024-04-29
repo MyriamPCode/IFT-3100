@@ -20,6 +20,8 @@ void Interface::setup() {
 	iconTopBar.push_back(imgCamera);
 	imgCurve.load("img/curve.png");
 	iconTopBar.push_back(imgCurve);
+	imgBox.load("img/box.png");
+	iconTopBar.push_back(imgBox);
 
 	//same here but for the side bar
 	imgColorWheel.load("img/color-wheel.png");
@@ -45,6 +47,7 @@ void Interface::setup() {
 	import_activate = false;
 	export_activate = false;
 	curve_activate = false;
+	box_activate = false;
 
 	typeRender = MeshRenderMode::wireframe;
 	mouse_current_x = mouse_current_y = mouse_press_x = mouse_press_y = mouse_drag_x = mouse_drag_y = 0;
@@ -81,8 +84,8 @@ void Interface::draw() {
 		curve_activate = true;
 	}
 
-	if (curvePressed) {
-		curve_activate = true;
+	if (boxPressed) {
+		box_activate = true;
 	}
 
 	int gridSize = 50; // Espacement de la grille
@@ -233,6 +236,10 @@ void Interface::showMaille() {
 
 void Interface::toggleCurveOptions() {
 	curvePressed = !curvePressed;
+}
+
+void Interface::toggleBoxOptions() {
+	boxPressed = !boxPressed;
 }
 
 void Interface::enableOrtho(bool& value) {
