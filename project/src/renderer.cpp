@@ -104,7 +104,7 @@ void Renderer::draw() {
 	if (okDessiner)
 	{
 		if (interface.textureFillButton) {
-			shader.load("filters/colors.vert", "filters/wood.frag");
+			shader.load("filters/colors.vert", "filters/colors.frag");
 
 			shader.begin();
 			shader.setUniform1f("u_time", ofGetElapsedTimef());
