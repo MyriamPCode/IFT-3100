@@ -1,10 +1,85 @@
-﻿﻿#define _USE_MATH_DEFINES
+﻿//﻿#define _USE_MATH_DEFINES
 #include "Application.h"
 #include "Constants.h"
 #include <cmath>
 #include <iostream>
 
 using namespace std;
+
+struct Sphere
+{
+	double radius;   // rayon de la sphère
+	Vector position; // position du centre de la sphère
+	Vector emission; // couleur émissive de la sphère
+	Vector color;    // couleur diffuse de la sphère
+
+	SurfaceType material; // type de réflexion de la sphère
+
+	// constructeur
+	Sphere(double r, Vector p, Vector e, Vector c, SurfaceType m) : radius(r), position(p), emission(e), color(c), material(m) {}
+
+	// fonction d'intersection entre la sphère et un rayon
+	double intersect(const Ray& ray) const
+	{
+		// distance de l'intersection la plus près si elle existe
+		double distance;
+
+		// seuil de tolérance numérique du test d'intersection
+		double epsilon = 1e-4;
+
+		// distance du point d'intersection
+		double t;
+
+		// vecteur entre le centre de la sphère et l'origine du rayon
+		Vector delta = position - ray.origin;
+
+		// calculer a
+		double a = delta.dot(delta);
+
+		// calculer b
+		double b = delta.dot(ray.direction);
+
+		// calculer c
+		double c = radius * radius;
+
+		// calculer le discriminant de l'équation quadratique
+		double discriminant = b * b - a + c;
+
+		// valider si le discriminant est négatif
+		if (discriminant < 0)
+		{
+			// il n'y a pas d'intersection avec cette sphère
+			return distance = 0;
+		}
+
+		// calculer la racine carrée du discriminant seulement si non négatif
+		discriminant = sqrt(discriminant);
+
+		// déterminer la distance de la première intersection
+		t = b - discriminant;
+
+		// valider si la distance de la première intersection est dans le seuil de tolérance
+		if (t > epsilon)
+			distance = t;
+		else
+		{
+			// déterminer la distance de la première intersection
+			t = b + discriminant;
+
+			// valider si la distance de la seconde intersection est dans le seuil de tolérance
+			if (t > epsilon)
+				distance = t;
+			else
+				distance = 0;
+		}
+
+		// retourner la distance du point d'intersection
+		return distance;
+	}
+};
+
+// déclaration du graphe de scène
+std::vector<Sphere> scene;
 
 void Application::setup(){
 	ofSetWindowTitle("BIBO");
@@ -109,6 +184,8 @@ void Application::setup(){
 	filterGUI.setup();
 	filterGUI.setPosition(700, 70);
 	filterGroupe.setup("Filtres");
+	filterGroupe.add(sphereTextureButton.setup("Sphere", false));
+	sphereTextureButton.addListener(this, &Application::button_sphereTexture);
 	filterGUI.add(color_picker.set("teinte", renderer.tint, ofColor(0, 0), ofColor(255, 255)));
 	filterGUI.add(slider.set("mix", renderer.mix_factor, 0.0f, 1.0f));
 	filterGroupe.add(grayButton);
@@ -121,6 +198,7 @@ void Application::setup(){
 	embossButton.setName("Emboss");
 	embossButton.addListener(this, &Application::button_emboss);
 	filterGUI.add(&filterGroupe);
+
 
 	// CrÃƒÂ©ation de la maille
 	for (int x = 0; x < size; x++) {
@@ -285,26 +363,12 @@ void Application::draw(){
 	}
 
 	if (renderer.interface.import_activate) {
-		textureGUI.setup();
-		textureGUI.setPosition(800, 40);
-		textureGroupe.setup("Filtres");
-		textureGroupe.add(sphereTextureButton.setup("Sphere", false));
-		sphereTextureButton.addListener(this, &Application::button_sphereTexture);
-		textureGUI.add(&textureGroupe);
 
-		filterGUI.setup();
-		filterGUI.setPosition(800, 40);
-		textureGroupe.setup("Filtres");
-		textureGroupe.add(sphereTextureButton.setup("Sphere", false));
-		sphereTextureButton.addListener(this, &Application::button_sphereTexture);
-		filterGUI.add(&textureGroupe);
+		filterGUI.draw();
+
 	}
 
 	renderer.interface.backgroundLine();
-
-	if (renderer.interface.import_activate) {
-		filterGUI.draw();
-	}
 
 	renderer.draw();
 	
@@ -924,6 +988,10 @@ void Application::mouseReleased(int x, int y, int button){
 			case 6:
 				renderer.interface.toggleCurveOptions();
 				renderer.interface.curve_activate = !renderer.interface.curve_activate;
+				break;
+			case 7:
+				renderer.interface.toggleBoxOptions();
+				renderer.interface.box_activate = !renderer.interface.box_activate;
 				break;
 		}
 	}

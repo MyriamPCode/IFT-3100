@@ -103,6 +103,10 @@ void Renderer::draw() {
 	if (interface.mesh_activate) {
 		mesh.drawWireframe();
 	}
+
+	if (interface.box_activate) {
+		boxInit();
+	}
 	
 	model1.setPosition(1410,700, 0);
 	model2.setPosition(-50, 1200, -400);
@@ -563,5 +567,27 @@ void Renderer::image_export(const string name, const string extension) const {
 void Renderer::captureImage() {
 	// Exporter l'image
 	ofSaveScreen(ofToString(frameCounter) + ".png");
+}
+
+void Renderer::boxInit() {
+	std::cout << "scene setup" << std::endl;
+
+	constexpr double anchor = 1e5;
+	constexpr double wall_radius = anchor;
+
+	constexpr double box_size_x = 100.0;
+	constexpr double box_size_y = 81.6;
+	constexpr double box_size_z = 81.6;
+
+	constexpr double box_x_min = 0.0;
+	constexpr double box_x_max = box_size_x;
+	constexpr double box_y_min = 0.0;
+	constexpr double box_y_max = box_size_y;
+	constexpr double box_z_min = 0.0;
+	constexpr double box_z_max = box_size_z;
+
+	constexpr double box_center_x = (box_x_max - box_x_min) / 2.0;
+	constexpr double box_center_y = (box_y_max - box_y_min) / 2.0;
+	constexpr double box_center_z = (box_z_max - box_z_min) / 2.0;
 }
 

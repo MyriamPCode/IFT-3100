@@ -119,6 +119,8 @@ public:
 
     ofxInputField<int> inputIndex;
 
+    void boxInit();
+
 private:
     ofxPanel gui;
     ofParameter<string> nameField;
