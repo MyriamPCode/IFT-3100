@@ -91,13 +91,13 @@ struct Sphere
 std::vector<Sphere> scene;
 
 //--------------------------------------------------------------
-void ofApp::setup() {
+void Application::setup() {
     //rayonGui.setup();
 
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
+void Application::update() {
     auto t1 = std::chrono::high_resolution_clock::now();
 
     // rendu de la scène
@@ -112,7 +112,7 @@ void ofApp::update() {
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void Application::draw() {
 
     // initialisation de la scène
     init();
@@ -125,68 +125,68 @@ void ofApp::draw() {
 }
 
 //--------------------------------------------------------------
-void ofApp::keyPressed(int key) {
+void Application::keyPressed(int key) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::keyReleased(int key) {
+void Application::keyReleased(int key) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseMoved(int x, int y) {
+void Application::mouseMoved(int x, int y) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseDragged(int x, int y, int button) {
+void Application::mouseDragged(int x, int y, int button) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button) {
+void Application::mousePressed(int x, int y, int button) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseReleased(int x, int y, int button) {
+void Application::mouseReleased(int x, int y, int button) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseEntered(int x, int y) {
+void Application::mouseEntered(int x, int y) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseExited(int x, int y) {
+void Application::mouseExited(int x, int y) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::windowResized(int w, int h) {
+void Application::windowResized(int w, int h) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::gotMessage(ofMessage msg) {
+void Application::gotMessage(ofMessage msg) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo) {
+void Application::dragEvent(ofDragInfo dragInfo) {
 
 }
 
 // fonction pour borner une valeur numérique entre 0 et 1
-double ofApp::clamp(double x)
+double Application::clamp(double x)
 {
     return x < 0 ? 0 : x > 1 ? 1 : x;
 }
 
 // traitement de la couleur d'un pixel
-int ofApp::format_color_component(double value)
+int Application::format_color_component(double value)
 {
     // appliquer la correction gamma
     value = pow(clamp(value), gamma_correction);
@@ -200,7 +200,7 @@ int ofApp::format_color_component(double value)
 
 // fonction qui valide s'il y a intersection entre un rayon et les géométries de la scène
 // retourne l'intersection la plus près de la caméra (distance et index de l'élément)
-bool ofApp::raycast(const Ray& ray, double& distance, int& id)
+bool Application::raycast(const Ray& ray, double& distance, int& id)
 {
     // variable temporaire pour la distance d'une intersection entre un rayon et une sphère
     double d;
@@ -234,7 +234,7 @@ bool ofApp::raycast(const Ray& ray, double& distance, int& id)
 }
 
 // fonction récursive qui calcule la radiance
-Vector ofApp::compute_radiance(const Ray& ray, int depth)
+Vector Application::compute_radiance(const Ray& ray, int depth)
 {
     // valeur de la radiance
     Vector radiance;
@@ -348,7 +348,7 @@ Vector ofApp::compute_radiance(const Ray& ray, int depth)
 }
 
 // fonction d'initialisation de la scène
-void ofApp::init()
+void Application::init()
 {
     std::cout << "scene setup" << std::endl;
 
@@ -404,7 +404,7 @@ void ofApp::init()
 }
 
 // fonction appelée quand le rendu de la scène est terminée
-void ofApp::post_render()
+void Application::post_render()
 {
     // écrire les pixels dans un fichier image
     //save_image_file(image.width, image.height, ray_per_pixel, image.pixel);
@@ -413,7 +413,7 @@ void ofApp::post_render()
 }
 
 // fonction de rendu de la scène
-void ofApp::render()
+void Application::render()
 {
     std::cout << "render start" << std::endl;
 
@@ -489,7 +489,7 @@ void ofApp::render()
 /*
 
 // fonction qui permet de sauvegarder des pixels dans un fichier image (format .ppm)
-void ofApp::save_image_file(int width, int height, int ray_per_pixel, const Vector* pixel)
+void Application::save_image_file(int width, int height, int ray_per_pixel, const Vector* pixel)
 {
     // nom du fichier image de type .ppm (portable pixmap)
     std::stringstream ss;
