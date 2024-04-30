@@ -70,13 +70,29 @@ class Interface {
 		ofxToggle wireframeRender;
 		ofxToggle pointRender;
 
-		ofxGuiGroup materials;
-		ofxToggle showMaterials;
-		ofParameter<ofColor> ambientColorPicker;
-		ofParameter<ofColor> diffuseColorPicker;
-		ofParameter<ofColor> emissiveColorPicker;
-		ofParameter<ofColor> specularColorPicker;
-		ofParameter <float> shininess;
+		ofxGuiGroup teapotMaterials;
+		ofxToggle showTeapotMaterials;
+		ofParameter<ofColor> teapotAmbientColorPicker;
+		ofParameter<ofColor> teapotDiffuseColorPicker;
+		ofParameter<ofColor> teapotEmissiveColorPicker;
+		ofParameter<ofColor> teapotSpecularColorPicker;
+		ofParameter <float> teapotShininess;
+
+		ofxGuiGroup sphereMaterials;
+		ofxToggle showSphereMaterials;
+		ofParameter<ofColor> sphereAmbientColorPicker;
+		ofParameter<ofColor> sphereDiffuseColorPicker;
+		ofParameter<ofColor> sphereEmissiveColorPicker;
+		ofParameter<ofColor> sphereSpecularColorPicker;
+		ofParameter <float> sphereShininess;
+
+		ofxGuiGroup cubeMaterials;
+		ofxToggle showCubeMaterials;
+		ofParameter<ofColor> cubeAmbientColorPicker;
+		ofParameter<ofColor> cubeDiffuseColorPicker;
+		ofParameter<ofColor> cubeEmissiveColorPicker;
+		ofParameter<ofColor> cubeSpecularColorPicker;
+		ofParameter <float> cubeShininess;
 
 		bool mesh_activate;
 		bool noise_activate;

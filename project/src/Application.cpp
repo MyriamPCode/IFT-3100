@@ -32,8 +32,10 @@ void Application::setup(){
 	primitivesGroupe.add(toggleDrawLine.setup("Line", false));
 	primitivesGroupe.add(toggleDrawEllipse.setup("Ellipse", false));
 	primitivesGroupe.add(toggleDrawBezier.setup("Bezier", false));
-	primitivesGroupe.add(drawSphere.setup("Sphere", false)); 
+	primitivesGroupe.add(drawSphere.setup("Sphere", false));
+	primitivesGroupe.add(&renderer.interface.sphereMaterials);
 	primitivesGroupe.add(drawCube.setup("Cube", false));
+	primitivesGroupe.add(&renderer.interface.cubeMaterials);
 	
 	// Associer des fonctions de rappel aux boutons
 	toggleDrawTriangle.addListener(this, &Application::button_triangle);
@@ -53,7 +55,6 @@ void Application::setup(){
 	drawingGUI.add(renderer.uiShift.set("shift", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
 	drawingGUI.add(renderer.uiSize.set("size", ofVec2f(1), ofVec2f(1), ofVec2f(10)));
 
-
 	camera_setup_perspective(WIDTH, HEIGHT, 60.0f, 0.0f, 0.0f);
 	cam.enableOrtho();
 	orthoEnabled = true;
@@ -61,15 +62,12 @@ void Application::setup(){
 	setupCamera();
 	is_visible_camera = true;
 	
-
 	draw_triangle = false;
 	draw_circle = false;
 	draw_rectangle = false;
 	rotation_activate = false;
 	mesh_activate = false;
 	noise_activate = false;
-
-
 
 	reinitialisationGroupe.setup("Reinitialisation");
 	reinitialisationGroupe.add(resetButton.setup("Reset", false));

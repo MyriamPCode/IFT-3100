@@ -19,6 +19,8 @@ void Renderer::setup() {
 	gui.setPosition(200, 40);
 
 	setTeapotMaterials();
+	setSphereMaterials();
+	setCubeMaterials();
 
 	teapotMultiple.loadModel("models/teapot.obj");
 	teapotMultiple.setPosition(0, 0, 0);
@@ -125,7 +127,7 @@ void Renderer::draw() {
 	//////////////////////////////////////////////////////////////////
 	if (interface.getShowModel()) {
 
-		if (interface.showMaterials) {
+		if (interface.showTeapotMaterials) {
 			// désactiver le matériau par défaut du modèle
 			teapotMultiple.disableMaterials();
 			teapotOrtho.disableMaterials();
@@ -148,7 +150,7 @@ void Renderer::draw() {
 			teapotOrtho.draw(OF_MESH_POINTS);
 		}
 
-		if (interface.showMaterials) {
+		if (interface.showTeapotMaterials) {
 			// désactiver le matériau
 			material_teapot.end();
 
@@ -168,14 +170,19 @@ void Renderer::draw() {
 
 void Renderer::setTeapotMaterials() {
 	// configurer le matériau du teapot
-	material_teapot.setAmbientColor(ofColor(interface.ambientColorPicker));
-	material_teapot.setDiffuseColor(ofColor(interface.diffuseColorPicker));
-	material_teapot.setEmissiveColor(ofColor(interface.emissiveColorPicker));
-	material_teapot.setSpecularColor(ofColor(interface.specularColorPicker));
-	material_teapot.setShininess(interface.shininess);
+	material_teapot.setAmbientColor(ofColor(interface.teapotAmbientColorPicker));
+	material_teapot.setDiffuseColor(ofColor(interface.teapotDiffuseColorPicker));
+	material_teapot.setEmissiveColor(ofColor(interface.teapotEmissiveColorPicker));
+	material_teapot.setSpecularColor(ofColor(interface.teapotSpecularColorPicker));
+	material_teapot.setShininess(interface.teapotShininess);
 }
 
 void Renderer::dessinerSphere(){
+	if (interface.showSphereMaterials) {
+		setSphereMaterials();
+		material_sphere.begin();
+	}
+
 	ofSetLineWidth(1);
 	ofSetColor(255,0,0);
 	if (v_formes_ptr) {
@@ -188,9 +195,27 @@ void Renderer::dessinerSphere(){
 			}
 		}
 	}
+
+	if (interface.showSphereMaterials) {
+		material_sphere.end();
+	}
+}
+
+void Renderer::setSphereMaterials() {
+	// configurer le matériau du teapot
+	material_sphere.setAmbientColor(ofColor(interface.sphereAmbientColorPicker));
+	material_sphere.setDiffuseColor(ofColor(interface.sphereDiffuseColorPicker));
+	material_sphere.setEmissiveColor(ofColor(interface.sphereEmissiveColorPicker));
+	material_sphere.setSpecularColor(ofColor(interface.sphereSpecularColorPicker));
+	material_sphere.setShininess(interface.sphereShininess);
 }
 
 void Renderer::dessinerCube() {
+	if (interface.showCubeMaterials) {
+		setCubeMaterials();
+		material_cube.begin();
+	}
+
 	ofSetLineWidth(1);
 	ofSetColor(255, 255, 0);
 	if (v_formes_ptr) {
@@ -202,6 +227,19 @@ void Renderer::dessinerCube() {
 			}
 		}
 	}
+
+	if (interface.showCubeMaterials) {
+		material_cube.end();
+	}
+}
+
+void Renderer::setCubeMaterials() {
+	// configurer le matériau du teapot
+	material_cube.setAmbientColor(ofColor(interface.cubeAmbientColorPicker));
+	material_cube.setDiffuseColor(ofColor(interface.cubeDiffuseColorPicker));
+	material_cube.setEmissiveColor(ofColor(interface.cubeEmissiveColorPicker));
+	material_cube.setSpecularColor(ofColor(interface.cubeSpecularColorPicker));
+	material_cube.setShininess(interface.cubeShininess);
 }
 
 void Renderer::dessinerTriangle() {
