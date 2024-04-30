@@ -199,6 +199,10 @@ class Application : public ofBaseApp{
 		}
 		std::map<ofImage*, OriginalPixels> originalImagePixels;
 
+		// Modele illumination
+		float time_current, time_last, time_elapsed;
+		bool is_key_press_up, is_key_press_down, is_key_press_left, is_key_press_right;
+
 private:
 	stack<function<void()>> undoStack;
 	stack<function<void()>> redoStack;
