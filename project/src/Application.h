@@ -12,6 +12,12 @@ enum class Camera { front, back, left, right, top, down };
 
 class Application : public ofBaseApp{
 	public:
+
+		struct OriginalPixels {
+			ofPixels pixels;
+			bool initialized = false;
+		};
+
 		Renderer renderer;
 		Forme forme;
 		ofColor backgroundColor = ofColor(178, 184, 194);
@@ -103,6 +109,27 @@ class Application : public ofBaseApp{
 		ofxToggle meshButton;
 		ofxToggle meshAnimationButton; // Bouton pour l'animation sur la maille géométrique 
 
+		ofxPanel textureGUI;
+		ofxGuiGroup textureGroupe;
+		ofxToggle sphereTextureButton;
+
+		ofxPanel curveGui;
+		ofxGuiGroup catmullRomGroupe;
+		ofxGuiGroup hermiteGroupe;
+		ofParameter<bool> catmullRomButton = false;
+		ofParameter<bool> catmullRomButton6 = false;
+		ofParameter<bool> hermiteButton = false;
+		void button_catmullRom(bool& value);
+		void button_catmullRom6(bool& value);
+		void button_hermite(bool& value);
+		void hermite(float t, const ofVec2f& p0, const ofVec2f& p1, const ofVec2f& p2, const ofVec2f& p3, const ofVec2f& p4, float& x, float& y);
+
+		vector<ofVec2f> controlPoints;
+		ofParameter<int> segments;
+		int selectedPointIndex;
+		ofVec2f Application::catmullRom(float t, const ofVec2f& p0, const ofVec2f& p1, const ofVec2f& p2, const ofVec2f& p3, const ofVec2f& p4);
+		ofVec2f catmullRom6(float t, const ofVec2f& p0, const ofVec2f& p1, const ofVec2f& p2, const ofVec2f& p3, const ofVec2f& p4, const ofVec2f& p5);
+
 		bool drawingGUIPressed;
 		bool draw_triangle;
 		bool draw_circle;
@@ -112,6 +139,27 @@ class Application : public ofBaseApp{
 		bool mesh_activate;
 		bool noise_activate;
 		bool draw_sphere, draw_cube;
+		bool draw_sphereTexture;
+		bool catmullRom_activate;
+		bool catmullRom6_activate;
+		bool hermite_activate;
+
+		ofxPanel filterGUI;
+		ofxGuiGroup filterGroupe;
+		ofParameter<ofColor> color_picker;
+		ofParameter<float> slider;
+		ofParameter<bool> grayButton = false;;
+		ofParameter<bool> sharpenButton = false;
+		ofxGuiGroup sharpenGroupe;
+		ofParameter<bool> embossButton = false;
+
+		bool gray_activate;
+		bool sharpen_activate;
+		bool emboss_activate;
+
+		void button_blackAndWhite(bool& value);
+		void button_sharpen(bool& value);
+		void button_emboss(bool& value);
 
 		float rotate;
 
@@ -149,6 +197,11 @@ class Application : public ofBaseApp{
 				undoStack.push(move(redoAction));
 			}
 		}
+		std::map<ofImage*, OriginalPixels> originalImagePixels;
+
+		// Modele illumination
+		float time_current, time_last, time_elapsed;
+		bool is_key_press_up, is_key_press_down, is_key_press_left, is_key_press_right;
 
 private:
 	stack<function<void()>> undoStack;
@@ -193,6 +246,6 @@ private:
 		void button_rotation(bool& value);
 		void button_mesh(bool& value);
 		void button_noise(bool& value);
-
+		void button_sphereTexture(bool& value);
 
 };

@@ -96,6 +96,7 @@ class Interface {
 
 		bool mesh_activate;
 		bool noise_activate;
+		bool curve_activate;
 
 		void setup();
 		void draw();
@@ -108,13 +109,16 @@ class Interface {
 		void backgroundLine();
 		void toggleCamOptions();
 		void toggleMailleGUI();
+		void toggleCurveOptions();
 
 	private:
 		bool outilsPressed = false;
 		bool camPressed = false;
+		bool curvePressed = false;
 		
 		bool modelsPressed = false;
 		bool showModels = false;
+		
 		MeshRenderMode typeRender;
 
 		ofTrueTypeFont buttonFont;
@@ -131,6 +135,7 @@ class Interface {
 		ofImage imgEllipse;
 		ofImage imgMesh;
 		ofImage imgCamera;
+		ofImage imgCurve;
 
 		ofColor backgroundLineColor = ofColor(217, 217, 217);
 		ofColor backgroundInteractionColor = ofColor(4, 3, 77);
@@ -141,8 +146,8 @@ class Interface {
 		ofxPanel outilsGui;
 		ofxPanel modelsGui;
 		ofxPanel cameraGui;
-
 		ofxPanel mailleGui;
+
 		bool mailleVisible = false;
 		ofParameter<bool> meshButton = false;
 		ofParameter<bool> meshAnimationButton = false;
