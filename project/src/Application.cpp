@@ -1,8 +1,10 @@
-﻿//﻿#define _USE_MATH_DEFINES
+﻿#define _USE_MATH_DEFINES
 #include "Application.h"
 #include "Constants.h"
 #include <cmath>
 #include <iostream>
+
+const int max_depth = 5;
 
 using namespace std;
 
@@ -254,6 +256,9 @@ void Application::setup(){
 
 	// Aucun point de contrôle n'est sélectionné au début
 	selectedPointIndex = -1;
+
+	// Modele Illumination
+	is_key_press_up = is_key_press_down = is_key_press_left = is_key_press_right = false;
 }
 
 void Application::update()
@@ -293,6 +298,20 @@ void Application::update()
 	if (moveCameraFar) {
 		cam.move(0, 0, -1); // DÃ©placer la camÃ©ra en s'eloignant
 	}
+
+	/// Modele Illumination
+	time_current = ofGetElapsedTimef();
+	time_elapsed = time_current - time_last;
+	time_last = time_current;
+	if (is_key_press_up)
+		renderer.offset_z += renderer.delta_z * time_elapsed;
+	if (is_key_press_down)
+		renderer.offset_z -= renderer.delta_z * time_elapsed;
+	if (is_key_press_left)
+		renderer.offset_x += renderer.delta_x * time_elapsed;
+	if (is_key_press_right)
+		renderer.offset_x -= renderer.delta_x * time_elapsed;
+	////////////////////////////
 }
 
 
@@ -568,49 +587,137 @@ void Application::keyPressed(int key)
 		}
 	}
 
-	if (key == OF_KEY_LEFT) {
-		moveCameraLeft = true;
+	/// Ajout du false pour retirer le modeIllumination 
+	if (renderer.isModeIllumination == false)
+	{
+		if (key == OF_KEY_LEFT) {
+			moveCameraLeft = true;
+		}
+		if (key == OF_KEY_RIGHT) {
+			moveCameraRight = true;
+		}
+		if (key == OF_KEY_UP) {
+			moveCameraUp = true;
+		}
+		if (key == OF_KEY_DOWN) {
+			moveCameraDown = true;
+		}
+		if (key == 49) {
+			moveCameraNear = true;
+		}
+		if (key == 50) {
+			moveCameraFar = true;
+		}
 	}
-	if (key == OF_KEY_RIGHT) {
-		moveCameraRight = true;
-	}
-	if (key == OF_KEY_UP) {
-		moveCameraUp = true;
-	}
-	if (key == OF_KEY_DOWN) {
-		moveCameraDown = true;
-	}
-	if (key == 49) {
-		moveCameraNear = true;
-	}
-	if (key == 50) {
-		moveCameraFar = true;
+	// Modele illumination
+	if (renderer.isModeIllumination)
+	{
+		switch (key)
+		{
+		case OF_KEY_LEFT: // touche ?
+			is_key_press_left = true;
+			break;
+
+		case OF_KEY_UP: // touche ?
+			is_key_press_up = true;
+			break;
+
+		case OF_KEY_RIGHT: // touche ?
+			is_key_press_right = true;
+			break;
+
+		case OF_KEY_DOWN: // touche ?
+			is_key_press_down = true;
+			break;
+
+		default:
+			break;
+		}
 	}
 }
 
 void Application::keyReleased(int key){
-	if (key == 105) { // 105 = key "i"
-		isImportable = !isImportable;
-		renderer.interface.import_activate = !renderer.interface.import_activate;
+	/// Ajout boolean mode non-Illumination 
+	if (renderer.isModeIllumination == false)
+	{
+		if (key == 105) { // 105 = key "i"
+			isImportable = !isImportable;
+			renderer.interface.import_activate = !renderer.interface.import_activate;
+		}
+		if (key == OF_KEY_LEFT) {
+			moveCameraLeft = false;
+		}
+		if (key == OF_KEY_RIGHT) {
+			moveCameraRight = false;
+		}
+		if (key == OF_KEY_UP) {
+			moveCameraUp = false;
+		}
+		if (key == OF_KEY_DOWN) {
+			moveCameraDown = false;
+		}
+		if (key == 49) { // 49 = touche 1
+			moveCameraNear = false;
+		}
+		if (key == 50) { // 50 = touche 2
+			moveCameraFar = false;
+		}
 	}
-	if (key == OF_KEY_LEFT) {
-		moveCameraLeft = false;
+	/// Modele illumination 
+	if (renderer.isModeIllumination)
+	{
+		switch (key)
+		{
+		case 49: // touche 1
+			renderer.shader_active = ShaderType::color_fill;
+			ofLog() << "<shader: color fill>";
+			break;
+
+		case 50: // touche 2
+			renderer.shader_active = ShaderType::lambert;
+			ofLog() << "<shader: lambert>";
+			break;
+
+		case 51: // touche 3
+			renderer.shader_active = ShaderType::gouraud;
+			ofLog() << "<shader: gouraud>";
+			break;
+
+		case 52: // touche 4
+			renderer.shader_active = ShaderType::phong;
+			ofLog() << "<shader: phong>";
+			break;
+
+		case 53: // touche 5
+			renderer.shader_active = ShaderType::blinn_phong;
+			ofLog() << "<shader: blinn-phong>";
+			break;
+
+		case 114: // touche r
+			renderer.reset();
+			break;
+
+		case OF_KEY_LEFT: // touche ?
+			is_key_press_left = false;
+			break;
+
+		case OF_KEY_UP: // touche ?
+			is_key_press_up = false;
+			break;
+
+		case OF_KEY_RIGHT: // touche ?
+			is_key_press_right = false;
+			break;
+
+		case OF_KEY_DOWN: // touche ?
+			is_key_press_down = false;
+			break;
+
+		default:
+			break;
+		}
 	}
-	if (key == OF_KEY_RIGHT) {
-		moveCameraRight = false;
-	}
-	if (key == OF_KEY_UP) {
-		moveCameraUp = false;
-	}
-	if (key == OF_KEY_DOWN) {
-		moveCameraDown = false;
-	}
-	if (key == 49) { // 49 = touche 1
-		moveCameraNear = false;
-	}
-	if (key == 50) { // 50 = touche 2
-		moveCameraFar = false;
-	}
+	/////////////////////////////////////
 	/*if (key == 'n') {
 		if (orthoEnabled) {
 			cam.disableOrtho();
@@ -1733,6 +1840,120 @@ bool Application::raycast(const Ray& ray, double& distance, int& id)
 		return true;
 	else
 		return false;
+}
+
+// fonction récursive qui calcule la radiance
+Vector Application::compute_radiance(const Ray& ray, int depth)
+{
+	// valeur de la radiance
+	Vector radiance;
+
+	// distance de l'intersection
+	double distance;
+
+	// identifiant de la géométrie en intersection
+	int id = 0;
+
+	// valider s'il n'y a pas intersection
+	if (!raycast(ray, distance, id))
+		return Vector(); // couleur par défault (noir)
+
+	// référence sur une géométrie en intersection avec un rayon
+	const Sphere& obj = scene[id];
+
+	// calculer les coordonnées du point d'intersection
+	Vector x = ray.origin + ray.direction * distance;
+
+	// calculer la normale au point d'intersection
+	Vector n = (x - obj.position).normalize();
+
+	// ajustement de la direction de la normale
+	Vector na = n.dot(ray.direction) < 0 ? n : n * -1;
+
+	// isoler la composante de couleur la plus puissante
+	Vector f = obj.color;
+	double threshold = f.x > f.y && f.x > f.z ? f.x : f.y > f.z ? f.y : f.z;
+
+	// valider si la limite du nombre de récursions est atteinte
+	if (++depth > max_depth)
+	{
+		// test de probabilité
+		if (random01(rng) < threshold)
+			f = f * (1 / threshold);
+		else
+			return obj.emission;
+	}
+
+	if (obj.material == SurfaceType::diffuse)
+	{
+		// matériau avec réflexion diffuse
+
+		double r1 = 2 * M_PI * random01(rng);
+		double r2 = random01(rng);
+		double r2s = sqrt(r2);
+
+		Vector w = na;
+		Vector u = ((fabs(w.x) > 0.1 ? Vector(0, 1) : Vector(1)).cross(w)).normalize();
+		Vector v = w.cross(u);
+		Vector d = (u * cos(r1) * r2s + v * sin(r1) * r2s + w * sqrt(1 - r2)).normalize();
+
+		radiance = obj.emission + f.multiply(compute_radiance(Ray(x, d), depth));
+
+		return radiance;
+	}
+	else if (obj.material == SurfaceType::specular)
+	{
+		// matériau avec réflexion spéculaire
+
+		radiance = obj.emission + f.multiply(compute_radiance(Ray(x, ray.direction - n * 2.0 * n.dot(ray.direction)), depth));
+
+		return radiance;
+	}
+	else if (obj.material == SurfaceType::refraction)
+	{
+		// matériau avec réflexion réfraction
+
+		Ray reflection_ray(x, ray.direction - n * 2.0 * n.dot(ray.direction));
+
+		bool into = n.dot(na) > 0;
+
+		double ior = 1.5; // indice de réfraction du verre
+		double nc = 1.0;
+		double nt = ior;
+		double nnt = into ? nc / nt : nt / nc;
+		double ddn = ray.direction.dot(na);
+		double cos2t;
+
+		if ((cos2t = 1.0 - nnt * nnt * (1.0 - ddn * ddn)) < 0.0)
+		{
+			radiance = obj.emission + f.multiply(compute_radiance(reflection_ray, depth));
+
+			return radiance;
+		}
+
+		Vector tdir = (ray.direction * nnt - n * ((into ? 1.0 : -1.0) * (ddn * nnt + sqrt(cos2t)))).normalize();
+
+		// effet de fresnel
+		double a = nt - nc;
+		double b = nt + nc;
+		double r0 = a * a / (b * b);
+		double c = 1.0 - (into ? -ddn : tdir.dot(n));
+		double re = r0 + (1.0 - r0) * c * c * c * c * c;
+		double tr = 1 - re;
+		double p = 0.25 + 0.5 * re;
+		double rp = re / p;
+		double tp = tr / (1.0 - p);
+
+		radiance = obj.emission + f.multiply(depth > 2 ? (random01(rng) < p ?
+			compute_radiance(reflection_ray, depth) * rp : compute_radiance(Ray(x, tdir), depth) * tp) :
+			compute_radiance(reflection_ray, depth) * re + compute_radiance(Ray(x, tdir), depth) * tr);
+
+		return radiance;
+	}
+	else
+	{
+		return radiance;
+	}
 }
 
 

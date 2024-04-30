@@ -281,11 +281,25 @@ class Application : public ofBaseApp{
 		}
 		std::map<ofImage*, OriginalPixels> originalImagePixels;
 
-		bool Application::raycast(const Ray& ray, double& distance, int& id);
+		// Modele illumination
+		float time_current, time_last, time_elapsed;
+		bool is_key_press_up, is_key_press_down, is_key_press_left, is_key_press_right;
 
-private:
-	stack<function<void()>> undoStack;
-	stack<function<void()>> redoStack;
+		bool raycast(const Ray& ray, double& distance, int& id);
+		Vector compute_radiance(const Ray& ray, int depth);
+
+		// source d'entropie
+		std::random_device rd;
+
+		// générateur de nombres pseudo-aléatoires (algorithme mersenne twister)
+		std::mt19937 rng{ rd() };
+
+		// distribution uniforme entre 0 et 1
+		std::uniform_real_distribution<double> random01{ 0.0, 1.0 };
+
+    private:
+	    stack<function<void()>> undoStack;
+	    stack<function<void()>> redoStack;
 
 		bool shapeBool; 
 
@@ -304,7 +318,7 @@ private:
 		bool moveCameraNear;
 		bool moveCameraFar;
   		
-  Forme::TypeForme lastShape;
+        Forme::TypeForme lastShape;
 
 		ofxPanel guiScene;
 		ofParameter<string> circle = "CIRCLE";

@@ -8,11 +8,17 @@
 #include "ofxGui.h"
 
 #include "ofxAssimpModelLoader.h"
+#include <iostream>
+#include <vector>
+#include <glm/glm.hpp>
 
 
 using namespace std;
 
 //enum class MeshRenderMode { fill, wireframe, vertex };
+
+// Illumination 
+enum class ShaderType { color_fill, lambert, gouraud, phong, blinn_phong };
 
 class Renderer {
 public:
@@ -39,9 +45,6 @@ public:
 
     ofxAssimpModelLoader boite;
     //MeshRenderMode typeRender;
-
-    ofLight light;
-
 
     int mouse_press_x;
     int mouse_press_y;
@@ -123,14 +126,43 @@ public:
 
     ofxInputField<int> inputIndex;
 
+    // Modele Illumination 
+    void reset();
+    ShaderType shader_active;
+    ofShader shader_color_fill, shader_lambert, shader_gouraud, shader_phong, shader_blinn_phong;
+    ofShader* shader_illumination;
+    ofLight light;
+    ofxAssimpModelLoader modele_illumination1, modele_illumination2;
+    ofVec3f position_cube, position_sphere, position_modele_ill_1, position_modele_ill_2;
+    string shader_name;
+    float oscillation, oscillation_frequency, oscillation_amplitude;
+    float scale_cube, scale_sphere, scale_modele_ill_1, scale_modele_ill_2;
+    float speed_motion;
+    float offset_x, offset_z;
+    float delta_x, delta_z;
+    float initial_x, initial_z;
+    float center_x, center_y;
+    float oscillate(float time, float frequency, float amplitude);
+    void activer_Illumination();
+    bool isModeIllumination;
+
+    void setSphereMaterials();
+    void setCubeMaterials();
+
     void boxInit();
 
 private:
+
+    ofMaterial material_teapot;
+    ofMaterial material_sphere;
+    ofMaterial material_cube;
+
     ofxPanel gui;
     ofParameter<string> nameField;
     ofParameter<bool> visible = false;
     ofParameter<bool> exportButton = false;
 
     void image_export(const string name, const string extension) const;
+    void setTeapotMaterials();
 
 };
