@@ -36,6 +36,8 @@ public:
     ofxAssimpModelLoader model1;
     ofxAssimpModelLoader model2;
     ofxAssimpModelLoader model3;
+
+    ofxAssimpModelLoader boite;
     //MeshRenderMode typeRender;
 
 
