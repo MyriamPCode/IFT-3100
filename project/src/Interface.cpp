@@ -40,6 +40,32 @@ void Interface::setup() {
 	setupModelOptions();
 	setupMeshOptions();
 
+	sphereAmbientColorPicker.set("Couleur ambiante", ofColor(36, 36, 36));
+	sphereDiffuseColorPicker.set("Couleur diffuse", ofColor(36, 0, 36));
+	sphereEmissiveColorPicker.set("Couleur emissive", ofColor(0, 0, 86));
+	sphereSpecularColorPicker.set("Couleur specular", ofColor(84, 84, 84));
+
+	sphereMaterials.setup("Sphere materials");
+	sphereMaterials.add(showSphereMaterials.setup("Add materials", false));
+	sphereMaterials.add(sphereAmbientColorPicker);
+	sphereMaterials.add(sphereDiffuseColorPicker);
+	sphereMaterials.add(sphereEmissiveColorPicker);
+	sphereMaterials.add(sphereSpecularColorPicker);
+	sphereMaterials.add(sphereShininess.set("Shininess", 5, 0, 10));
+
+	cubeAmbientColorPicker.set("Couleur ambiante", ofColor(125, 63, 84));
+	cubeDiffuseColorPicker.set("Couleur diffuse", ofColor(13, 10, 13));
+	cubeEmissiveColorPicker.set("Couleur emissive", ofColor(75, 75, 78));
+	cubeSpecularColorPicker.set("Couleur specular", ofColor(131, 131, 131));
+
+	cubeMaterials.setup("Cube materials");
+	cubeMaterials.add(showCubeMaterials.setup("Add materials", false));
+	cubeMaterials.add(cubeAmbientColorPicker);
+	cubeMaterials.add(cubeDiffuseColorPicker);
+	cubeMaterials.add(cubeEmissiveColorPicker);
+	cubeMaterials.add(cubeSpecularColorPicker);
+	cubeMaterials.add(cubeShininess.set("Shininess", 5, 0, 10));
+
 	is_mouse_button_pressed = false;
 	is_mouse_button_dragged = false;
 	import_activate = false;
@@ -148,7 +174,6 @@ void Interface::draw_cursor(float x, float y) const {
 		ofSetColor(255);
 	}
 	 // Couleur blanche
-
 
 	ofDrawLine(x + offset, y, x + offset + length, y);
 	ofDrawLine(x - offset, y, x - offset - length, y);
@@ -415,6 +440,21 @@ void Interface::setupModelOptions() {
 	fillRender.addListener(this, &Interface::modelFill);
 	wireframeRender.addListener(this, &Interface::modelWireframe);
 	pointRender.addListener(this, &Interface::modelPoints);
+
+	teapotAmbientColorPicker.set("Couleur ambiante", ofColor(63, 63, 63));
+	teapotDiffuseColorPicker.set("Couleur diffuse", ofColor(63, 0, 63));
+	teapotEmissiveColorPicker.set("Couleur emissive", ofColor(0, 0, 31));
+	teapotSpecularColorPicker.set("Couleur specular", ofColor(191, 191, 191));
+
+	teapotMaterials.setup("Teapot materials");
+	teapotMaterials.add(showTeapotMaterials.setup("Add materials", false));
+	teapotMaterials.add(teapotAmbientColorPicker);
+	teapotMaterials.add(teapotEmissiveColorPicker);
+	teapotMaterials.add(teapotDiffuseColorPicker);
+	teapotMaterials.add(teapotSpecularColorPicker);
+	teapotMaterials.add(teapotShininess.set("Shininess", 5, 0, 10));
+
+	modelsGui.add(&teapotMaterials);
 
 	modelsGui.maximizeAll();
 }

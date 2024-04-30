@@ -23,6 +23,10 @@ void Renderer::setup() {
 	gui.add(exportButton);
 	gui.setPosition(200, 40);
 
+	setTeapotMaterials();
+	setSphereMaterials();
+	setCubeMaterials();
+
 	teapotMultiple.loadModel("models/teapot.obj");
 	teapotMultiple.setPosition(0, 0, 0);
 
@@ -179,7 +183,7 @@ void Renderer::draw() {
 	if (okDessiner)
 	{
 		if (interface.textureFillButton) {
-			shader.load("filters/colors.vert", "filters/wood.frag");
+			shader.load("filters/colors.vert", "filters/colors.frag");
 			shader.begin();
 			shader.setUniform1f("u_time", ofGetElapsedTimef());
 			shader.setUniform2f("u_resolution", ofGetWidth(), ofGetHeight());
@@ -216,18 +220,38 @@ void Renderer::draw() {
 
 	//////////////////////////////////////////////////////////////////
 	if (interface.getShowModel()) {
+
+		if (interface.showTeapotMaterials) {
+			// désactiver le matériau par défaut du modèle
+			teapotMultiple.disableMaterials();
+			teapotOrtho.disableMaterials();
+
+			setTeapotMaterials();
+			// activer le matériau
+			material_teapot.begin();
+		}
+
 		if (interface.getRenderType() == MeshRenderMode::wireframe) {
 			teapotMultiple.draw(OF_MESH_WIREFRAME);
 			teapotOrtho.draw(OF_MESH_WIREFRAME);
 		}
 		else if (interface.getRenderType() == MeshRenderMode::fill) {
-
 			teapotMultiple.draw(OF_MESH_FILL);
 			teapotOrtho.draw(OF_MESH_FILL);
 		}
 		else if (interface.getRenderType() == MeshRenderMode::vertex) {
 			teapotMultiple.draw(OF_MESH_POINTS);
 			teapotOrtho.draw(OF_MESH_POINTS);
+		}
+
+		if (interface.showTeapotMaterials) {
+			// désactiver le matériau
+			material_teapot.end();
+
+			// activer le matériau par défaut 
+			teapotMultiple.enableMaterials();
+			teapotOrtho.enableMaterials();
+
 		}
 	}
 
@@ -239,6 +263,15 @@ void Renderer::draw() {
 	/// Modele illumination
 	// Load les 2 modeles 3D et un sphere au milieu
 	//activer_Illumination(); // Le commenter pour ne pas charger au lancement 
+}
+
+void Renderer::setTeapotMaterials() {
+	// configurer le matériau du teapot
+	material_teapot.setAmbientColor(ofColor(interface.teapotAmbientColorPicker));
+	material_teapot.setDiffuseColor(ofColor(interface.teapotDiffuseColorPicker));
+	material_teapot.setEmissiveColor(ofColor(interface.teapotEmissiveColorPicker));
+	material_teapot.setSpecularColor(ofColor(interface.teapotSpecularColorPicker));
+	material_teapot.setShininess(interface.teapotShininess);
 }
 
 // Nouvelle fonction pour Illumination
@@ -337,6 +370,11 @@ float Renderer::oscillate(float time, float frequency, float amplitude)
 }
 
 void Renderer::dessinerSphere(){
+	if (interface.showSphereMaterials) {
+		setSphereMaterials();
+		material_sphere.begin();
+	}
+
 	ofSetLineWidth(1);
 	ofSetColor(255,0,0);
 	if (v_formes_ptr) {
@@ -348,9 +386,27 @@ void Renderer::dessinerSphere(){
 			}
 		}
 	}
+
+	if (interface.showSphereMaterials) {
+		material_sphere.end();
+	}
+}
+
+void Renderer::setSphereMaterials() {
+	// configurer le matériau du teapot
+	material_sphere.setAmbientColor(ofColor(interface.sphereAmbientColorPicker));
+	material_sphere.setDiffuseColor(ofColor(interface.sphereDiffuseColorPicker));
+	material_sphere.setEmissiveColor(ofColor(interface.sphereEmissiveColorPicker));
+	material_sphere.setSpecularColor(ofColor(interface.sphereSpecularColorPicker));
+	material_sphere.setShininess(interface.sphereShininess);
 }
 
 void Renderer::dessinerCube() {
+	if (interface.showCubeMaterials) {
+		setCubeMaterials();
+		material_cube.begin();
+	}
+
 	ofSetLineWidth(1);
 	ofSetColor(255, 255, 0);
 	if (v_formes_ptr) {
@@ -362,6 +418,19 @@ void Renderer::dessinerCube() {
 			}
 		}
 	}
+
+	if (interface.showCubeMaterials) {
+		material_cube.end();
+	}
+}
+
+void Renderer::setCubeMaterials() {
+	// configurer le matériau du teapot
+	material_cube.setAmbientColor(ofColor(interface.cubeAmbientColorPicker));
+	material_cube.setDiffuseColor(ofColor(interface.cubeDiffuseColorPicker));
+	material_cube.setEmissiveColor(ofColor(interface.cubeEmissiveColorPicker));
+	material_cube.setSpecularColor(ofColor(interface.cubeSpecularColorPicker));
+	material_cube.setShininess(interface.cubeShininess);
 }
 
 void Renderer::dessinerTriangle() {

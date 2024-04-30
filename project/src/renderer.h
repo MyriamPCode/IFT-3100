@@ -20,136 +20,137 @@ using namespace std;
 enum class ShaderType { color_fill, lambert, gouraud, phong, blinn_phong };
 
 class Renderer {
-public:
-    Interface interface;
+    public:
+        Interface interface;
+        ofImage image;
+        ofShader shader;
+        float mix_factor;
+        ofColor tint;
 
-    ofImage image;
+        ofMesh mesh;
+        int size = 96; // Taille de la maille
+        list<ofImage> imageList; //Liste d'images import�es
+        list<vector<int>> imgPosList; //Positions x et y des images import�es
 
-    ofShader shader;
+        ofxAssimpModelLoader teapotOrtho;
+        ofxAssimpModelLoader teapotMultiple;
+        ofxAssimpModelLoader model1;
+        ofxAssimpModelLoader model2;
+        ofxAssimpModelLoader model3;
+        //MeshRenderMode typeRender;
 
-    float mix_factor;
-    ofColor tint;
+        int mouse_press_x;
+        int mouse_press_y;
 
-    ofMesh mesh;
-    int size = 96; // Taille de la maille
+        int mouse_current_x;
+        int mouse_current_y;
 
-    list<ofImage> imageList; //Liste d'images import�es
-    list<vector<int>> imgPosList; //Positions x et y des images import�es
+        int mouse_drag_x;
+        int mouse_drag_y;
 
-    ofxAssimpModelLoader teapotOrtho;
-    ofxAssimpModelLoader teapotMultiple;
-    ofxAssimpModelLoader model1;
-    ofxAssimpModelLoader model2;
-    ofxAssimpModelLoader model3;
-    //MeshRenderMode typeRender;
+        bool is_mouse_button_pressed;
+        bool is_mouse_button_dragged;
+        bool import_activate;
 
+        void setup();
+        void setup(vector<Forme*>& v_formes);
+        void draw();
+        void newImage(string filePath, int posX, int posY);
+        void draw_cursor(float x, float y) const;
 
-    int mouse_press_x;
-    int mouse_press_y;
+        Forme forme;
+        vector<unique_ptr<Forme>>* v_formes_ptr;
+        vector<unique_ptr<Forme>> v_formes;
+        void setup(vector<unique_ptr<Forme>>& v_formes);
+        bool okDessiner;
+        void dessinerTriangle();
+        vector<ofColor> triangleColors = {}; // Contient les couleurs du dessin
+        bool triangleFill = false; // Indique si l'interieur de la forme doit etre colore
+        float triangleStroke; // Taille du outline
+        void dessinerCercle();
+        vector<ofColor> cercleColors = {}; // Contient les couleurs du dessin
+        bool cercleFill = false; // Indique si l'interieur de la forme doit etre colore
+        float cercleStroke; // Taille du outline
+        void dessinerRectangle();
+        vector<ofColor> rectangleColors = {}; // Contient les couleurs du dessin
+        bool rectangleFill = false; // Indique si l'interieur de la forme doit etre colore
+        float rectangleStroke; // Taille du outline
+        void dessinerLigne();
+        ofColor ligneColor; // Contient la couleur du dessin
+        float ligneStroke; // Taille du outline
+        void dessinerEllipse();
+        vector<ofColor> ellipseColors = {}; // Contient les couleurs du dessin
+        bool ellipseFill = false; // Indique si l'interieur de la forme doit etre colore
+        float ellipseStroke; // Taille du outline
+        void dessinerBezier();
+        vector<ofColor> bezierColors = {}; // Contient les couleurs du dessin
+        bool bezierFill = false; // Indique si l'interieur de la forme doit etre colore
+        float bezierStroke; // Taille du outline
 
+        void dessinerSphere();
+        void dessinerCube();
 
-    int mouse_current_x;
-    int mouse_current_y;
+        vector<unique_ptr<Forme>>* getVecteurFormesPtr() {
+            return &v_formes;
+        }
 
-    int mouse_drag_x;
-    int mouse_drag_y;
+        bool modeDrawState, modeTransformState; // pour indiquer si en mode draw ou transformation
 
-    bool is_mouse_button_pressed;
-    bool is_mouse_button_dragged;
-    bool import_activate;
+        ofPolyline ligne;
+        void addPoint(const ofVec3f& point) {
+            // Ajouter le point à une liste de points
+            ligne.addVertex(point);
+        }
+        vector<ofPolyline> vecteur_lignes;
 
-    void setup();
-    void setup(vector<Forme*>& v_formes);
-    void draw();
-    void newImage(string filePath, int posX, int posY);
-    void draw_cursor(float x, float y) const;
+        //Capture images
+        void update();
+        void captureImage();
+        int frameCounter, captureInterval, compteur;
+        bool isRecording;
 
-    Forme forme;
-    vector<unique_ptr<Forme>>* v_formes_ptr;
-    vector<unique_ptr<Forme>> v_formes;
-    void setup(vector<unique_ptr<Forme>>& v_formes);
-    bool okDessiner;
-    void dessinerTriangle();
-    vector<ofColor> triangleColors = {}; // Contient les couleurs du dessin
-    bool triangleFill = false; // Indique si l'interieur de la forme doit etre colore
-    float triangleStroke; // Taille du outline
-    void dessinerCercle();
-    vector<ofColor> cercleColors = {}; // Contient les couleurs du dessin
-    bool cercleFill = false; // Indique si l'interieur de la forme doit etre colore
-    float cercleStroke; // Taille du outline
-    void dessinerRectangle();
-    vector<ofColor> rectangleColors = {}; // Contient les couleurs du dessin
-    bool rectangleFill = false; // Indique si l'interieur de la forme doit etre colore
-    float rectangleStroke; // Taille du outline
-    void dessinerLigne();
-    ofColor ligneColor; // Contient la couleur du dessin
-    float ligneStroke; // Taille du outline
-    void dessinerEllipse();
-    vector<ofColor> ellipseColors = {}; // Contient les couleurs du dessin
-    bool ellipseFill = false; // Indique si l'interieur de la forme doit etre colore
-    float ellipseStroke; // Taille du outline
-    void dessinerBezier();
-    vector<ofColor> bezierColors = {}; // Contient les couleurs du dessin
-    bool bezierFill = false; // Indique si l'interieur de la forme doit etre colore
-    float bezierStroke; // Taille du outline
+        void toggleExportGUI();
+        void toggleColorWheelGUI();
 
-    void dessinerSphere();
-    void dessinerCube();
+        ofParameter<ofVec2f> uiPosition, uiStep, uiShift, uiSize;
+        ofParameter <ofVec3f> uiRotate;
+        ofParameter <int> uiAmount; // Total de la liste formes 
 
-    vector<unique_ptr<Forme>>* getVecteurFormesPtr() {
-        return &v_formes;
-    }
+        ofxInputField<int> inputIndex; 
 
-    bool modeDrawState, modeTransformState; // pour indiquer si en mode draw ou transformation
+        // Modele Illumination 
+        void reset();
+        ShaderType shader_active;
+        ofShader shader_color_fill, shader_lambert, shader_gouraud, shader_phong, shader_blinn_phong;
+        ofShader* shader_illumination;
+        ofLight light;
+        ofxAssimpModelLoader modele_illumination1, modele_illumination2;
+        ofVec3f position_cube, position_sphere, position_modele_ill_1, position_modele_ill_2;
+        string shader_name;
+        float oscillation, oscillation_frequency, oscillation_amplitude;
+        float scale_cube, scale_sphere, scale_modele_ill_1, scale_modele_ill_2;
+        float speed_motion;
+        float offset_x, offset_z;
+        float delta_x, delta_z;
+        float initial_x, initial_z;
+        float center_x, center_y;
+        float oscillate(float time, float frequency, float amplitude);
+        void activer_Illumination();
+        bool isModeIllumination;
 
-    ofPolyline ligne;
-    void addPoint(const ofVec3f& point) {
-        // Ajouter le point à une liste de points
-        ligne.addVertex(point);
-    }
-    vector<ofPolyline> vecteur_lignes;
+        void setSphereMaterials();
+        void setCubeMaterials();
 
-    //Capture images
-    void update();
-    void captureImage();
-    int frameCounter, captureInterval, compteur;
-    bool isRecording;
+    private:
+        ofMaterial material_teapot;
+        ofMaterial material_sphere;
+        ofMaterial material_cube;
 
-    void toggleExportGUI();
-    void toggleColorWheelGUI();
+        ofxPanel gui;
+        ofParameter<string> nameField;
+        ofParameter<bool> visible = false;
+        ofParameter<bool> exportButton = false;
 
-    ofParameter<ofVec2f> uiPosition, uiStep, uiShift, uiSize;
-    ofParameter <ofVec3f> uiRotate;
-    ofParameter <int> uiAmount; // Total de la liste formes 
-
-    ofxInputField<int> inputIndex;
-
-    /// Modele Illumination 
-    void reset();
-    ShaderType shader_active;
-    ofShader shader_color_fill, shader_lambert, shader_gouraud, shader_phong, shader_blinn_phong;
-    ofShader* shader_illumination;
-    ofLight light;
-    ofxAssimpModelLoader modele_illumination1, modele_illumination2;
-    ofVec3f position_cube, position_sphere, position_modele_ill_1, position_modele_ill_2;
-    string shader_name;
-    float oscillation, oscillation_frequency, oscillation_amplitude;
-    float scale_cube, scale_sphere, scale_modele_ill_1, scale_modele_ill_2;
-    float speed_motion;
-    float offset_x, offset_z;
-    float delta_x, delta_z;
-    float initial_x, initial_z;
-    float center_x, center_y;
-    float oscillate(float time, float frequency, float amplitude);
-    void activer_Illumination();
-    bool isModeIllumination;
-
-private:
-    ofxPanel gui;
-    ofParameter<string> nameField;
-    ofParameter<bool> visible = false;
-    ofParameter<bool> exportButton = false;
-
-    void image_export(const string name, const string extension) const;
-
+        void image_export(const string name, const string extension) const;
+        void setTeapotMaterials();
 };
