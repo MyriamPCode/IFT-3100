@@ -40,6 +40,8 @@ public:
     ofxAssimpModelLoader boite;
     //MeshRenderMode typeRender;
 
+    ofLight light;
+
 
     int mouse_press_x;
     int mouse_press_y;

@@ -11,6 +11,8 @@ void Renderer::setup() {
 	ofSetFrameRate(60);
 	interface.setup();
 	ofDisableArbTex();
+	//ofSetVerticalSync(true);
+	ofEnableLighting();
 
 	tint.set(255, 255, 255);
 	mix_factor = 0.618f;
@@ -31,6 +33,9 @@ void Renderer::setup() {
 
 	boite.loadModel("models/boiteCornell.obj");
 	boite.setPosition(ofGetWidth() / 2, ofGetHeight() / 2, 0);
+
+	light.setPointLight();
+	light.setPosition(ofGetWidth() / 2, ofGetHeight() / 2, 600);
 
 	okDessiner = false; 
 
@@ -574,7 +579,9 @@ void Renderer::captureImage() {
 
 void Renderer::boxInit() {
 
+	light.enable();
 	boite.drawFaces();
+	light.disable();
 
 	/*
 	constexpr double anchor = 1e5;
