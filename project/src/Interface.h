@@ -70,6 +70,14 @@ class Interface {
 		ofxToggle wireframeRender;
 		ofxToggle pointRender;
 
+		ofxGuiGroup materials;
+		ofxToggle showMaterials;
+		ofParameter<ofColor> ambientColorPicker;
+		ofParameter<ofColor> diffuseColorPicker;
+		ofParameter<ofColor> emissiveColorPicker;
+		ofParameter<ofColor> specularColorPicker;
+		ofParameter <float> shininess;
+
 		bool mesh_activate;
 		bool noise_activate;
 

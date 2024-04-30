@@ -124,5 +124,5 @@ public:
         ofParameter<bool> exportButton = false;
 
         void image_export(const string name, const string extension) const;
-
+        void setTeapotMaterials();
 };

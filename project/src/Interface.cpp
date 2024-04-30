@@ -139,7 +139,6 @@ void Interface::draw_cursor(float x, float y) const {
 	}
 	 // Couleur blanche
 
-
 	ofDrawLine(x + offset, y, x + offset + length, y);
 	ofDrawLine(x - offset, y, x - offset - length, y);
 	ofDrawLine(x, y + offset, x, y + offset + length);
@@ -401,6 +400,21 @@ void Interface::setupModelOptions() {
 	fillRender.addListener(this, &Interface::modelFill);
 	wireframeRender.addListener(this, &Interface::modelWireframe);
 	pointRender.addListener(this, &Interface::modelPoints);
+
+	ambientColorPicker.set("Couleur ambiante", ofColor(63, 63, 63));
+	diffuseColorPicker.set("Couleur diffuse", ofColor(63, 0, 63));
+	emissiveColorPicker.set("Couleur emissive", ofColor(0, 0, 31));
+	specularColorPicker.set("Couleur specular", ofColor(191, 191, 191));
+
+	materials.setup("Materials");
+	materials.add(showMaterials.setup("Add materials", false));
+	materials.add(ambientColorPicker);
+	materials.add(diffuseColorPicker);
+	materials.add(emissiveColorPicker);
+	materials.add(specularColorPicker);
+	materials.add(shininess.set("shininess", 5, 0, 10));
+
+	modelsGui.add(&materials);
 
 	modelsGui.maximizeAll();
 }
