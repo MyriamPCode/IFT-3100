@@ -240,27 +240,27 @@ void Application::draw(){
 	}
 	else if (renderer.interface.angleIsActive) {
 		if (renderer.interface.frontCamRendering) {
-			camera_active = Camera::front;
+			camera_active = CameraPosition::front;
 			setupCamera();
 		}
 		else if (renderer.interface.backCamRendering) {
-			camera_active = Camera::back;
+			camera_active = CameraPosition::back;
 			setupCamera();
 		}
 		else if (renderer.interface.leftCamRendering) {
-			camera_active = Camera::left;
+			camera_active = CameraPosition::left;
 			setupCamera();
 		}
 		else if (renderer.interface.rightCamRendering) {
-			camera_active = Camera::right;
+			camera_active = CameraPosition::right;
 			setupCamera();
 		}
 		else if (renderer.interface.topCamRendering) {
-			camera_active = Camera::top;
+			camera_active = CameraPosition::top;
 			setupCamera();
 		}
 		else if (renderer.interface.bottomCamRendering) {
-			camera_active = Camera::down;
+			camera_active = CameraPosition::down;
 			setupCamera();
 		}
 
@@ -268,17 +268,17 @@ void Application::draw(){
 
 		if (is_visible_camera)
 		{
-			if (camera_active != Camera::front)
+			if (camera_active != CameraPosition::front)
 				camFront.draw();
-			if (camera_active != Camera::back)
+			if (camera_active != CameraPosition::back)
 				camBack.draw();
-			if (camera_active != Camera::left)
+			if (camera_active != CameraPosition::left)
 				camLeft.draw();
-			if (camera_active != Camera::right)
+			if (camera_active != CameraPosition::right)
 				camRight.draw();
-			if (camera_active != Camera::top)
+			if (camera_active != CameraPosition::top)
 				camTop.draw();
-			if (camera_active != Camera::down)
+			if (camera_active != CameraPosition::down)
 				camBottom.draw();
 		}
 	}
@@ -545,6 +545,12 @@ void Application::keyReleased(int key){
 	}
 	if (key == 50) { // 50 = touche 2
 		moveCameraFar = false;
+	}
+	if (key == 51) { // 50 = touche 3
+		image_width = 256;
+		image_height = 256;
+		ray_per_pixel = 16;
+		rayons.draw();
 	}
 	/*if (key == 'n') {
 		if (orthoEnabled) {
@@ -1330,7 +1336,7 @@ void Application::reset_cam() {
 	camTop.setVFlip(true);
 	camBottom.setVFlip(true);
 
-	camera_active = Camera::front;
+	camera_active = CameraPosition::front;
 }
 
 void Application::button_rotation(bool& value) {
@@ -1399,32 +1405,32 @@ float Application::compute_zoom_from_fov(float fov)
 
 void Application::setupCamera() {
 	switch (camera_active) {
-		case Camera::front:
+		case CameraPosition::front:
 			camera = &camFront;
 			renderer.interface.camera_name = "avant";
 			break;
 
-		case Camera::back:
+		case CameraPosition::back:
 			camera = &camBack;
 			renderer.interface.camera_name = "arriÃ¨re";
 			break;
 
-		case Camera::left:
+		case CameraPosition::left:
 			camera = &camLeft;
 			renderer.interface.camera_name = "gauche";
 			break;
 
-		case Camera::right:
+		case CameraPosition::right:
 			camera = &camRight;
 			renderer.interface.camera_name = "droite";
 			break;
 
-		case Camera::top:
+		case CameraPosition::top:
 			camera = &camTop;
 			renderer.interface.camera_name = "haut";
 			break;
 
-		case Camera::down:
+		case CameraPosition::down:
 			camera = &camBottom;
 			renderer.interface.camera_name = "bas";
 			break;
@@ -1631,6 +1637,3 @@ void Application::button_emboss(bool& value) {
 		}
 	}
 }
-	return p0 * b0 + p1 * b1 + p2 * b2 + p3 * b3 + p4 * b3 + p5 * b3; 
-}
-

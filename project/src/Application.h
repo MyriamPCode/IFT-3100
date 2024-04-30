@@ -4,11 +4,11 @@
 #include "ofxGui.h"
 #include "Renderer.h"
 #include "Forme.h"
-
+#include "Rayons.h"
 
 using namespace std;
 
-enum class Camera { front, back, left, right, top, down };
+enum class CameraPosition { front, back, left, right, top, down };
 
 class Application : public ofBaseApp{
 	public:
@@ -19,12 +19,13 @@ class Application : public ofBaseApp{
 		};
 
 		Renderer renderer;
+		Rayons rayons;
 		Forme forme;
 		ofColor backgroundColor = ofColor(178, 184, 194);
 		ofMesh mesh;
 		int size = 96; // Taille de la maille
 
-		Camera camera_active;
+		CameraPosition camera_active;
 
 		ofCamera cam;
 
