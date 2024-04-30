@@ -155,6 +155,8 @@ void Renderer::lightSetup() {
 	lightSpot.setSpotlightCutOff(30);
 	lightSpot.setSpotlight();
 
+	lightTest.load("shaders/multiLighting330_vs.glsl","shaders/multiLighting330_fs.glsl");
+
 	//shaderLight.load("shaders/color_fill_330_vs.glsl","shaders/color_fill_330_fs.glsl"); //Implementer en suivant EX02 du module 7
 	//shaderLight.setUniform3f("color", 230.0f, 145.0f, 200.0f);
 	shaderLight.load("shaders/lambert_330_vs.glsl", "shaders/lambert_330_fs.glsl");
@@ -253,6 +255,64 @@ void Renderer::update()
 		lightSpot.setPosition(ofVec3f(interface.spotLightPositionX, interface.spotLightPositionY,
 			interface.spotLightPositionZ));
 	}
+
+	lightTest.begin();
+	//Update Ambient Struct
+	lightTest.setUniform3f("ambLight.color", lightAmbient.r, lightAmbient.g, lightAmbient.b);
+	//Update Directionnal Struct
+	lightTest.setUniform3f("dirLight.direction", lightDirectionnal.getOrientationEuler());
+	lightTest.setUniform3f("dirLight.ambient", lightDirectionnal.getAmbientColor().r, lightDirectionnal.getAmbientColor().g, 
+		lightDirectionnal.getAmbientColor().b);
+	lightTest.setUniform3f("dirLight.diffuse", lightDirectionnal.getDiffuseColor().r, lightDirectionnal.getDiffuseColor().g, 
+		lightDirectionnal.getDiffuseColor().b);
+	lightTest.setUniform3f("dirLight.specular", lightDirectionnal.getSpecularColor().r, lightDirectionnal.getSpecularColor().g, 
+		lightDirectionnal.getSpecularColor().b);
+	//Update Point Struct
+	lightTest.setUniform3f("pointLight.position", lightPoint.getPosition());
+	lightTest.setUniform1f("pointLight.constant", lightPoint.getAttenuationConstant());
+	lightTest.setUniform1f("pointLight.linear", lightPoint.getAttenuationLinear());
+	lightTest.setUniform1f("pointLight.quadratic", lightPoint.getAttenuationQuadratic());
+	lightTest.setUniform3f("pointLight.ambient", lightPoint.getAmbientColor().r, lightPoint.getAmbientColor().g, 
+		lightPoint.getAmbientColor().b);
+	lightTest.setUniform3f("pointLight.diffuse", lightPoint.getDiffuseColor().r, lightPoint.getDiffuseColor().g, 
+		lightPoint.getDiffuseColor().b);
+	lightTest.setUniform3f("pointLight.specular", lightPoint.getSpecularColor().r, lightPoint.getSpecularColor().g, 
+		lightPoint.getSpecularColor().b);
+	//Update Spot Struct
+	lightTest.setUniform3f("spotLight.position", lightSpot.getPosition());
+	lightTest.setUniform3f("spotLight.direction", lightSpot.getOrientationEuler());
+	lightTest.setUniform1f("spotLight.cutoff", lightSpot.getSpotlightCutOff());
+	lightTest.setUniform1f("spotLight.constant", lightSpot.getAttenuationConstant());
+	lightTest.setUniform1f("spotLight.linear", lightSpot.getAttenuationLinear());
+	lightTest.setUniform1f("spotLight.quadratic", lightSpot.getAttenuationQuadratic());
+	lightTest.setUniform3f("spotLight.ambient", lightSpot.getAmbientColor().r, lightSpot.getAmbientColor().g,
+		lightSpot.getAmbientColor().b);
+	lightTest.setUniform3f("spotLight.diffuse", lightSpot.getDiffuseColor().r, lightSpot.getDiffuseColor().g, 
+		lightSpot.getDiffuseColor().b);
+	lightTest.setUniform3f("spotLight.specular", lightSpot.getSpecularColor().r, lightSpot.getSpecularColor().g,
+		lightSpot.getSpecularColor().b);
+	//Set Model Variables
+	lightTest.setUniform3f("color_ambient", 0.1f, 0.1f, 0.1f);
+	lightTest.setUniform3f("color_diffuse", 0.6f, 0.6f, 0.6f);
+	lightTest.setUniform3f("color_specular", 0.2f, 0.2f, 0.2f);
+	lightTest.setUniform1f("brightness", 0.5f);
+	if (interface.showAmbientLight) {
+		lightTest.setUniform1f("ambientActive", 1.0f);
+	} else lightTest.setUniform1f("ambientActive", 0.0f);
+	if (interface.showDirectionnalLight) {
+		lightTest.setUniform1f("directionnalActive", 1.0f);
+	}
+	else lightTest.setUniform1f("directionnalActive", 0.0f);
+	if (interface.showPointLight) {
+		lightTest.setUniform1f("pointActive", 1.0f);
+	}
+	else lightTest.setUniform1f("pointActive", 0.0f);
+	if (interface.showSpotLight) {
+		lightTest.setUniform1f("spotActive", 1.0f);
+	}
+	else lightTest.setUniform1f("spotActive", 0.0f);
+
+	lightTest.end();
 
 	shaderLight.begin();
 	shaderLight.setUniform3f("color_ambient", 0.1f, 0.1f, 0.1f);
@@ -377,7 +437,8 @@ void Renderer::draw() {
 		dessinerBezier();
 	} 
 	ofPushMatrix();
-	shaderLight.begin();
+	//shaderLight.begin();
+	lightTest.begin();
 	//////////////////////////////////////////////////////////////////
 	if (interface.getShowModel()) {
 
@@ -423,6 +484,8 @@ void Renderer::draw() {
 		}
 	}
 
+	lightTest.end();
+	//shaderLight.end();
 	ofDisableDepthTest();
 
 	ofSetGlobalAmbientColor(ofColor(0, 0, 0));

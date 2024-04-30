@@ -29,6 +29,7 @@ class Renderer {
 
     ofShader shader;
     ofShader shaderLight;
+    ofShader lightTest;
 
     ofMesh mesh;
     int size = 96; // Taille de la maille
