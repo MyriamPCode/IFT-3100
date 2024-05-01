@@ -235,7 +235,6 @@ void Application::update()
 
 
 void Application::draw(){
-	renderer.interface.drawBackground();
 	if (isImportable) {
 		renderer.interface.import_activate = true;
 		ofDrawBitmapString("Please drag an image to import it.", 30, 70);
@@ -315,8 +314,6 @@ void Application::draw(){
 		sphereTextureButton.addListener(this, &Application::button_sphereTexture);
 		filterGUI.add(&textureGroupe);
 	}
-
-	renderer.interface.backgroundLine();
 
 	if (renderer.interface.import_activate) {
 		filterGUI.draw();

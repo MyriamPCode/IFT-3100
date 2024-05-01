@@ -160,13 +160,11 @@ class Interface {
 
 		void setup();
 		void draw();
-		void drawBackground();
 		void toggleColorWheel();
 		void toggleModelOptions();
 		void setRenderType(MeshRenderMode renderMode) { typeRender = renderMode; }
 		MeshRenderMode getRenderType() { return typeRender; }
 		bool getShowModel() { return showModels; }
-		void backgroundLine();
 		void toggleCamOptions();
 		void toggleLightOptions();
 		void toggleMailleGUI();
@@ -200,11 +198,10 @@ class Interface {
 		ofImage imgLight;
 		ofImage imgCurve;
 
-		ofColor backgroundLineColor = ofColor(217, 217, 217);
 		ofColor backgroundInteractionColor = ofColor(4, 3, 77);
 		ofColor backgroundInteractionBorderColor = ofColor(215, 215, 224);
 
-		ofColor textColor = backgroundLineColor;
+		ofColor textColor = ofColor(217, 217, 217);;
 
 		ofxPanel outilsGui;
 		ofxPanel modelsGui;
