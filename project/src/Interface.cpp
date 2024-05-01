@@ -18,10 +18,10 @@ void Interface::setup() {
 	iconTopBar.push_back(imgModele);
 	imgCamera.load("img/camera.png");
 	iconTopBar.push_back(imgCamera);
-	imgLight.load("img/Light.png");
-	iconTopBar.push_back(imgLight);
 	imgCurve.load("img/curve.png");
 	iconTopBar.push_back(imgCurve);
+	imgLight.load("img/Light.png");
+	iconTopBar.push_back(imgLight);
 
 	//same here but for the side bar
 	imgColorWheel.load("img/color-wheel.png");

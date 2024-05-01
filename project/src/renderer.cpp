@@ -88,27 +88,26 @@ void Renderer::setup() {
 	modele_illumination1.disableMaterials();
 	modele_illumination2.disableMaterials();
 	shader_color_fill.load(
-		"shader/color_fill_330_vs.glsl",
-		"shader/color_fill_330_fs.glsl");
+		"shaders/color_fill_330_vs.glsl",
+		"shaders/color_fill_330_fs.glsl");
 
 	shader_lambert.load(
-		"shader/lambert_330_vs.glsl",
-		"shader/lambert_330_fs.glsl");
+		"shaders/lambert_330_vs.glsl",
+		"shaders/lambert_330_fs.glsl");
 
 	shader_gouraud.load(
-		"shader/gouraud_330_vs.glsl",
-		"shader/gouraud_330_fs.glsl");
+		"shaders/gouraud_330_vs.glsl",
+		"shaders/gouraud_330_fs.glsl");
 
 	shader_phong.load(
-		"shader/phong_330_vs.glsl",
-		"shader/phong_330_fs.glsl");
+		"shaders/phong_330_vs.glsl",
+		"shaders/phong_330_fs.glsl");
 
 	shader_blinn_phong.load(
-		"shader/blinn_phong_330_vs.glsl",
-		"shader/blinn_phong_330_fs.glsl");
+		"shaders/blinn_phong_330_vs.glsl",
+		"shaders/blinn_phong_330_fs.glsl");
 	// shader actif au lancement de la scène
 	shader_active = ShaderType::blinn_phong;
-	//////////////////////////////////////
 	// initialisation de la scène
 	reset();
 
@@ -256,11 +255,80 @@ void Renderer::update()
 			interface.spotLightPositionZ));
 	}
 
+	/// Modele illumination 
+	// transformer la lumière
+	light.setGlobalPosition(
+		ofMap(ofGetMouseX() / (float)ofGetWidth(), 0.0f, 1.0f, -ofGetWidth() / 2.0f, ofGetWidth() / 2.0f),
+		ofMap(ofGetMouseY() / (float)ofGetHeight(), 0.0f, 1.0f, -ofGetHeight() / 2.0f, ofGetHeight() / 2.0f),
+		-offset_z * 1.5f);
+	// mise à jour d'une valeur numérique animée par un oscillateur
+	float oscillation = oscillate(ofGetElapsedTimeMillis(), oscillation_frequency, oscillation_amplitude) + oscillation_amplitude;
+	// passer les attributs uniformes au shader de sommets
+	switch (shader_active)
+	{
+	case ShaderType::color_fill:
+		shader_name = "Color Fill";
+		shader_illumination = &shader_color_fill;
+		shader_illumination->begin();
+		shader_illumination->setUniform3f("color", 1.0f, 1.0f, 0.0f);
+		shader_illumination->end();
+		break;
+
+	case ShaderType::lambert:
+		shader_name = "Lambert";
+		shader_illumination = &shader_lambert;
+		shader_illumination->begin();
+		shader_illumination->setUniform3f("color_ambient", 0.1f, 0.1f, 0.1f);
+		shader_illumination->setUniform3f("color_diffuse", 0.6f, 0.6f, 0.6f);
+		shader_illumination->setUniform3f("light_position", light.getGlobalPosition());
+		shader_illumination->end();
+		break;
+
+	case ShaderType::gouraud:
+		shader_name = "Gouraud";
+		shader_illumination = &shader_gouraud;
+		shader_illumination->begin();
+		shader_illumination->setUniform3f("color_ambient", 0.1f, 0.1f, 0.1f);
+		shader_illumination->setUniform3f("color_diffuse", 0.6f, 0.6f, 0.0f);
+		shader_illumination->setUniform3f("color_specular", 1.0f, 1.0f, 0.0f);
+		shader_illumination->setUniform1f("brightness", oscillation);
+		shader_illumination->setUniform3f("light_position", light.getGlobalPosition());
+		shader_illumination->end();
+		break;
+
+	case ShaderType::phong:
+		shader_name = "Phong";
+		shader_illumination = &shader_phong;
+		shader_illumination->begin();
+		shader_illumination->setUniform3f("color_ambient", 0.1f, 0.1f, 0.1f);
+		shader_illumination->setUniform3f("color_diffuse", 0.6f, 0.0f, 0.6f);
+		shader_illumination->setUniform3f("color_specular", 1.0f, 1.0f, 0.0f);
+		shader_illumination->setUniform1f("brightness", oscillation);
+		shader_illumination->setUniform3f("light_position", light.getGlobalPosition());
+		shader_illumination->end();
+		break;
+
+	case ShaderType::blinn_phong:
+		shader_name = "Blinn-Phong";
+		shader_illumination = &shader_blinn_phong;
+		shader_illumination->begin();
+		shader_illumination->setUniform3f("color_ambient", 0.1f, 0.1f, 0.1f);
+		shader_illumination->setUniform3f("color_diffuse", 0.0f, 0.6f, 0.6f);
+		shader_illumination->setUniform3f("color_specular", 1.0f, 1.0f, 0.0f);
+		shader_illumination->setUniform1f("brightness", oscillation);
+		shader_illumination->setUniform3f("light_position", light.getGlobalPosition());
+		shader_illumination->end();
+		break;
+
+	default:
+		break;
+	}
+
 	lightTest.begin();
 	//Update Ambient Struct
 	lightTest.setUniform3f("ambLight.color", lightAmbient.r, lightAmbient.g, lightAmbient.b);
 	//Update Directionnal Struct
-	lightTest.setUniform3f("dirLight.direction",
+	lightTest.setUniform3f("dirLight.direction", //Calcule les directions avec des rotations vectorielles
 		cos(ofDegToRad(interface.directionnalLightOrientationZ)) - sin(ofDegToRad(interface.directionnalLightOrientationZ))
 		+ cos(ofDegToRad(interface.directionnalLightOrientationY)) + sin(ofDegToRad(interface.directionnalLightOrientationY)),
 		sin(ofDegToRad(interface.directionnalLightOrientationZ)) + cos(ofDegToRad(interface.directionnalLightOrientationZ)),
@@ -485,18 +553,15 @@ void Renderer::draw() {
 	ofPopMatrix();
 	shaderLight.end();
 
-		if (interface.showTeapotMaterials) {
-			// désactiver le matériau
-			material_teapot.end();
+	if (interface.showTeapotMaterials) {
+		// désactiver le matériau
+		material_teapot.end();
 
-			// activer le matériau par défaut 
-			teapotMultiple.enableMaterials();
-			teapotOrtho.enableMaterials();
-
-		}
+		// activer le matériau par défaut 
+		teapotMultiple.enableMaterials();
+		teapotOrtho.enableMaterials();
 	}
-
-	lightTest.end();
+	
 	if (interface.activateMultiShader) {
 		lightTest.end();
 	}
@@ -1032,146 +1097,6 @@ void Renderer::newImage(string filePath, int posX, int posY) {
 	imageList.push_back(newImage);
 	imageList.back().load(filePath);
 	imgPosList.push_back({posX, posY});
-}
-
-void Renderer::update()
-{
-	if (isRecording)
-	{
-		frameCounter++;
-		//captureInterval++; 
-		//compteur++;
-		if (frameCounter == captureInterval)
-		{
-			ofSaveScreen(ofToString(frameCounter / captureInterval) + ".png");
-			//ofSaveScreen(ofToString(frameCounter) + ".png");
-			frameCounter = 0;
-			//captureInterval -= compteur;
-		}
-	}
-
-	if (interface.noise_activate) {
-		int count = 0;
-		for (int x = 0; x < size; x++) {
-			for (int y = 0; y < size; y++) {
-				ofVec3f vertex = mesh.getVertex(count);
-				vertex.z = ofMap(ofNoise(count, ofGetElapsedTimef()), 0, 1, 0, 30);
-				mesh.setVertex(count, vertex);
-				count++;
-			}
-		}
-	}
-	if (interface.showAmbientLight) {
-		lightAmbient.set(interface.ambientLightColor);
-	}
-	if (interface.showAreaLight) {
-		lightArea.setDiffuseColor(ofColor(interface.areaLightColor));
-		lightArea.setSpecularColor(ofColor(interface.areaLightColor));
-		lightArea.setPosition(ofVec3f(interface.areaLightPositionX, interface.areaLightPositionY,
-			interface.areaLightPositionZ));
-		lightArea.setOrientation(ofVec3f(interface.areaLightOrientationX, interface.areaLightOrientationY,
-			interface.areaLightOrientationZ));
-		lightArea.setAreaLight(interface.areaLightWidth, interface.areaLightHeight);
-	}
-	if (interface.showDirectionnalLight)
-	{
-		lightDirectionnal.setDiffuseColor(ofColor(interface.directionnalLightColor));
-		lightDirectionnal.setSpecularColor(ofColor(interface.directionnalLightColor));
-		lightDirectionnal.setPosition(ofVec3f(interface.directionnalLightPositionX, interface.directionnalLightPositionY, 
-			interface.directionnalLightPositionZ));
-		lightDirectionnal.setOrientation(ofVec3f(interface.directionnalLightOrientationX, interface.directionnalLightOrientationY,
-			interface.directionnalLightOrientationZ));
-	}
-
-	if (interface.showPointLight)
-	{
-		lightPoint.setDiffuseColor(ofColor(interface.pointLightColor));
-		lightPoint.setSpecularColor(ofColor(interface.pointLightColor));
-		lightPoint.setPosition(ofVec3f(interface.pointLightPositionX, interface.pointLightPositionY,
-			interface.pointLightPositionZ));
-	}
-
-	if (interface.showSpotLight)
-	{
-		// configurer la lumière projecteur
-		lightSpot.setDiffuseColor(ofColor(interface.spotLightColor));
-		lightSpot.setSpecularColor(ofColor(interface.spotLightColor));
-		lightSpot.setOrientation(ofVec3f(interface.spotLightOrientationX, interface.spotLightOrientationY,
-			interface.spotLightOrientationZ));
-		lightSpot.setPosition(ofVec3f(interface.spotLightPositionX, interface.spotLightPositionY,
-			interface.spotLightPositionZ));
-		}
-	}
-
-	/// Modele illumination 
-	// transformer la lumière
-	light.setGlobalPosition(
-		ofMap(ofGetMouseX() / (float)ofGetWidth(), 0.0f, 1.0f, -ofGetWidth() / 2.0f, ofGetWidth() / 2.0f),
-		ofMap(ofGetMouseY() / (float)ofGetHeight(), 0.0f, 1.0f, -ofGetHeight() / 2.0f, ofGetHeight() / 2.0f),
-		-offset_z * 1.5f);
-	// mise à jour d'une valeur numérique animée par un oscillateur
-	float oscillation = oscillate(ofGetElapsedTimeMillis(), oscillation_frequency, oscillation_amplitude) + oscillation_amplitude;
-	// passer les attributs uniformes au shader de sommets
-	switch (shader_active)
-	{
-	case ShaderType::color_fill:
-		shader_name = "Color Fill";
-		shader_illumination = &shader_color_fill;
-		shader_illumination->begin();
-		shader_illumination->setUniform3f("color", 1.0f, 1.0f, 0.0f);
-		shader_illumination->end();
-		break;
-
-	case ShaderType::lambert:
-		shader_name = "Lambert";
-		shader_illumination = &shader_lambert;
-		shader_illumination->begin();
-		shader_illumination->setUniform3f("color_ambient", 0.1f, 0.1f, 0.1f);
-		shader_illumination->setUniform3f("color_diffuse", 0.6f, 0.6f, 0.6f);
-		shader_illumination->setUniform3f("light_position", light.getGlobalPosition());
-		shader_illumination->end();
-		break;
-
-	case ShaderType::gouraud:
-		shader_name = "Gouraud";
-		shader_illumination = &shader_gouraud;
-		shader_illumination->begin();
-		shader_illumination->setUniform3f("color_ambient", 0.1f, 0.1f, 0.1f);
-		shader_illumination->setUniform3f("color_diffuse", 0.6f, 0.6f, 0.0f);
-		shader_illumination->setUniform3f("color_specular", 1.0f, 1.0f, 0.0f);
-		shader_illumination->setUniform1f("brightness", oscillation);
-		shader_illumination->setUniform3f("light_position", light.getGlobalPosition());
-		shader_illumination->end();
-		break;
-
-	case ShaderType::phong:
-		shader_name = "Phong";
-		shader_illumination = &shader_phong;
-		shader_illumination->begin();
-		shader_illumination->setUniform3f("color_ambient", 0.1f, 0.1f, 0.1f);
-		shader_illumination->setUniform3f("color_diffuse", 0.6f, 0.0f, 0.6f);
-		shader_illumination->setUniform3f("color_specular", 1.0f, 1.0f, 0.0f);
-		shader_illumination->setUniform1f("brightness", oscillation);
-		shader_illumination->setUniform3f("light_position", light.getGlobalPosition());
-		shader_illumination->end();
-		break;
-
-	case ShaderType::blinn_phong:
-		shader_name = "Blinn-Phong";
-		shader_illumination = &shader_blinn_phong;
-		shader_illumination->begin();
-		shader_illumination->setUniform3f("color_ambient", 0.1f, 0.1f, 0.1f);
-		shader_illumination->setUniform3f("color_diffuse", 0.0f, 0.6f, 0.6f);
-		shader_illumination->setUniform3f("color_specular", 1.0f, 1.0f, 0.0f);
-		shader_illumination->setUniform1f("brightness", oscillation);
-		shader_illumination->setUniform3f("light_position", light.getGlobalPosition());
-		shader_illumination->end();
-		break;
-
-	default:
-		break;
-	}
-	//////////////////////////////////////
 }
 
 void Renderer::toggleColorWheelGUI() {

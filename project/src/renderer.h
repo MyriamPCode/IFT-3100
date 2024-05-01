@@ -26,8 +26,6 @@ class Renderer {
         ofShader shader;
         float mix_factor;
         ofColor tint;
-
-    ofShader shader;
     ofShader shaderLight;
     ofShader lightTest;
 
