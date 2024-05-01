@@ -260,7 +260,11 @@ void Renderer::update()
 	//Update Ambient Struct
 	lightTest.setUniform3f("ambLight.color", lightAmbient.r, lightAmbient.g, lightAmbient.b);
 	//Update Directionnal Struct
-	lightTest.setUniform3f("dirLight.direction", lightDirectionnal.getOrientationEuler());
+	lightTest.setUniform3f("dirLight.direction",
+		cos(ofDegToRad(interface.directionnalLightOrientationZ)) - sin(ofDegToRad(interface.directionnalLightOrientationZ))
+		+ cos(ofDegToRad(interface.directionnalLightOrientationY)) + sin(ofDegToRad(interface.directionnalLightOrientationY)),
+		sin(ofDegToRad(interface.directionnalLightOrientationZ)) + cos(ofDegToRad(interface.directionnalLightOrientationZ)),
+		cos(ofDegToRad(interface.directionnalLightOrientationY)) - sin(ofDegToRad(interface.directionnalLightOrientationY)));
 	lightTest.setUniform3f("dirLight.ambient", lightDirectionnal.getAmbientColor().r, lightDirectionnal.getAmbientColor().g, 
 		lightDirectionnal.getAmbientColor().b);
 	lightTest.setUniform3f("dirLight.diffuse", lightDirectionnal.getDiffuseColor().r, lightDirectionnal.getDiffuseColor().g, 
@@ -280,7 +284,11 @@ void Renderer::update()
 		lightPoint.getSpecularColor().b);
 	//Update Spot Struct
 	lightTest.setUniform3f("spotLight.position", lightSpot.getPosition());
-	lightTest.setUniform3f("spotLight.direction", lightSpot.getOrientationEuler());
+	lightTest.setUniform3f("spotLight.direction", 
+		cos(ofDegToRad(interface.spotLightOrientationZ)) - sin(ofDegToRad(interface.spotLightOrientationZ))
+		+ cos(ofDegToRad(interface.spotLightOrientationY)) + sin(ofDegToRad(interface.spotLightOrientationY)),
+		sin(ofDegToRad(interface.spotLightOrientationZ)) + cos(ofDegToRad(interface.spotLightOrientationZ)),
+		cos(ofDegToRad(interface.spotLightOrientationY)) - sin(ofDegToRad(interface.spotLightOrientationY)));
 	lightTest.setUniform1f("spotLight.cutoff", lightSpot.getSpotlightCutOff());
 	lightTest.setUniform1f("spotLight.constant", lightSpot.getAttenuationConstant());
 	lightTest.setUniform1f("spotLight.linear", lightSpot.getAttenuationLinear());
@@ -438,7 +446,9 @@ void Renderer::draw() {
 	} 
 	ofPushMatrix();
 	//shaderLight.begin();
-	lightTest.begin();
+	if (interface.activateMultiShader) {
+		lightTest.begin();
+	}
 	//////////////////////////////////////////////////////////////////
 	if (interface.getShowModel()) {
 
@@ -457,7 +467,9 @@ void Renderer::draw() {
 			teapotOrtho.draw(OF_MESH_WIREFRAME);
 		}
 		else if (interface.getRenderType() == MeshRenderMode::fill) {
-			teapotMultiple.disableMaterials();
+			if (interface.activateMultiShader) {
+				teapotMultiple.disableMaterials();
+			}
 			teapotMultiple.draw(OF_MESH_FILL);
 			textu.generateMipmap();
 			textu.bind();
@@ -485,6 +497,9 @@ void Renderer::draw() {
 	}
 
 	lightTest.end();
+	if (interface.activateMultiShader) {
+		lightTest.end();
+	}
 	//shaderLight.end();
 	ofDisableDepthTest();
 

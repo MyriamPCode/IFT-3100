@@ -23,6 +23,7 @@ uniform float spotActive;
 
 struct AmbientLight {
   vec3 color;
+  float strength;
 };
 
 struct DirectionnalLight {
@@ -72,7 +73,6 @@ uniform SpotLight spotLight;
 void main()
 {
   vec3 result = vec3(0.0);
-  vec3 resultAmbient = vec3(0.0);
   vec3 norm = normalize(surface_normal);
   vec3 viewDir = normalize(-surface_position);
   if (ambientActive == 1.0f){
@@ -134,7 +134,7 @@ vec3 CalcSpotLight(SpotLight light, vec3 surface_normal, vec3 surface_position, 
   float theta = dot(lightDir, normalize(-light.direction));
     
   float diff = max(dot(surface_normal, lightDir), 0.0);
-  if(theta < light.cutoff) 
+  if (theta < light.cutoff) 
   {       
     vec3 ambient = light.ambient * color_diffuse;
         
@@ -150,11 +150,10 @@ vec3 CalcSpotLight(SpotLight light, vec3 surface_normal, vec3 surface_position, 
     float distance    = length(light.position - surface_position);
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
 
-    // ambient  *= attenuation; // remove attenuation from ambient, as otherwise at large distances the light would be darker inside than outside the spotlight due the ambient term in the else branch
-    diffuse   *= attenuation;
+    ambient *= attenuation;
+    diffuse *= attenuation;
     specular *= attenuation;   
             
     return (ambient + diffuse + specular);
-  }
-  return (vec3(0.0));
+  } else return light.ambient * color_diffuse;
 }

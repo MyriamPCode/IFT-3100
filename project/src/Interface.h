@@ -96,7 +96,7 @@ class Interface {
 		ofParameter<float> pointLightPositionY;
 		ofParameter<float> pointLightPositionZ;
 		ofParameter<ofColor> pointLightColor;
-
+		ofxToggle activateMultiShader;
 
 		int mouse_press_x;
 		int mouse_press_y;

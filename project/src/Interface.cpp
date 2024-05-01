@@ -575,7 +575,7 @@ void Interface::setupLightOptions() {
 	pointLightPosition.add(pointLightPositionZ);
 	pointLightOptions.add(pointLightColor);
 
-	ambientLightColor.set("Ambient Light Color", ofColor(255), ofColor(0, 0), ofColor(255, 255));
+	ambientLightColor.set("Ambient Light Color", ofColor(255, 0), ofColor(0, 0), ofColor(255, 0));
 	areaLightColor.set("Area Light Color", ofColor(255), ofColor(0, 0), ofColor(255, 255));
 	areaLightWidth.set("Area Light Width", 200.0f, 1.0f, 1000.0f);
 	areaLightHeight.set("Area Light Height", 200.0f, 1.0f, 1000.0f);
@@ -609,6 +609,7 @@ void Interface::setupLightOptions() {
 	lightGui.add(&directionnalLightOptions);
 	lightGui.add(&spotLightOptions);
 	lightGui.add(&pointLightOptions);
+	lightGui.add(activateMultiShader.setup("Activate Multilighting",false));
 	ambientLightOptions.minimizeAll();
 	areaLightOptions.minimizeAll();
 	directionnalLightOptions.minimizeAll();
