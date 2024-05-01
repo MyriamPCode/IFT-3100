@@ -91,7 +91,7 @@ void Application::setup(){
 	curveGui.loadFont("roboto/Roboto-Regular.ttf", 10);
 	curveGui.setPosition(600, 50);
 	curveGui.add(segments.set("Segments", 150, 150, 400));
-	catmullRomGroupe.setup("Catmull-Rom's curve");
+	catmullRomGroupe.setup("Catmull-Rom's curve"); 
 	catmullRomButton.setName("5 points");
 	catmullRomGroupe.add(catmullRomButton);
 	catmullRomButton.addListener(this, &Application::button_catmullRom);
@@ -335,7 +335,6 @@ void Application::draw(){
 	renderer.interface.draw();
 	drawingGUI.draw();
 	//cam.end();
-	ofPopMatrix();
 
 	renderer.interface.draw();
 
@@ -1029,6 +1028,9 @@ void Application::mouseReleased(int x, int y, int button){
 			case 6:
 				renderer.interface.toggleCurveOptions();
 				renderer.interface.curve_activate = !renderer.interface.curve_activate;
+				break;
+			case 7:
+				renderer.interface.toggleLightOptions();
 				break;
 		}
 	}
