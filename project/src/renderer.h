@@ -26,6 +26,11 @@ public:
 
     ofImage image;
 
+    ofLight light1;
+    ofLight light2;
+    ofLight light3;
+    ofLight light4;
+
     ofShader shader;
 
     float mix_factor;

@@ -37,12 +37,19 @@ void Renderer::setup() {
 
 	boite.loadModel("models/boiteCornell.obj");
 	boite.setPosition(ofGetWidth() / 2, ofGetHeight() / 2, 0);
+	boite.setScale(0.5, 0.5, 0.5);
 
-	light.setPointLight();
-	light.setPosition(ofGetWidth() / 2, ofGetHeight() / 2, 600);
+	light1.setPointLight();
+	light1.setPosition(ofGetWidth() / 2, ofGetHeight() / 2, 600);
 
-	//light.setPointLight();
-	//light.setPosition(ofGetWidth() / 2, ofGetHeight() / 2, -600);
+	//light2.setPointLight();
+	//light2.setPosition(ofGetWidth() / 2, ofGetHeight() / 2, -600);
+
+	light3.setPointLight();
+	light3.setPosition(ofGetWidth() / 2, ofGetHeight() / 2 + 600, 0);
+
+	light4.setPointLight();
+	light4.setPosition(ofGetWidth() / 2, ofGetHeight() / 2 - 600, 0);
 
 	okDessiner = false; 
 
@@ -898,63 +905,16 @@ void Renderer::captureImage() {
 
 void Renderer::boxInit() {
 
-	light.enable();
+	light1.enable();
+	//light2.enable();
+	light3.enable();
+	light4.enable();
 	boite.drawFaces();
-	light.disable();
+	light1.disable();
+	//light2.disable();
+	light3.disable();
+	light4.disable();
 
-	/*
-	constexpr double anchor = 1e5;
-	constexpr double wall_radius = anchor;
-
-	constexpr double box_size_x = 400.0;
-	constexpr double box_size_y = 400.0;
-	constexpr double box_size_z = 100.0;
-
-	constexpr double border_thickness = 5.0;
-
-	constexpr double window_width = 1800;
-	constexpr double window_height = 1000;
-
-	double window_center_x = window_width / 2.0;
-	double window_center_y = window_height / 2.0;
-
-	double box_with_border_size_x = box_size_x + 2 * border_thickness;
-	double box_with_border_size_y = box_size_y + 2 * border_thickness;
-	double box_with_border_size_z = box_size_z + 2 * border_thickness;
-
-	// Décaler le centre de la boîte en fonction des dimensions de la fenêtre
-	double box_center_x = window_center_x;
-	double box_center_y = window_center_y;
-	double box_center_z = 0.0;
-
-	// Dessiner la boîte avec bordure
-	ofPushMatrix();
-	ofTranslate(window_center_x, window_center_y, 0.0);
-
-	// Dessiner la face avant de la boîte (en bleu)
-	ofSetColor(0, 0, 255); // Bleu
-	ofDrawBox(0, 0, box_with_border_size_z / 2.0, box_with_border_size_x, box_with_border_size_y, border_thickness);
-
-	// Dessiner la face arrière de la boîte (en rouge)
-	ofSetColor(255, 0, 0); // Rouge
-	ofDrawBox(0, 0, -box_with_border_size_z / 2.0, box_with_border_size_x, box_with_border_size_y, border_thickness);
-
-	// Dessiner la face gauche de la boîte (en vert)
-	ofSetColor(0, 255, 0); // Vert
-	ofDrawBox(-box_with_border_size_x / 2.0, 0, 0, border_thickness, box_with_border_size_y, box_with_border_size_z);
-
-	// Dessiner la face droite de la boîte (en jaune)
-	ofSetColor(255, 255, 0); // Jaune
-	ofDrawBox(box_with_border_size_x / 2.0, 0, 0, border_thickness, box_with_border_size_y, box_with_border_size_z);
-
-	// Dessiner la face supérieure de la boîte (en cyan)
-	ofSetColor(0, 255, 255); // Cyan
-	ofDrawBox(0, -box_with_border_size_y / 2.0, 0, box_with_border_size_x, border_thickness, box_with_border_size_z);
-
-	// Dessiner la face inférieure de la boîte (en magenta)
-	ofSetColor(255, 0, 255); // Magenta
-	ofDrawBox(0, box_with_border_size_y / 2.0, 0, box_with_border_size_x, border_thickness, box_with_border_size_z);
-
-	ofPopMatrix();*/
+	
 }
 

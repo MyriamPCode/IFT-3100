@@ -4,6 +4,7 @@
 #include "ofxGui.h"
 #include "Renderer.h"
 #include "Forme.h"
+//#include "Sphere.h"
 
 #define _USE_MATH_DEFINES 
 #include <cmath>
@@ -102,6 +103,8 @@ class Application : public ofBaseApp{
 
 		Renderer renderer;
 		Forme forme;
+		//Sphere sphere;
+
 		ofColor backgroundColor = ofColor(178, 184, 194);
 		ofMesh mesh;
 		int size = 96; // Taille de la maille
@@ -164,10 +167,8 @@ class Application : public ofBaseApp{
 		ofxToggle drawSphere;
 		ofxToggle drawCube;
 
-
 		ofxGuiGroup reinitialisationGroupe;
 		ofxToggle resetButton; // Bouton de r�initialisation
-
 
 		ofxGuiGroup primitivesMode;
 		ofxToggle toggleDraw, toggleTransform; //Boutons toggle pour les modes draw & transform
@@ -243,6 +244,17 @@ class Application : public ofBaseApp{
 		void button_sharpen(bool& value);
 		void button_emboss(bool& value);
 
+		ofxPanel rayonGUI;
+		ofxGuiGroup sphereGroupe;
+		ofParameter<double> radius;
+		ofParameter<ofVec3f> position;
+		ofParameter<ofColor> emission;
+		ofParameter<ofColor> color;
+		ofParameter<SurfaceType> material;
+		ofxToggle sphereDiffuse;
+
+		void sphereDiffuseButton(bool & value);
+
 		float rotate;
 
 		float diffX, diffY, newX2, newY2, newX3, newY3;
@@ -298,6 +310,7 @@ class Application : public ofBaseApp{
 		std::uniform_real_distribution<double> random01{ 0.0, 1.0 };
 
     private:
+
 	    stack<function<void()>> undoStack;
 	    stack<function<void()>> redoStack;
 

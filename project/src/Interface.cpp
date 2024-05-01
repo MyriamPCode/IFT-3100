@@ -449,6 +449,19 @@ void Interface::setupModelOptions() {
 	wireframeRender.addListener(this, &Interface::modelWireframe);
 	pointRender.addListener(this, &Interface::modelPoints);
 
+	teapotAmbientColorPicker.set("Couleur ambiante", ofColor(63, 63, 63));
+	teapotDiffuseColorPicker.set("Couleur diffuse", ofColor(63, 0, 63));
+	teapotEmissiveColorPicker.set("Couleur emissive", ofColor(0, 0, 31));
+	teapotSpecularColorPicker.set("Couleur specular", ofColor(191, 191, 191));
+
+	teapotMaterials.setup("Teapot materials");
+	teapotMaterials.add(showTeapotMaterials.setup("Add materials", false));
+	teapotMaterials.add(teapotAmbientColorPicker);
+	teapotMaterials.add(teapotEmissiveColorPicker);
+	teapotMaterials.add(teapotDiffuseColorPicker);
+	teapotMaterials.add(teapotSpecularColorPicker);
+	teapotMaterials.add(teapotShininess.set("Shininess", 5, 0, 10));
+
 	modelsGui.maximizeAll();
 }
 

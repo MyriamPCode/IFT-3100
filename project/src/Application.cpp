@@ -8,6 +8,7 @@ const int max_depth = 5;
 
 using namespace std;
 
+
 struct Sphere
 {
 	double radius;   // rayon de la sphère
@@ -19,6 +20,11 @@ struct Sphere
 
 	// constructeur
 	Sphere(double r, Vector p, Vector e, Vector c, SurfaceType m) : radius(r), position(p), emission(e), color(c), material(m) {}
+
+	void draw() {
+		//ofSetColor(color);
+		ofDrawSphere(position.x, position.y, position.z, radius);
+	}
 
 	// fonction d'intersection entre la sphère et un rayon
 	double intersect(const Ray& ray) const
@@ -80,6 +86,7 @@ struct Sphere
 	}
 };
 
+
 // déclaration du graphe de scène
 std::vector<Sphere> scene;
 
@@ -123,7 +130,6 @@ void Application::setup(){
 	drawSphere.addListener(this, &Application::button_sphere); 
 	drawCube.addListener(this, &Application::button_cube);
 
-
 	drawingGUI.add(&primitivesGroupe);
 	drawingGUI.add(renderer.uiPosition.set("position", ofVec2f(0), ofVec2f(0), ofVec2f(ofGetWidth(), ofGetHeight()))); // La position des primitives
 	drawingGUI.add(renderer.uiAmount.set("amount", 1, 0, 5));
@@ -132,7 +138,6 @@ void Application::setup(){
 	drawingGUI.add(renderer.uiShift.set("shift", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
 	drawingGUI.add(renderer.uiSize.set("size", ofVec2f(1), ofVec2f(1), ofVec2f(10)));
 
-
 	camera_setup_perspective(WIDTH, HEIGHT, 60.0f, 0.0f, 0.0f);
 	cam.enableOrtho();
 	orthoEnabled = true;
@@ -140,7 +145,6 @@ void Application::setup(){
 	setupCamera();
 	is_visible_camera = true;
 	
-
 	draw_triangle = false;
 	draw_circle = false;
 	draw_rectangle = false;
@@ -201,6 +205,22 @@ void Application::setup(){
 	embossButton.addListener(this, &Application::button_emboss);
 	filterGUI.add(&filterGroupe);
 
+	rayonGUI.setup();
+	rayonGUI.setPosition(950, 70);
+	sphereGroupe.setup("Sphere settings");
+	sphereGroupe.add(radius.set("Radius", 10.0, 1.0, 10.0));
+	sphereGroupe.add(position.set("Position", ofVec3f(0), ofVec3f(0), ofVec3f(ofGetWidth(), ofGetHeight())));
+	sphereGroupe.add(emission.set("Emission", ofColor::white));
+	sphereGroupe.add(color.set("Color", ofColor::gray));
+	rayonGUI.add(&sphereGroupe);
+
+	double currentRadius = radius.get();
+	ofVec3f currentPosition = position.get();
+	ofColor currentEmission = emission.get();
+	ofColor currentColor = color.get();
+	SurfaceType currentMaterial = material.get();
+
+	//sphere(currentRadius, currentPosition, currentEmission, currentColor, currentMaterial);
 
 	// CrÃƒÂ©ation de la maille
 	for (int x = 0; x < size; x++) {
@@ -408,6 +428,11 @@ void Application::draw(){
 
 	if (drawingGUIPressed) {
 		drawingGUI.draw();
+	}
+
+	if(renderer.interface.box_activate) {
+		rayonGUI.draw();
+		sphere.draw();
 	}
 
 	if (renderer.interface.curve_activate) {
