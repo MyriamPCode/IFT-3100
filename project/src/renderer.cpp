@@ -10,11 +10,10 @@ using namespace std;
 void Renderer::setup() {
 	ofSetFrameRate(60);
 	interface.setup();
-	ofDisableArbTex();
 
 	tint.set(255, 255, 255);
 	mix_factor = 0.618f;
-	shader.load("image_filter_330_vs.glsl", "image_filter_330_fs.glsl");
+	//shaderFiltres.load("image_filter_330_vs.glsl", "image_filter_330_fs.glsl");
 	
 	gui.setup("Exportation");
 	nameField.set("Image name", "name");
@@ -67,7 +66,7 @@ void Renderer::setup() {
 	}
 	//////////////////////////////////////
 	// Parametres pour modele illumination 
-	isModeIllumination = true;  /// mettre a false pour desactiver au lancement 
+	isModeIllumination = false;  /// mettre a false pour desactiver au lancement 
 	oscillation_amplitude = 32.0f;
 	oscillation_frequency = 7500.0f;
 	speed_motion = 150.0f;
@@ -82,11 +81,11 @@ void Renderer::setup() {
 	delta_x = speed_motion;
 	delta_z = speed_motion;
 	modele_illumination1.loadModel("models/teapot.obj");
-	modele_illumination2.loadModel("models/pomu.obj");
+	//modele_illumination2.loadModel("models/pomu.obj");
 	//modele_illumination1.loadModel("teapot.obj");
 	//modele_illumination2.loadModel("pomu.obj");
 	modele_illumination1.disableMaterials();
-	modele_illumination2.disableMaterials();
+	//modele_illumination2.disableMaterials();
 	shader_color_fill.load(
 		"shaders/color_fill_330_vs.glsl",
 		"shaders/color_fill_330_fs.glsl");
@@ -158,7 +157,7 @@ void Renderer::lightSetup() {
 
 	//shaderLight.load("shaders/color_fill_330_vs.glsl","shaders/color_fill_330_fs.glsl"); //Implementer en suivant EX02 du module 7
 	//shaderLight.setUniform3f("color", 230.0f, 145.0f, 200.0f);
-	shaderLight.load("shaders/lambert_330_vs.glsl", "shaders/lambert_330_fs.glsl");
+	//shaderLight.load("shaders/lambert_330_vs.glsl", "shaders/lambert_330_fs.glsl");
 }
 // a ete ajoute avec le mode Illumination 
 void Renderer::reset()
@@ -264,9 +263,9 @@ void Renderer::update()
 	// mise à jour d'une valeur numérique animée par un oscillateur
 	float oscillation = oscillate(ofGetElapsedTimeMillis(), oscillation_frequency, oscillation_amplitude) + oscillation_amplitude;
 	// passer les attributs uniformes au shader de sommets
-	switch (shader_active)
+	switch (interface.illuminationType)
 	{
-	case ShaderType::color_fill:
+	case 0:
 		shader_name = "Color Fill";
 		shader_illumination = &shader_color_fill;
 		shader_illumination->begin();
@@ -274,7 +273,7 @@ void Renderer::update()
 		shader_illumination->end();
 		break;
 
-	case ShaderType::lambert:
+	case 1:
 		shader_name = "Lambert";
 		shader_illumination = &shader_lambert;
 		shader_illumination->begin();
@@ -284,7 +283,7 @@ void Renderer::update()
 		shader_illumination->end();
 		break;
 
-	case ShaderType::gouraud:
+	case 2:
 		shader_name = "Gouraud";
 		shader_illumination = &shader_gouraud;
 		shader_illumination->begin();
@@ -296,7 +295,7 @@ void Renderer::update()
 		shader_illumination->end();
 		break;
 
-	case ShaderType::phong:
+	case 3:
 		shader_name = "Phong";
 		shader_illumination = &shader_phong;
 		shader_illumination->begin();
@@ -308,7 +307,7 @@ void Renderer::update()
 		shader_illumination->end();
 		break;
 
-	case ShaderType::blinn_phong:
+	case 4:
 		shader_name = "Blinn-Phong";
 		shader_illumination = &shader_blinn_phong;
 		shader_illumination->begin();
@@ -410,16 +409,16 @@ void Renderer::draw() {
 		}
 	}
 
-	shader.begin();
-	shader.setUniformTexture("image", image.getTexture(), 1);
-	shader.setUniform3f("tint", tint.r / 255.0f, tint.g / 255.0f, tint.b / 255.0f);
-	shader.setUniform1f("factor", mix_factor);
+	/*shaderFiltre.begin();
+	shaderFiltre.setUniformTexture("image", image.getTexture(), 1);
+	shaderFiltre.setUniform3f("tint", tint.r / 255.0f, tint.g / 255.0f, tint.b / 255.0f);
+	shaderFiltre.setUniform1f("factor", mix_factor);*/
 	ofPushMatrix();
 	ofTranslate(image.getWidth(), image.getHeight());
 	ofSetColor(tint); // Définir la couleur de dessin avec la teinte sélectionnée
 	image.draw(0, 0, image.getWidth(), image.getHeight());
 	ofPopMatrix();
-	shader.end();
+	//shader.end();
 
 	auto currImg = imgPosList.begin();
 	for (list<ofImage>::iterator iter = imageList.begin(); iter != imageList.end(); ++iter) {
@@ -551,7 +550,13 @@ void Renderer::draw() {
 		}
 	}
 	ofPopMatrix();
-	shaderLight.end();
+	//shaderLight.end();
+
+	/// Modele illumination
+	// Load les 2 modeles 3D et un sphere au milieu
+	if (interface.activateModelesIllumination) {
+		activer_Illumination(); // Le commenter pour ne pas charger au lancement 
+	}
 
 	if (interface.showTeapotMaterials) {
 		// désactiver le matériau
@@ -579,10 +584,6 @@ void Renderer::draw() {
 	if (isRecording) {
 		ofDrawBitmapString("Enregistrement enmouse cours...", 20, 20);
 	}
-
-	/// Modele illumination
-	// Load les 2 modeles 3D et un sphere au milieu
-	//activer_Illumination(); // Le commenter pour ne pas charger au lancement 
 }
 
 void Renderer::setTeapotMaterials() {
@@ -618,7 +619,7 @@ void Renderer::activer_Illumination() {
 	//ofRotateDeg(45.0f, 1.0f, 0.0f, 0.0f);
 	// 
 	// positionner pomudachi
-	modele_illumination2.setPosition(
+	/*modele_illumination2.setPosition(
 		position_modele_ill_2.x,
 		position_modele_ill_2.y + 15.0f,
 		position_modele_ill_2.z);
@@ -629,14 +630,14 @@ void Renderer::activer_Illumination() {
 		scale_modele_ill_2,
 		scale_modele_ill_2);
 
-	// activer le shader
-	shader_illumination->begin();
 
 	// dessiner un cube
 	//ofDrawBox(0.0f, 0.0f, 0.0f, scale_cube);
 	// dessiner pomudachi 
-	modele_illumination2.draw(OF_MESH_FILL);
+	modele_illumination2.draw(OF_MESH_FILL);*/
 
+	// activer le shader
+	shader_illumination->begin();
 	ofPopMatrix();
 
 	ofPushMatrix();

@@ -97,6 +97,15 @@ class Interface {
 		ofParameter<float> pointLightPositionZ;
 		ofParameter<ofColor> pointLightColor;
 		ofxToggle activateMultiShader;
+		ofxGuiGroup modelesIllumination;
+		ofxToggle activateModelesIllumination;
+		ofxToggle colorFill;
+		ofxToggle lambert;
+		ofxToggle gouraud;
+		ofxToggle phong;
+		ofxToggle blinnPhong;
+		int illuminationType = 4;
+
 
 		int mouse_press_x;
 		int mouse_press_y;
@@ -238,6 +247,11 @@ class Interface {
 		void modelFill(bool& value);
 		void modelWireframe(bool& value);
 		void modelPoints(bool& value);
+		void colorFillSelect(bool& value);
+		void lambertSelect(bool& value);
+		void gouraudSelect(bool& value);
+		void phongSelect(bool& value);
+		void blinnPhongSelect(bool& value);
 };
 
 

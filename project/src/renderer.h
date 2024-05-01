@@ -24,6 +24,7 @@ class Renderer {
         Interface interface;
         ofImage image;
         ofShader shader;
+        ofShader shaderFiltres;
         float mix_factor;
         ofColor tint;
     ofShader shaderLight;

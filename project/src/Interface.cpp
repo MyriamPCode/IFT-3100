@@ -353,6 +353,41 @@ void Interface::enableModels(bool& value) {
 	showModels = !showModels;
 }
 
+void Interface::colorFillSelect(bool& value) {
+	if (value) {
+		illuminationType = 0;
+		lambert = gouraud = phong = blinnPhong = false;
+	}
+}
+
+void Interface::lambertSelect(bool& value) {
+	if (value) {
+		illuminationType = 1;
+		colorFill = gouraud = phong = blinnPhong = false;
+	}
+}
+
+void Interface::gouraudSelect(bool& value) {
+	if (value) {
+		illuminationType = 2;
+		lambert = colorFill = phong = blinnPhong = false;
+	}
+}
+
+void Interface::phongSelect(bool& value) {
+	if (value) {
+		illuminationType = 3;
+		lambert = gouraud = colorFill = blinnPhong = false;
+	}
+}
+
+void Interface::blinnPhongSelect(bool& value) {
+	if (value) {
+		illuminationType = 4;
+		lambert = gouraud = phong = colorFill = false;
+	}
+}
+
 void Interface::backgroundLine() {
 	ofSetLineWidth(1);
 	ofSetColor(backgroundLineColor);
@@ -604,12 +639,28 @@ void Interface::setupLightOptions() {
 	pointLightPositionY.set("Y Position of point Light", 0.0f, -5000.0f, 5000.0f);
 	pointLightPositionZ.set("Z Position of point Light", 0.0f, -5000.0f, 5000.0f);
 
+	modelesIllumination.setup("Illumination Models");
+	modelesIllumination.add(activateModelesIllumination.setup("Activate Illumination Models", false));
+	modelesIllumination.add(colorFill.setup("Color Fill", false));
+	modelesIllumination.add(lambert.setup("Lambert", false));
+	modelesIllumination.add(gouraud.setup("Gouraud", false));
+	modelesIllumination.add(phong.setup("Phong", false));
+	modelesIllumination.add(blinnPhong.setup("Blinn-Phong", true));
+
+
+	colorFill.addListener(this, &Interface::colorFillSelect);
+	lambert.addListener(this, &Interface::lambertSelect);
+	gouraud.addListener(this, &Interface::gouraudSelect);
+	phong.addListener(this, &Interface::phongSelect);
+	blinnPhong.addListener(this, &Interface::blinnPhongSelect);
+
 	lightGui.add(&ambientLightOptions);
 	lightGui.add(&areaLightOptions);
 	lightGui.add(&directionnalLightOptions);
 	lightGui.add(&spotLightOptions);
 	lightGui.add(&pointLightOptions);
 	lightGui.add(activateMultiShader.setup("Activate Multilighting",false));
+	lightGui.add(&modelesIllumination);
 	ambientLightOptions.minimizeAll();
 	areaLightOptions.minimizeAll();
 	directionnalLightOptions.minimizeAll();
