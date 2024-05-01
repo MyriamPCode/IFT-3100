@@ -432,7 +432,7 @@ void Application::draw(){
 
 	if(renderer.interface.box_activate) {
 		rayonGUI.draw();
-		sphere.draw();
+		//sphere.draw();
 	}
 
 	if (renderer.interface.curve_activate) {
