@@ -133,11 +133,6 @@ void Interface::draw() {
 
 }
 
-void Interface::drawBackground() {
-	backgroundLine();
-	ofSetColor(255);
-}
-
 void Interface::draw_cursor(float x, float y) const {
 	float length = 10.0f;
 	float offset = 5.0f;
@@ -388,21 +383,7 @@ void Interface::blinnPhongSelect(bool& value) {
 	}
 }
 
-void Interface::backgroundLine() {
-	ofSetLineWidth(1);
-	ofSetColor(backgroundLineColor);
-	for (int i = 0; i < WIDTH; i += WIDTH / 40) {
-		ofDrawLine(i, 0, i, HEIGHT);
-		ofDrawLine(0, i, WIDTH, i);
-	};
-
-	for (int i = 0; i < HEIGHT; i += WIDTH / 40) {
-		ofDrawLine(0, i, WIDTH, i);
-	};
-}
-
 void Interface::backgroundInteraction() {
-
 	//Right rectangle
 	ofSetColor(backgroundInteractionColor);
 	ofFill();
