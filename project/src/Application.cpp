@@ -239,12 +239,10 @@ void Application::draw(){
 		renderer.interface.import_activate = true;
 		ofDrawBitmapString("Please drag an image to import it.", 30, 70);
 		ofSetColor(renderer.tint);
-		ofEnableBlendMode(OF_BLENDMODE_MULTIPLY);
+		//ofEnableBlendMode(OF_BLENDMODE_MULTIPLY);
 	}
-	ofDisableBlendMode();
+	//ofDisableBlendMode();
 
-
-	//cam.begin(); //TODO: ***TROUVER UN MOYEN DE RELIER LES DEUX CAMERA POUR PASSER DU CIRCUIT A CELLE ORTHOGRAPHIQUE***
 	if (renderer.interface.orthoIsActive) {
 		if (renderer.interface.orthoRendering) {
 			cam.enableOrtho();
@@ -320,7 +318,7 @@ void Application::draw(){
 	}
 
 	renderer.draw();
-	
+
 	//ofPopMatrix();
 	if (renderer.interface.orthoIsActive) {
 		cam.end();
@@ -328,10 +326,6 @@ void Application::draw(){
 	else if (renderer.interface.angleIsActive) {
 		camera->end();
 	}
-
-	renderer.interface.draw();
-	drawingGUI.draw();
-	//cam.end();
 
 	renderer.interface.draw();
 

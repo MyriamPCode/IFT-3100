@@ -22,7 +22,8 @@ void Renderer::setup() {
 	gui.add(exportButton);
 	gui.setPosition(200, 40);
 
-	textureImage.load("img/teapot.jpg"); //Changer l'image pour une vraie texture
+	ofLoadImage(briques,"img/briques.jpg"); //Changer l'image pour une vraie texture
+	ofLoadImage(briquesNormal, "img/briquesNormal.jpg");
 
 	setTeapotMaterials();
 	setSphereMaterials();
@@ -81,30 +82,29 @@ void Renderer::setup() {
 	delta_x = speed_motion;
 	delta_z = speed_motion;
 	modele_illumination1.loadModel("models/teapot.obj");
-	//modele_illumination2.loadModel("models/pomu.obj");
-	//modele_illumination1.loadModel("teapot.obj");
-	//modele_illumination2.loadModel("pomu.obj");
+	modele_illumination2.loadModel("models/pomu.obj");
+
 	modele_illumination1.disableMaterials();
-	//modele_illumination2.disableMaterials();
+	modele_illumination2.disableMaterials();
 	shader_color_fill.load(
-		"shaders/color_fill_330_vs.glsl",
-		"shaders/color_fill_330_fs.glsl");
+		"shader/color_fill_330_vs.glsl",
+		"shader/color_fill_330_fs.glsl");
 
 	shader_lambert.load(
-		"shaders/lambert_330_vs.glsl",
-		"shaders/lambert_330_fs.glsl");
+		"shader/lambert_330_vs.glsl",
+		"shader/lambert_330_fs.glsl");
 
 	shader_gouraud.load(
-		"shaders/gouraud_330_vs.glsl",
-		"shaders/gouraud_330_fs.glsl");
+		"shader/gouraud_330_vs.glsl",
+		"shader/gouraud_330_fs.glsl");
 
 	shader_phong.load(
-		"shaders/phong_330_vs.glsl",
-		"shaders/phong_330_fs.glsl");
+		"shader/phong_330_vs.glsl",
+		"shader/phong_330_fs.glsl");
 
 	shader_blinn_phong.load(
-		"shaders/blinn_phong_330_vs.glsl",
-		"shaders/blinn_phong_330_fs.glsl");
+		"shader/blinn_phong_330_vs.glsl",
+		"shader/blinn_phong_330_fs.glsl");
 	// shader actif au lancement de la scène
 	shader_active = ShaderType::blinn_phong;
 	// initialisation de la scène
@@ -153,7 +153,7 @@ void Renderer::lightSetup() {
 	lightSpot.setSpotlightCutOff(30);
 	lightSpot.setSpotlight();
 
-	lightTest.load("shaders/multiLighting330_vs.glsl","shaders/multiLighting330_fs.glsl");
+	lightTest.load("shader/multiLighting330_vs.glsl","shader/multiLighting330_fs.glsl");
 
 	//shaderLight.load("shaders/color_fill_330_vs.glsl","shaders/color_fill_330_fs.glsl"); //Implementer en suivant EX02 du module 7
 	//shaderLight.setUniform3f("color", 230.0f, 145.0f, 200.0f);
@@ -409,17 +409,17 @@ void Renderer::draw() {
 		}
 	}
 
-	/*shaderFiltre.begin();
+	//shaderFiltre.begin();
 	shaderFiltre.setUniformTexture("image", image.getTexture(), 1);
 	shaderFiltre.setUniform3f("tint", tint.r / 255.0f, tint.g / 255.0f, tint.b / 255.0f);
-	shaderFiltre.setUniform1f("factor", mix_factor);*/
+	shaderFiltre.setUniform1f("factor", mix_factor);
 	ofPushMatrix();
 	ofTranslate(image.getWidth(), image.getHeight());
 	ofSetColor(tint); // Définir la couleur de dessin avec la teinte sélectionnée
 	image.draw(0, 0, image.getWidth(), image.getHeight());
 	ofPopMatrix();
-	//shader.end();
-
+	//shaderFiltre.end();
+	
 	auto currImg = imgPosList.begin();
 	for (list<ofImage>::iterator iter = imageList.begin(); iter != imageList.end(); ++iter) {
 		vector temp = *currImg;
@@ -449,13 +449,14 @@ void Renderer::draw() {
 
 	if (interface.texturedBox) {
 		ofBoxPrimitive cube;
-		cube.mapTexCoordsFromTexture(textu);
+		cube.mapTexCoordsFromTexture(briques);
 		cube.setPosition(400, 0, 50);
+		cube.setScale(3.0f, 3.0f, 3.0f);
 		cube.rotateDeg(180, ofVec3f(0, 1, 0));
 		cube.rotateDeg(180, ofVec3f(1, 0, 0));
-		textu.bind();
+		briques.bind();
 		cube.draw();
-		textu.unbind();
+		briques.unbind();
 	}
 
 	if (interface.texturedPanel) {
@@ -628,17 +629,15 @@ void Renderer::activer_Illumination() {
 	modele_illumination2.setScale(
 		scale_modele_ill_2,
 		scale_modele_ill_2,
-		scale_modele_ill_2);
-
+		scale_modele_ill_2);*/
 
 	// dessiner un cube
 	//ofDrawBox(0.0f, 0.0f, 0.0f, scale_cube);
-	// dessiner pomudachi 
-	modele_illumination2.draw(OF_MESH_FILL);*/
 
 	// activer le shader
-	shader_illumination->begin();
 	ofPopMatrix();
+
+	shader_illumination->begin();
 
 	ofPushMatrix();
 
@@ -655,6 +654,18 @@ void Renderer::activer_Illumination() {
 
 	ofPushMatrix();
 
+	// positionner pomudachi
+	modele_illumination2.setPosition(
+		position_modele_ill_2.x,
+		position_modele_ill_2.y + 15.0f,
+		position_modele_ill_2.z);
+
+	// dimension pomudachi
+	modele_illumination2.setScale(
+		scale_modele_ill_2,
+		scale_modele_ill_2,
+		scale_modele_ill_2);
+
 	// positionner le teapot
 	modele_illumination1.setPosition(
 		position_modele_ill_1.x,
@@ -667,9 +678,10 @@ void Renderer::activer_Illumination() {
 		scale_modele_ill_1,
 		scale_modele_ill_1);
 
+	// dessiner pomudachi 
+	modele_illumination2.draw(OF_MESH_FILL);
 	// dessiner un teapot 
 	modele_illumination1.draw(OF_MESH_FILL);
-
 
 	ofPopMatrix();
 

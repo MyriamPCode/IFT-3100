@@ -24,7 +24,7 @@ class Renderer {
         Interface interface;
         ofImage image;
         ofShader shader;
-        ofShader shaderFiltres;
+        ofShader shaderFiltre;
         float mix_factor;
         ofColor tint;
     ofShader shaderLight;
@@ -35,6 +35,8 @@ class Renderer {
     ofImage textureImage;
     ofTexture textu;
     ofTexture textuSphere;
+    ofTexture briques;
+    ofTexture briquesNormal;
     list<ofImage> imageList; //Liste d'images import�es
     list<vector<int>> imgPosList; //Positions x et y des images import�es
 
