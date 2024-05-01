@@ -189,6 +189,5 @@ public:
     void init();
     void post_render();
     void render();
-    //void save_image_file(int width, int height, int ray_per_pixel, const Vector* pixel);
-    //int main(int argc, char* argv[]);
+    void save_image_file(int width, int height, int ray_per_pixel, const Vector* pixel);
 };

@@ -350,9 +350,42 @@ void Rayons::init()
 void Rayons::post_render()
 {
     // écrire les pixels dans un fichier image
-    //save_image_file(image.width, image.height, ray_per_pixel, image.pixel);
+    save_image_file(image.width, image.height, ray_per_pixel, image.pixel);
 
     std::cout << "raytracer task is done" << std::endl;
+}
+
+void Rayons::save_image_file(int width, int height, int ray_per_pixel, const Vector* pixel)
+{
+    // nom du fichier image de type .ppm (portable pixmap)
+    std::stringstream ss;
+    ss << "image" << width << "x" << height << "_" << ray_per_pixel << ".ppm";
+    std::string filename = ss.str();
+
+    // déclaration et ouverture du fichier en mode écriture
+    std::ofstream file;
+    file.open(filename, std::ios::out);
+
+    // entête du ficher pour une image avec un espace de couleur RGB 24 bits (P3 pour pixmap)
+    file << "P3\n";
+
+    // largeur et hauteur de l'image sur la seconde ligne de l'entête
+    file << width << ' ' << height << '\n';
+
+    // valeur maximale de l'espace de couleur sur la troisième ligne de l'entête
+    file << "255\n";
+
+    // écriture des pixels dans le fichier image
+    for (int index = 0; index < width * height; ++index)
+    {
+        // écrire la couleur du pixel dans le fichier image
+        file << static_cast<std::uint32_t>(format_color_component(pixel[index].x)) << " ";
+        file << static_cast<std::uint32_t>(format_color_component(pixel[index].y)) << " ";
+        file << static_cast<std::uint32_t>(format_color_component(pixel[index].z)) << " ";
+    }
+
+    // fermeture du fichier
+    file.close();
 }
 
 // fonction de rendu de la scène
