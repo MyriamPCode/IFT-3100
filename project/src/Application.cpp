@@ -91,7 +91,7 @@ void Application::setup(){
 	curveGui.loadFont("roboto/Roboto-Regular.ttf", 10);
 	curveGui.setPosition(600, 50);
 	curveGui.add(segments.set("Segments", 150, 150, 400));
-	catmullRomGroupe.setup("Catmull-Rom's curve");
+	catmullRomGroupe.setup("Catmull-Rom's curve"); 
 	catmullRomButton.setName("5 points");
 	catmullRomGroupe.add(catmullRomButton);
 	catmullRomButton.addListener(this, &Application::button_catmullRom);
