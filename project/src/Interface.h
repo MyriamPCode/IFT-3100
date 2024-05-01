@@ -51,6 +51,62 @@ class Interface {
 		bool topCamRendering = false;
 		bool bottomCamRendering = false;
 
+		ofxGuiGroup ambientLightOptions; // Options pour lumiere ambiente
+		ofxToggle showAmbientLight;
+		ofParameter<ofColor> ambientLightColor;
+		ofxGuiGroup areaLightOptions;
+		ofxToggle showAreaLight;
+		ofParameter<float> areaLightWidth;
+		ofParameter<float> areaLightHeight;
+		ofxGuiGroup areaLightPosition;
+		ofParameter<float> areaLightPositionX;
+		ofParameter<float> areaLightPositionY;
+		ofParameter<float> areaLightPositionZ;
+		ofxGuiGroup areaLightOrientation;
+		ofParameter<float> areaLightOrientationX;
+		ofParameter<float> areaLightOrientationY;
+		ofParameter<float> areaLightOrientationZ;
+		ofParameter<ofColor> areaLightColor;
+		ofxGuiGroup directionnalLightOptions; // Options pour lumiere directionnelle
+		ofxToggle showDirectionnalLight;
+		ofxGuiGroup directionnalLightPosition;
+		ofParameter<float> directionnalLightPositionX;
+		ofParameter<float> directionnalLightPositionY;
+		ofParameter<float> directionnalLightPositionZ;
+		ofxGuiGroup directionnalLightOrientation;
+		ofParameter<float> directionnalLightOrientationX;
+		ofParameter<float> directionnalLightOrientationY;
+		ofParameter<float> directionnalLightOrientationZ;
+		ofParameter<ofColor> directionnalLightColor;
+		ofxGuiGroup spotLightOptions; // Options pour lumiere "spot"
+		ofxToggle showSpotLight;
+		ofxGuiGroup spotLightPosition;
+		ofParameter<float> spotLightPositionX;
+		ofParameter<float> spotLightPositionY;
+		ofParameter<float> spotLightPositionZ;
+		ofxGuiGroup spotLightOrientation;
+		ofParameter<float> spotLightOrientationX;
+		ofParameter<float> spotLightOrientationY;
+		ofParameter<float> spotLightOrientationZ;
+		ofParameter<ofColor> spotLightColor;
+		ofxGuiGroup pointLightOptions; // Options pour lumiere de point
+		ofxToggle showPointLight;
+		ofxGuiGroup pointLightPosition;
+		ofParameter<float> pointLightPositionX;
+		ofParameter<float> pointLightPositionY;
+		ofParameter<float> pointLightPositionZ;
+		ofParameter<ofColor> pointLightColor;
+		ofxToggle activateMultiShader;
+		ofxGuiGroup modelesIllumination;
+		ofxToggle activateModelesIllumination;
+		ofxToggle colorFill;
+		ofxToggle lambert;
+		ofxToggle gouraud;
+		ofxToggle phong;
+		ofxToggle blinnPhong;
+		int illuminationType = 4;
+
+
 		int mouse_press_x;
 		int mouse_press_y;
 
@@ -69,6 +125,34 @@ class Interface {
 		ofxToggle fillRender;
 		ofxToggle wireframeRender;
 		ofxToggle pointRender;
+		ofxGuiGroup texturedModels;
+		ofxToggle texturedPanel;
+		ofxToggle texturedSphere;
+		ofxToggle texturedBox;
+
+		ofxGuiGroup teapotMaterials;
+		ofxToggle showTeapotMaterials;
+		ofParameter<ofColor> teapotAmbientColorPicker;
+		ofParameter<ofColor> teapotDiffuseColorPicker;
+		ofParameter<ofColor> teapotEmissiveColorPicker;
+		ofParameter<ofColor> teapotSpecularColorPicker;
+		ofParameter <float> teapotShininess;
+
+		ofxGuiGroup sphereMaterials;
+		ofxToggle showSphereMaterials;
+		ofParameter<ofColor> sphereAmbientColorPicker;
+		ofParameter<ofColor> sphereDiffuseColorPicker;
+		ofParameter<ofColor> sphereEmissiveColorPicker;
+		ofParameter<ofColor> sphereSpecularColorPicker;
+		ofParameter <float> sphereShininess;
+
+		ofxGuiGroup cubeMaterials;
+		ofxToggle showCubeMaterials;
+		ofParameter<ofColor> cubeAmbientColorPicker;
+		ofParameter<ofColor> cubeDiffuseColorPicker;
+		ofParameter<ofColor> cubeEmissiveColorPicker;
+		ofParameter<ofColor> cubeSpecularColorPicker;
+		ofParameter <float> cubeShininess;
 
 		bool mesh_activate;
 		bool noise_activate;
@@ -84,6 +168,7 @@ class Interface {
 		bool getShowModel() { return showModels; }
 		void backgroundLine();
 		void toggleCamOptions();
+		void toggleLightOptions();
 		void toggleMailleGUI();
 		void toggleCurveOptions();
 
@@ -93,6 +178,7 @@ class Interface {
 		bool curvePressed = false;
 		
 		bool modelsPressed = false;
+		bool lightPressed = false;
 		bool showModels = false;
 		
 		MeshRenderMode typeRender;
@@ -111,6 +197,7 @@ class Interface {
 		ofImage imgEllipse;
 		ofImage imgMesh;
 		ofImage imgCamera;
+		ofImage imgLight;
 		ofImage imgCurve;
 
 		ofColor backgroundLineColor = ofColor(217, 217, 217);
@@ -122,6 +209,7 @@ class Interface {
 		ofxPanel outilsGui;
 		ofxPanel modelsGui;
 		ofxPanel cameraGui;
+		ofxPanel lightGui;
 		ofxPanel mailleGui;
 
 		bool mailleVisible = false;
@@ -138,6 +226,7 @@ class Interface {
 		void setupCameraOptions();
 		void setupOutilsGuiOptions();
 		void setupModelOptions();
+		void setupLightOptions();
 		void setupMeshOptions();
 		//Renderer& renderer;
 		void showOutils(bool& value);
@@ -158,6 +247,11 @@ class Interface {
 		void modelFill(bool& value);
 		void modelWireframe(bool& value);
 		void modelPoints(bool& value);
+		void colorFillSelect(bool& value);
+		void lambertSelect(bool& value);
+		void gouraudSelect(bool& value);
+		void phongSelect(bool& value);
+		void blinnPhongSelect(bool& value);
 };
 
 
