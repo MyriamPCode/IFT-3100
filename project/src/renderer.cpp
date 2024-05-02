@@ -24,18 +24,26 @@ void Renderer::setup() {
 
 	textureImage.load("img/teapot.jpg"); //Changer l'image pour une vraie texture
 
-	texture_roughness.load("img/snow_field_aerial_rough_1k.jpg"); //Pour la rugosite
-	texture_roughness.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
-
 	setTeapotMaterials();
 	setSphereMaterials();
 	setCubeMaterials();
 
 	teapotMultiple.loadModel("models/teapot.obj");
 	teapotMultiple.setPosition(0, 0, 0);
+	//teapotMultiple.disableMaterials();
 
 	teapotOrtho.loadModel("models/teapotOrtho.obj");
 	teapotOrtho.setPosition(800, 700, 0);
+	//teapotOrtho.disableMaterials();
+
+	shader_pbr.load("shader / pbr_330_vs.glsl", "shader / pbr_330_fs.glsl");
+
+	texture_diffuse.load("img/corrugated_iron_02_diff_1k.jpg");
+	texture_roughness.load("img/corrugated_iron_02_rough_1k.jpg"); //Pour la rugosite
+
+	texture_diffuse.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
+	texture_roughness.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
+
 
 	okDessiner = false; 
 
@@ -396,6 +404,16 @@ void Renderer::update()
 
 	lightTest.end();
 
+	shader_pbr.begin();
+
+	shader_pbr.setUniform1f("material_roughness", material_roughness);
+	shader_pbr.setUniform3f("material_fresnel_ior", material_fresnel_ior);
+
+	shader_pbr.setUniformTexture("texture_diffuse", texture_diffuse.getTexture(), 1);
+	shader_pbr.setUniformTexture("texture_roughness", texture_roughness.getTexture(), 3);
+
+	shader_pbr.end();
+
 	shaderLight.begin();
 	shaderLight.setUniform3f("color_ambient", 0.1f, 0.1f, 0.1f);
 	shaderLight.setUniform3f("color_diffuse", 0.6f, 0.6f, 0.6f);
@@ -415,6 +433,8 @@ void Renderer::draw() {
 			visible = false;
 		}
 	}
+
+	shader_pbr.begin();
 
 	/*shaderFiltre.begin();
 	shaderFiltre.setUniformTexture("image", image.getTexture(), 1);
@@ -535,11 +555,6 @@ void Renderer::draw() {
 			// activer le matériau
 			material_teapot.begin();
 
-			shader.begin();
-			shader.setUniform1f("material_roughness", material_roughness);
-			shader.setUniform3f("material_fresnel_ior", material_fresnel_ior);
-			shader.setUniformTexture("texture_roughness", texture_roughness.getTexture(), 3);
-			shader.end();
 		}
 
 		if (interface.getRenderType() == MeshRenderMode::wireframe) {
@@ -584,6 +599,7 @@ void Renderer::draw() {
 		lightTest.end();
 	}
 	//shaderLight.end();
+	shader_pbr.end();
 	ofDisableDepthTest();
 
 	ofSetGlobalAmbientColor(ofColor(0, 0, 0));
@@ -606,6 +622,7 @@ void Renderer::setTeapotMaterials() {
 	material_teapot.setEmissiveColor(ofColor(interface.teapotEmissiveColorPicker));
 	material_teapot.setSpecularColor(ofColor(interface.teapotSpecularColorPicker));
 	material_teapot.setShininess(interface.teapotShininess);
+	
 }
 
 // Nouvelle fonction pour Illumination

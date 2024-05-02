@@ -6,7 +6,6 @@
 #include "Forme.h"
 #include <memory>
 #include "ofxGui.h"
-#include "ofxAssimpModelLoader.h"
 #include <iostream>
 #include <vector>
 #include <glm/glm.hpp>
@@ -25,6 +24,7 @@ class Renderer {
         ofImage image;
         ofShader shader;
         ofShader shaderFiltres;
+        ofShader shader_pbr;
         float mix_factor;
         ofColor tint;
         ofShader shaderLight;
@@ -42,7 +42,11 @@ class Renderer {
         ofxAssimpModelLoader teapotMultiple;
         //MeshRenderMode typeRender;
 
+        ofImage texture_diffuse;
+        ofImage texture_metallic;
         ofImage texture_roughness;
+
+        float material_metallic;
         float material_roughness;
 
         glm::vec3 material_fresnel_ior;
