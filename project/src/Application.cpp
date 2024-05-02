@@ -107,6 +107,12 @@ void Application::setup(){
 
 	filterGUI.setup();
 	filterGUI.setPosition(700, 70);
+	filterGUI.setup();
+	filterGUI.setPosition(800, 40);
+	textureGroupe.setup("Filtres (Texture)");
+	textureGroupe.add(sphereTextureButton.setup("Sphere", false));
+	sphereTextureButton.addListener(this, &Application::button_sphereTexture);
+	filterGUI.add(&textureGroupe);
 	filterGroupe.setup("Filtres");
 	filterGUI.add(color_picker.set("teinte", renderer.tint, ofColor(0, 0), ofColor(255, 255)));
 	filterGUI.add(slider.set("mix", renderer.mix_factor, 0.0f, 1.0f));
@@ -120,6 +126,15 @@ void Application::setup(){
 	embossButton.setName("Emboss");
 	embossButton.addListener(this, &Application::button_emboss);
 	filterGUI.add(&filterGroupe);
+
+	renderer.interface.sphereMaterials.add(sphereslider_roughness.set("Roughness", renderer.material_roughness, 0.0f, 1.0f));
+	renderer.interface.sphereMaterials.add(sphereslider_fresnel_ior.set("fresnel ior", renderer.material_fresnel_ior, glm::vec3(0.0f), glm::vec3(1.0f)));
+
+	renderer.interface.cubeMaterials.add(cubeslider_roughness.set("Roughness", renderer.material_roughness, 0.0f, 1.0f));
+	renderer.interface.cubeMaterials.add(cubeslider_fresnel_ior.set("fresnel ior", renderer.material_fresnel_ior, glm::vec3(0.0f), glm::vec3(1.0f)));
+
+	renderer.interface.teapotMaterials.add(teapotslider_roughness.set("Roughness", renderer.material_roughness, 0.0f, 1.0f));
+	renderer.interface.teapotMaterials.add(teapotslider_fresnel_ior.set("fresnel ior", renderer.material_fresnel_ior, glm::vec3(0.0f), glm::vec3(1.0f)));
 
 	// CrÃƒÂ©ation de la maille
 	for (int x = 0; x < size; x++) {
@@ -231,6 +246,9 @@ void Application::update()
 	if (is_key_press_right)
 		renderer.offset_x -= renderer.delta_x * time_elapsed;
 	////////////////////////////
+
+	renderer.material_roughness = sphereslider_roughness, cubeslider_roughness, teapotslider_roughness;
+	renderer.material_fresnel_ior = sphereslider_fresnel_ior, cubeslider_fresnel_ior, teapotslider_fresnel_ior;
 }
 
 
@@ -297,22 +315,6 @@ void Application::draw(){
 			if (camera_active != Camera::down)
 				camBottom.draw();
 		}
-	}
-
-	if (renderer.interface.import_activate) {
-		textureGUI.setup();
-		textureGUI.setPosition(800, 40);
-		textureGroupe.setup("Filtres");
-		textureGroupe.add(sphereTextureButton.setup("Sphere", false));
-		sphereTextureButton.addListener(this, &Application::button_sphereTexture);
-		textureGUI.add(&textureGroupe);
-
-		filterGUI.setup();
-		filterGUI.setPosition(800, 40);
-		textureGroupe.setup("Filtres");
-		textureGroupe.add(sphereTextureButton.setup("Sphere", false));
-		sphereTextureButton.addListener(this, &Application::button_sphereTexture);
-		filterGUI.add(&textureGroupe);
 	}
 
 	if (renderer.interface.import_activate) {

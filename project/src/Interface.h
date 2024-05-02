@@ -137,6 +137,8 @@ class Interface {
 		ofParameter<ofColor> teapotEmissiveColorPicker;
 		ofParameter<ofColor> teapotSpecularColorPicker;
 		ofParameter <float> teapotShininess;
+		//ofParameter<float> teapotslider_roughness;
+		//ofParameter<glm::vec3> teapotslider_fresnel_ior;
 
 		ofxGuiGroup sphereMaterials;
 		ofxToggle showSphereMaterials;
@@ -145,6 +147,8 @@ class Interface {
 		ofParameter<ofColor> sphereEmissiveColorPicker;
 		ofParameter<ofColor> sphereSpecularColorPicker;
 		ofParameter <float> sphereShininess;
+		//ofParameter<float> sphereslider_roughness;
+		//ofParameter<glm::vec3> sphereslider_fresnel_ior;
 
 		ofxGuiGroup cubeMaterials;
 		ofxToggle showCubeMaterials;

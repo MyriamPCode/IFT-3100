@@ -27,20 +27,26 @@ class Renderer {
         ofShader shaderFiltres;
         float mix_factor;
         ofColor tint;
-    ofShader shaderLight;
-    ofShader lightTest;
+        ofShader shaderLight;
+        ofShader lightTest;
 
-    ofMesh mesh;
-    int size = 96; // Taille de la maille
-    ofImage textureImage;
-    ofTexture textu;
-    ofTexture textuSphere;
-    list<ofImage> imageList; //Liste d'images import�es
-    list<vector<int>> imgPosList; //Positions x et y des images import�es
+        ofMesh mesh;
+        int size = 96; // Taille de la maille
+        ofImage textureImage;
+        ofTexture textu;
+        ofTexture textuSphere;
+        list<ofImage> imageList; //Liste d'images import�es
+        list<vector<int>> imgPosList; //Positions x et y des images import�es
 
-    ofxAssimpModelLoader teapotOrtho;
-    ofxAssimpModelLoader teapotMultiple;
-    //MeshRenderMode typeRender;
+        ofxAssimpModelLoader teapotOrtho;
+        ofxAssimpModelLoader teapotMultiple;
+        //MeshRenderMode typeRender;
+
+        ofImage texture_roughness;
+        float material_roughness;
+
+        glm::vec3 material_fresnel_ior;
+
 
     ofColor lightAmbient;
     ofLight lightArea;

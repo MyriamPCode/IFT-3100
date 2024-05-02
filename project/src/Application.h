@@ -203,6 +203,13 @@ class Application : public ofBaseApp{
 		float time_current, time_last, time_elapsed;
 		bool is_key_press_up, is_key_press_down, is_key_press_left, is_key_press_right;
 
+		ofParameter<float> teapotslider_roughness;
+		ofParameter<glm::vec3> teapotslider_fresnel_ior;
+		ofParameter<float> sphereslider_roughness;
+		ofParameter<glm::vec3> sphereslider_fresnel_ior;
+		ofParameter<float> cubeslider_roughness;
+		ofParameter<glm::vec3> cubeslider_fresnel_ior;
+
 private:
 	stack<function<void()>> undoStack;
 	stack<function<void()>> redoStack;

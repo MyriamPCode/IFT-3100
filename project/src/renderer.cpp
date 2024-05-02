@@ -24,6 +24,9 @@ void Renderer::setup() {
 
 	textureImage.load("img/teapot.jpg"); //Changer l'image pour une vraie texture
 
+	texture_roughness.load("img/snow_field_aerial_rough_1k.jpg"); //Pour la rugosite
+	texture_roughness.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
+
 	setTeapotMaterials();
 	setSphereMaterials();
 	setCubeMaterials();
@@ -66,7 +69,7 @@ void Renderer::setup() {
 	}
 	//////////////////////////////////////
 	// Parametres pour modele illumination 
-	isModeIllumination = false;  /// mettre a false pour desactiver au lancement 
+	isModeIllumination = true;  /// mettre a false pour desactiver au lancement 
 	oscillation_amplitude = 32.0f;
 	oscillation_frequency = 7500.0f;
 	speed_motion = 150.0f;
@@ -177,6 +180,10 @@ void Renderer::reset()
 	position_sphere.set(0.0f, 0.0f, 0.0f);
 	position_modele_ill_1.set(ofGetWidth() * (1.0f / 4.0f), 50.0f, 0.0f);
 	//////////////////////////////////////
+
+	//Parametres du materiau
+	material_roughness = 0.5f;
+	material_fresnel_ior = glm::vec3(0.04f, 0.04f, 0.04f);
 
 	ofLog() << "<reset>";
 }
@@ -527,6 +534,12 @@ void Renderer::draw() {
 			setTeapotMaterials();
 			// activer le matériau
 			material_teapot.begin();
+
+			shader.begin();
+			shader.setUniform1f("material_roughness", material_roughness);
+			shader.setUniform3f("material_fresnel_ior", material_fresnel_ior);
+			shader.setUniformTexture("texture_roughness", texture_roughness.getTexture(), 3);
+			shader.end();
 		}
 
 		if (interface.getRenderType() == MeshRenderMode::wireframe) {
