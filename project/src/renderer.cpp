@@ -131,8 +131,8 @@ void Renderer::setup() {
 	//teapotTexture.loadModel("models/teapotOrtho.obj");
 	teapotTexture.disableTextures(); 
 	shaderTexture.load(
-		"shaders/pbr_330_vs.glsl",
-		"shaders/pbr_330_fs.glsl");
+		"shader/pbr_330_vs.glsl",
+		"shader/pbr_330_fs.glsl");
 	texture_diffuse.load("texture/metal_plate_diffuse_1k.jpg");
 	texture_metallic.load("texture/metal_plate_metallic_1k.jpg");
 	texture_roughness.load("texture/metal_plate_roughness_1k.jpg");
