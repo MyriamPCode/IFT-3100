@@ -940,39 +940,44 @@ void Application::mousePressed(int x, int y, int button){
 		guiScene.add(bezier);
 	}
   
-		if (draw_sphere) //  && drawSphere
-		{
-			float x = renderer.interface.mouse_press_x / 1.00;
-			float y = renderer.interface.mouse_press_y / 1.00;
-			ofVec3f viktor(x, y, 0);
-			forme.setVSphere(viktor); 
-			//forme.setXS(x);
-			//forme.setYS(y);
-			renderer.v_formes.push_back(make_unique<Forme>(Forme::SPHERE, forme.getVSphere(), forme.getSphereRad()));
-			//renderer.v_formes.push_back(make_unique<Forme>(Forme::SPHERE, forme.getXS(), forme.getYS(), 0, forme.getSphereRad()));
-			renderer.okDessiner = true; 
-			auto button = make_unique<ofxToggle>(); 
-			//guiScene.add(button->setup("SPHERE", false)); 
-			v_buttons.push_back(move(button)); 
+	if (draw_sphere) //  && drawSphere
+	{
+		float x = renderer.interface.mouse_press_x / 1.00;
+		float y = renderer.interface.mouse_press_y / 1.00;
+		ofVec3f viktor(x, y, 0);
+		forme.setVSphere(viktor);
+		//forme.setXS(x);
+		//forme.setYS(y);
+		renderer.v_formes.push_back(make_unique<Forme>(Forme::SPHERE, forme.getVSphere(), forme.getSphereRad()));
+		//renderer.v_formes.push_back(make_unique<Forme>(Forme::SPHERE, forme.getXS(), forme.getYS(), 0, forme.getSphereRad()));
+		renderer.okDessiner = true;
+		auto button = make_unique<ofxToggle>();
+		//guiScene.add(button->setup("SPHERE", false)); 
+		v_buttons.push_back(move(button));
 
-			guiScene.add(sphere);
-		}
+		guiScene.add(sphere);
+	}
 
-		if (draw_cube) //  && drawCube
-		{
-			float x = renderer.interface.mouse_press_x;
-			float y = renderer.interface.mouse_press_y;
-			ofVec3f viktor(x, y, 0);
-			forme.setVSphere(viktor);
-			forme.setSizeCube(150);
-			renderer.v_formes.push_back(make_unique<Forme>(Forme::CUBE, forme.getVSphere(), forme.getSizeCube()));
-			renderer.okDessiner = true;
-			auto button = make_unique<ofxToggle>();
-			//guiScene.add(button->setup("CUBE", false));
-			v_buttons.push_back(move(button));
+	if (draw_cube) //  && drawCube
+	{
+		float x = renderer.interface.mouse_press_x;
+		float y = renderer.interface.mouse_press_y;
+		ofVec3f viktor(x, y, 0);
+		forme.setVSphere(viktor);
+		forme.setSizeCube(150);
+		renderer.v_formes.push_back(make_unique<Forme>(Forme::CUBE, forme.getVSphere(), forme.getSizeCube()));
+		renderer.okDessiner = true;
+		auto button = make_unique<ofxToggle>();
+		//guiScene.add(button->setup("CUBE", false));
+		v_buttons.push_back(move(button));
 
-			guiScene.add(cube);
-		}
+		guiScene.add(cube);
+	}
+
+	if (renderer.interface.delaunay) {
+		renderer.delaunayPoints.push_back({ (float)renderer.interface.mouse_press_x, (float)renderer.interface.mouse_press_y});
+		renderer.calculateDelaunay();
+	}
 }
 
 void Application::mouseReleased(int x, int y, int button){

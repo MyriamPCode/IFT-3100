@@ -22,8 +22,7 @@ void Renderer::setup() {
 	gui.add(exportButton);
 	gui.setPosition(200, 40);
 
-	ofLoadImage(briques,"img/briques.jpg"); //Changer l'image pour une vraie texture
-	ofLoadImage(briquesNormal, "img/briquesNormal.jpg");
+	ofSetLogLevel(OF_LOG_VERBOSE);
 
 	setTeapotMaterials();
 	setSphereMaterials();
@@ -435,6 +434,10 @@ void Renderer::draw() {
 		mesh.draw();
 	}
 
+	if (interface.delaunay) {
+		drawTriangulation();
+	}
+
 	if (interface.texturedSphere) {
 		ofSpherePrimitive sphere;
 		sphere.setPosition(0, 0, 50);
@@ -449,14 +452,14 @@ void Renderer::draw() {
 
 	if (interface.texturedBox) {
 		ofBoxPrimitive cube;
-		cube.mapTexCoordsFromTexture(briques);
+		cube.mapTexCoordsFromTexture(textu);
 		cube.setPosition(400, 0, 50);
 		cube.setScale(3.0f, 3.0f, 3.0f);
 		cube.rotateDeg(180, ofVec3f(0, 1, 0));
 		cube.rotateDeg(180, ofVec3f(1, 0, 0));
-		briques.bind();
+		textu.bind();
 		cube.draw();
-		briques.unbind();
+		textu.unbind();
 	}
 
 	if (interface.texturedPanel) {
@@ -1071,6 +1074,119 @@ void Renderer::dessinerBezier() {
 			}
 		}
 	}
+}
+
+void Renderer::drawTriangulation() {
+	for (auto iter = delaunayPoints.begin(); iter != delaunayPoints.end(); ++iter) {
+		ofDrawCircle(iter->x, iter->y, 10);
+	}
+	for (auto iter = delaunayEdges.begin(); iter != delaunayEdges.end(); ++iter) {
+		vector<ofVec2f> tempArray = *iter;
+		ofDrawLine(tempArray[0].x, tempArray[0].y, tempArray[1].x, tempArray[1].y);
+	}
+}
+
+void Renderer::calculateDelaunay() {
+	list<vector<ofVec2f>> triangles;
+	ofLog() << "Check 1";
+	vector<ofVec2f> superTriangle = { ofVec2f(1000,200),ofVec2f(600,900),ofVec2f(1400,900) };
+	triangles.push_front({ofVec2f(1000,200),ofVec2f(600,900),ofVec2f(1400,900)});
+	ofLog() << "Check 2";
+	for (auto iter = delaunayPoints.begin(); iter != delaunayPoints.end(); ++iter) {
+		ofLog() << "Check 3";
+		list<vector<ofVec2f>> badTriangles;
+		for (auto it2 = triangles.begin(); it2 != triangles.end(); ++it2) {
+			ofLog() << "Check 4";
+			vector<ofVec2f> tempTriangle = *it2;
+			if (isInsideCircumcircle(tempTriangle[0], tempTriangle[1], tempTriangle[2], *iter)) {
+				ofLog() << "Check 5";
+				badTriangles.push_back(*it2);
+			}
+		}
+		list<vector<ofVec2f>> polygon;
+		for (auto it3 = badTriangles.begin(); it3 != badTriangles.end(); ++it3) {
+			ofLog() << "Check 6";
+			vector<ofVec2f> currTri = *it3;
+			vector<ofVec2f> edge1 = {currTri[0], currTri[1]};
+			if (isEdgeUnique(badTriangles, edge1, currTri)) polygon.push_back(edge1);
+			vector<ofVec2f> edge2 = {currTri[1], currTri[2]};
+			if (isEdgeUnique(badTriangles, edge2, currTri)) polygon.push_back(edge2);
+			vector<ofVec2f> edge3 = {currTri[2], currTri[0]};
+			if (isEdgeUnique(badTriangles, edge3, currTri)) polygon.push_back(edge3);
+		}
+		for (auto it4 = badTriangles.begin(); it4 != badTriangles.end(); ++it4) {
+			ofLog() << "Check 7";
+			for (auto it5 = triangles.begin(); it5 != triangles.end();) {
+				ofLog() << "Check 8";
+				if (*it4 == *it5) {
+					ofLog() << "Check 8^";
+					it5 = triangles.erase(it5);
+				}
+				else ++it5;
+			}
+		}
+		for (auto it6 = polygon.begin(); it6 != polygon.end(); ++it6) {
+			ofLog() << "Check 9";
+			vector<ofVec2f> currEdge = *it6;
+			triangles.push_back({ currEdge[0], currEdge[1], *iter });
+		}
+	}
+	for (auto it7 = triangles.begin(); it7 != triangles.end();) {
+		ofLog() << "Check 10";
+		vector<ofVec2f> currTri2 = *it7;
+		if (hasSharedVertex(currTri2, superTriangle)) it7 = triangles.erase(it7);
+		else ++it7;
+	}
+	ofLog() << "Check 11";
+	delaunayEdges.clear();
+	for (auto it8 = triangles.begin(); it8 != triangles.end(); ++it8) {
+		ofLog() << "Check 12";
+		vector<ofVec2f> currTri3 = *it8;
+		delaunayEdges.push_back({{currTri3[0].x, currTri3[0].y}, {currTri3[1].x, currTri3[1].y }});
+		delaunayEdges.push_back({{currTri3[1].x, currTri3[1].y}, {currTri3[2].x, currTri3[2].y }});
+		delaunayEdges.push_back({{currTri3[2].x, currTri3[2].y}, {currTri3[0].x, currTri3[0].y }});
+	}
+}
+
+bool Renderer::isInsideCircumcircle(ofVec2f p1, ofVec2f p2, ofVec2f p3, ofVec2f pTest) {
+	ofLog() << "Check 4*";
+	float p1tx = p1.x - pTest.x;
+	float p1ty = p1.y - pTest.y;
+	float p2tx = p2.x - pTest.x;
+	float p2ty = p2.y - pTest.y;
+	float p3tx = p3.x - pTest.x;
+	float p3ty = p3.y - pTest.y;
+	float c1 = (pow(p1tx, 2) + pow(p1ty, 2)) * (p2tx * p3ty - p3tx * p2ty);
+	float c2 = (pow(p2tx, 2) + pow(p2ty, 2)) * (p1tx * p3ty - p3tx * p1ty);
+	float c3 = (pow(p3tx, 2) + pow(p3ty, 2)) * (p1tx * p2ty - p2tx * p1ty);
+	float det = c1 - c2 + c3;
+	return det < 0;
+}
+
+bool Renderer::isEdgeUnique(list<vector<ofVec2f>> badTriangles, vector<ofVec2f> edge, vector<ofVec2f> currTri) {
+	ofLog() << "Check 6*";
+	for (auto itEdge = badTriangles.begin(); itEdge != badTriangles.end(); ++itEdge) {
+		vector<ofVec2f> testTri = *itEdge;
+		if (testTri == currTri) continue;
+		vector<ofVec2f> edgeT1 = { testTri[0], testTri[1] };
+		vector<ofVec2f> edgeT1Swap = { testTri[1], testTri[0] };
+		vector<ofVec2f> edgeT2 = { testTri[1], testTri[2] };
+		vector<ofVec2f> edgeT2Swap = { testTri[2], testTri[1] };
+		vector<ofVec2f> edgeT3 = { testTri[2], testTri[0] };
+		vector<ofVec2f> edgeT3Swap = { testTri[0], testTri[2] };
+		if (edge == edgeT1 || edge == edgeT2 || edge == edgeT3 || edge == edgeT1Swap || edge == edgeT2Swap || edge == edgeT3Swap) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool Renderer::hasSharedVertex(vector<ofVec2f> triangle1, vector<ofVec2f> triangle2) {
+	ofLog() << "Check 10*";
+	if (triangle1[0] == triangle2[0] || triangle1[0] == triangle2[1] || triangle1[0] == triangle2[2]) return true;
+	if (triangle1[1] == triangle2[0] || triangle1[1] == triangle2[1] || triangle1[1] == triangle2[2]) return true;
+	if (triangle1[2] == triangle2[0] || triangle1[2] == triangle2[1] || triangle1[2] == triangle2[2]) return true;
+	return false;
 }
 
 void Renderer::drawLighting()
