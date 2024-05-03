@@ -52,10 +52,14 @@ class Renderer {
         float material_occlusion;
         float material_brightness;
 
-
         glm::vec3 material_fresnel_ior;
 
-        void addTexture();
+        float tone_mapping_exposure;
+        float tone_mapping_gamma;
+        bool tone_mapping_toggle;
+
+        bool texture_activate;
+        void addTexture(bool & value);
 
 
     ofColor lightAmbient;

@@ -140,11 +140,18 @@ void Application::setup(){
 	renderer.interface.cubeMaterials.add(cubeslider_brightness.set("Brightness", renderer.material_brightness, 0.0f, 5.0f));
 	renderer.interface.cubeMaterials.add(cubeslider_fresnel_ior.set("Fresnel ior", renderer.material_fresnel_ior, glm::vec3(0.0f), glm::vec3(1.0f)));
 
+	//teapotTexture.setName("Add texture");
+	//teapotTexture.addListener(this, &Renderer::addTexture);
+	//renderer.interface.teapotMaterials.add(teapotTexture);
 	renderer.interface.teapotMaterials.add(sphereslider_metallic.set("Metallic", renderer.material_metallic, 0.0f, 1.0f));
 	renderer.interface.teapotMaterials.add(teapotslider_roughness.set("Roughness", renderer.material_roughness, 0.0f, 1.0f));
 	renderer.interface.teapotMaterials.add(teapotslider_occlusion.set("Occlusion", renderer.material_occlusion, 0.0f, 5.0f));
 	renderer.interface.teapotMaterials.add(teapotslider_brightness.set("Brightness", renderer.material_brightness, 0.0f, 5.0f));
 	renderer.interface.teapotMaterials.add(teapotslider_fresnel_ior.set("Fresnel ior", renderer.material_fresnel_ior, glm::vec3(0.0f), glm::vec3(1.0f)));
+	renderer.interface.teapotMaterials.add(teapotslider_exposure);
+	renderer.interface.teapotMaterials.add(teapotslider_gamma);
+	renderer.interface.teapotMaterials.add(teapottoggle_tone_mapping);
+
 
 	// CrÃƒÂ©ation de la maille
 	for (int x = 0; x < size; x++) {
@@ -262,6 +269,13 @@ void Application::update()
 	renderer.material_occlusion = sphereslider_occlusion, cubeslider_occlusion, teapotslider_occlusion;
 	renderer.material_brightness = sphereslider_brightness, cubeslider_brightness, teapotslider_brightness;
 	renderer.material_fresnel_ior = sphereslider_fresnel_ior, cubeslider_fresnel_ior, teapotslider_fresnel_ior;
+	renderer.tone_mapping_exposure = teapotslider_exposure;
+	renderer.tone_mapping_gamma = teapotslider_gamma;
+	renderer.tone_mapping_toggle = teapottoggle_tone_mapping;
+	if (renderer.tone_mapping_toggle)
+		teapottoggle_tone_mapping.set("aces filmic", true);
+	else
+		teapottoggle_tone_mapping.set("reinhard", false);
 }
 
 
@@ -1405,6 +1419,13 @@ void Application::reset(bool& value) {
 		sharpenButton = false;
 		embossButton = false;
 		emboss_activate = false;
+
+		teapotslider_exposure.set("exposure", 1.0f, 0.0f, 5.0f);
+		teapotslider_gamma.set("gamma", 2.2f, 0.0f, 5.0f);
+		if (renderer.tone_mapping_toggle)
+			toggle_tone_mapping.set("aces filmic", true);
+		else
+			toggle_tone_mapping.set("reinhard", false);
 	}
 }
 

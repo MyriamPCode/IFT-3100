@@ -203,21 +203,35 @@ class Application : public ofBaseApp{
 		float time_current, time_last, time_elapsed;
 		bool is_key_press_up, is_key_press_down, is_key_press_left, is_key_press_right;
 
+		ofxToggle teapotTexture;
+
 		ofParameter<float> teapotslider_metallic;
 		ofParameter<float> teapotslider_roughness;
 		ofParameter<float> teapotslider_occlusion;
 		ofParameter<float> teapotslider_brightness;
 		ofParameter<glm::vec3> teapotslider_fresnel_ior;
+		ofParameter<float> teapotslider_exposure;
+		ofParameter<float> teapotslider_gamma;
+		ofParameter<bool> teapottoggle_tone_mapping;
+
 		ofParameter<float> sphereslider_metallic;
 		ofParameter<float> sphereslider_roughness;
 		ofParameter<float> sphereslider_occlusion;
 		ofParameter<float> sphereslider_brightness;
 		ofParameter<glm::vec3> sphereslider_fresnel_ior;
+		ofParameter<float> slider_exposure;
+		ofParameter<float> slider_gamma;
+		ofParameter<bool> toggle_tone_mapping;
+
 		ofParameter<float> cubeslider_metallic;
 		ofParameter<float> cubeslider_roughness;
 		ofParameter<float> cubeslider_occlusion;
 		ofParameter<float> cubeslider_brightness;
 		ofParameter<glm::vec3> cubeslider_fresnel_ior;
+		//ofParameter<float> slider_exposure;
+		//ofParameter<float> slider_gamma;
+		//ofParameter<bool> toggle_tone_mapping;
+
 
 private:
 	stack<function<void()>> undoStack;

@@ -37,7 +37,7 @@ void Renderer::setup() {
 	teapotOrtho.setPosition(800, 700, 0);
 	//teapotOrtho.disableMaterials();
 
-	shader_pbr.load("shader / pbr_330_vs.glsl", "shader / pbr_330_fs.glsl");
+	shader_pbr.load("shader/pbr_330_vs.glsl", "shader/pbr_330_fs.glsl");
 
 	texture_diffuse.load("texture/metal_plate_diffuse_1k.jpg");
 	texture_metallic.load("texture/metal_plate_metallic_1k.jpg");
@@ -199,6 +199,10 @@ void Renderer::reset()
 	material_occlusion = 1.0f;
 	material_brightness = 1.0f;
 	material_fresnel_ior = glm::vec3(0.04f, 0.04f, 0.04f);
+
+	tone_mapping_exposure = 1.0f;
+	tone_mapping_toggle = true;
+
 
 	ofLog() << "<reset>";
 }
@@ -417,12 +421,17 @@ void Renderer::update()
 	shader_pbr.setUniform1f("material_metallic", material_metallic);
 	shader_pbr.setUniform1f("material_roughness", material_roughness);
 	shader_pbr.setUniform1f("material_occlusion", material_occlusion);
+
 	shader_pbr.setUniform3f("material_fresnel_ior", material_fresnel_ior);
 
 	shader_pbr.setUniformTexture("texture_diffuse", texture_diffuse.getTexture(), 1);
 	shader_pbr.setUniformTexture("texture_metallic", texture_metallic.getTexture(), 2);
 	shader_pbr.setUniformTexture("texture_roughness", texture_roughness.getTexture(), 3);
 	shader_pbr.setUniformTexture("texture_occlusion", texture_occlusion.getTexture(), 4);
+
+	shader_pbr.setUniform1f("tone_mapping_exposure", tone_mapping_exposure);
+	shader_pbr.setUniform1f("tone_mapping_gamma", tone_mapping_gamma);
+	shader_pbr.setUniform1i("tone_mapping_toggle", tone_mapping_toggle);
 
 	shader_pbr.end();
 
@@ -445,8 +454,6 @@ void Renderer::draw() {
 			visible = false;
 		}
 	}
-
-	shader_pbr.begin();
 
 	/*shaderFiltre.begin();
 	shaderFiltre.setUniformTexture("image", image.getTexture(), 1);
@@ -497,18 +504,18 @@ void Renderer::draw() {
 		textu.unbind();
 	}
 
+	shader_pbr.begin();
+
 	if (interface.texturedPanel) {
 		ofPlanePrimitive plane;
 		plane.mapTexCoordsFromTexture(textu);
 		plane.setPosition(800, 700, 0);
 		plane.setScale(ofVec3f(2, 3, 1));
 		plane.rotateDeg(180, ofVec3f(1, 0, 0));
-		textu.generateMipmap();
-		textu.bind();
 		plane.draw();
-		textu.unbind();
 	}
 
+	shader_pbr.end();
 
 	//////////////////////////////////////////////////////////////////
 
@@ -578,11 +585,8 @@ void Renderer::draw() {
 				teapotMultiple.disableMaterials();
 			}
 			teapotMultiple.draw(OF_MESH_FILL);
-			textu.generateMipmap();
-			textu.bind();
 			//teapotOrtho.disableMaterials();
 			teapotOrtho.draw(OF_MESH_FILL);
-			textu.unbind();
 		}
 		else if (interface.getRenderType() == MeshRenderMode::vertex) {
 			teapotMultiple.draw(OF_MESH_POINTS);
@@ -611,7 +615,6 @@ void Renderer::draw() {
 		lightTest.end();
 	}
 	//shaderLight.end();
-	shader_pbr.end();
 	ofDisableDepthTest();
 
 	ofSetGlobalAmbientColor(ofColor(0, 0, 0));
@@ -1174,11 +1177,18 @@ void Renderer::captureImage() {
 	ofSaveScreen(ofToString(frameCounter) + ".png");
 }
 
-void Renderer::addTexture() {
-	texture_diffuse.load("img/corrugated_iron_02_diff_1k.jpg");
-	texture_roughness.load("img/corrugated_iron_02_rough_1k.jpg"); //Pour la rugosite
+void Renderer::addTexture(bool & value) {
+	texture_activate = value;
+	if (value) {
+		texture_diffuse.load("texture/metal_plate_diffuse_1k.jpg");
+		texture_metallic.load("texture/metal_plate_metallic_1k.jpg");
+		texture_roughness.load("texture/metal_plate_roughness_1k.jpg");
+		texture_occlusion.load("texture/metal_plate_ao_1k.jpg");
 
-	texture_diffuse.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
-	texture_roughness.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
+		texture_diffuse.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
+		texture_metallic.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
+		texture_roughness.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
+		texture_occlusion.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
+	}
 }
 
