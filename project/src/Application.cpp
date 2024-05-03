@@ -231,7 +231,7 @@ void Application::update()
 	time_current = ofGetElapsedTimef();
 	time_elapsed = time_current - time_last;
 	time_last = time_current;
-	if (renderer.isCoons)
+	if (renderer.isCoons && !renderer.isModeIllumination)
 	{
 		if (is_key_press_up) {
 			renderer.selected_ctrl_point->y -= renderer.delta_y * time_elapsed;
@@ -249,6 +249,17 @@ void Application::update()
 			renderer.selected_ctrl_point->z += controlPtZ * 5;
 			controlPtZ = 0.0f;
 		}
+	}
+	if (!renderer.isCoons && renderer.isModeIllumination)
+	{
+		if (is_key_press_up)
+			renderer.offset_y -= renderer.delta_y * time_elapsed;
+		if (is_key_press_down)
+			renderer.offset_y += renderer.delta_y * time_elapsed;
+		if (is_key_press_left)
+			renderer.offset_x -= renderer.delta_x * time_elapsed;
+		if (is_key_press_right)
+			renderer.offset_x += renderer.delta_x * time_elapsed;
 	}
 	////////////////////////////
 }

@@ -71,41 +71,41 @@ void Renderer::setup() {
 	oscillation_frequency = 7500.0f;
 	speed_motion = 150.0f;
 	initial_x = 0.0f;
+	initial_y = 0.0f;
 	initial_z = -100.0f;
 	scale_cube = 100.0f;
 	scale_sphere = 80.0f;
 	scale_modele_ill_1 = 0.618f;
 	scale_modele_ill_2 = 0.618f;
 	offset_x = initial_x;
+	offset_y = initial_y;
 	offset_z = initial_z;
 	delta_x = speed_motion;
 	delta_y = speed_motion;
 	delta_z = speed_motion;
 	modele_illumination1.loadModel("models/teapot.obj");
-	//modele_illumination2.loadModel("models/pomu.obj");
-	//modele_illumination1.loadModel("teapot.obj");
-	//modele_illumination2.loadModel("pomu.obj");
+	modele_illumination2.loadModel("models/pomu.obj");
 	modele_illumination1.disableMaterials();
-	//modele_illumination2.disableMaterials();
+	modele_illumination2.disableMaterials();
 	shader_color_fill.load(
-		"shaders/color_fill_330_vs.glsl",
-		"shaders/color_fill_330_fs.glsl");
+		"shader/color_fill_330_vs.glsl",
+		"shader/color_fill_330_fs.glsl");
 
 	shader_lambert.load(
-		"shaders/lambert_330_vs.glsl",
-		"shaders/lambert_330_fs.glsl");
+		"shader/lambert_330_vs.glsl",
+		"shader/lambert_330_fs.glsl");
 
 	shader_gouraud.load(
-		"shaders/gouraud_330_vs.glsl",
-		"shaders/gouraud_330_fs.glsl");
+		"shader/gouraud_330_vs.glsl",
+		"shader/gouraud_330_fs.glsl");
 
 	shader_phong.load(
-		"shaders/phong_330_vs.glsl",
-		"shaders/phong_330_fs.glsl");
+		"shader/phong_330_vs.glsl",
+		"shader/phong_330_fs.glsl");
 
 	shader_blinn_phong.load(
-		"shaders/blinn_phong_330_vs.glsl",
-		"shaders/blinn_phong_330_fs.glsl");
+		"shader/blinn_phong_330_vs.glsl",
+		"shader/blinn_phong_330_fs.glsl");
 	// shader actif au lancement de la scène
 	shader_active = ShaderType::blinn_phong;
 	// initialisation de la scène
@@ -483,7 +483,6 @@ void Renderer::draw() {
 	{
 		if (interface.textureFillButton) {
 			shader.load("filters/colors.vert", "filters/colors.frag");
-
 			shader.begin();
 			shader.setUniform1f("u_time", ofGetElapsedTimef());
 			shader.setUniform2f("u_resolution", ofGetWidth(), ofGetHeight());
@@ -492,6 +491,8 @@ void Renderer::draw() {
 
 		// draw Illumination 
 		if (isModeIllumination) {
+			modele_illumination1.setPosition(1410, 700, 0);
+			modele_illumination2.setPosition(-50, 1200, -400);
 			ofEnableLighting();
 			light.enable();
 			ofPushMatrix;
@@ -786,16 +787,9 @@ void Renderer::activer_Illumination() {
 
 	ofPushMatrix();
 
-	//// positionnner le cube
-	//ofTranslate(
-	//	position_cube.x,
-	//	position_cube.y,
-	//	position_cube.z);
-	//// rotation locale
-	//ofRotateDeg(45.0f, 1.0f, 0.0f, 0.0f);
-	// 
+
 	// positionner pomudachi
-	/*modele_illumination2.setPosition(
+	modele_illumination2.setPosition(
 		position_modele_ill_2.x,
 		position_modele_ill_2.y + 15.0f,
 		position_modele_ill_2.z);
@@ -806,14 +800,12 @@ void Renderer::activer_Illumination() {
 		scale_modele_ill_2,
 		scale_modele_ill_2);
 
-
-	// dessiner un cube
-	//ofDrawBox(0.0f, 0.0f, 0.0f, scale_cube);
-	// dessiner pomudachi 
-	modele_illumination2.draw(OF_MESH_FILL);*/
-
 	// activer le shader
 	shader_illumination->begin();
+
+	// dessiner pomudachi 
+	modele_illumination2.draw(OF_MESH_FILL);
+
 	ofPopMatrix();
 
 	ofPushMatrix();
