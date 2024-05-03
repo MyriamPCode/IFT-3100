@@ -55,6 +55,7 @@ void Application::setup(){
 	drawingGUI.add(renderer.uiRotate.set("rotate", ofVec3f(0), ofVec3f(-180), ofVec3f(180))); // La rotation des primitives
 	drawingGUI.add(renderer.uiShift.set("shift", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
 	drawingGUI.add(renderer.uiSize.set("size", ofVec2f(1), ofVec2f(1), ofVec2f(10)));
+	drawingGUI.minimizeAll();
 
 	camera_setup_perspective(WIDTH, HEIGHT, 60.0f, 0.0f, 0.0f);
 	cam.enableOrtho();
@@ -85,6 +86,7 @@ void Application::setup(){
 	animationGroupe.setup("Animations");
 	animationGroupe.add(rotationButton.setup("Rotation", false));
 	rotationButton.addListener(this, &Application::button_rotation);
+	animationGroupe.minimize(); 
 	drawingGUI.add(&animationGroupe);
 
 	curveGui.setup("Curve");
@@ -164,7 +166,7 @@ void Application::setup(){
 
 	shapeBool = false; 
 	v_buttons_ptr = &v_buttons;
-	guiScene.setup();
+	//guiScene.setup();
 	guiScene.setPosition(0, 40);
 
 	addAction([this]() { undo(); }, [this]() { redo(); });
@@ -192,8 +194,37 @@ void Application::setup(){
 	renderer.selected_ctrl_point = &renderer.controlPoint0;
 	controlPtZ = 0.0f; //pour le mousewheel avec Coons sur axe des Z
 
+	resetTexture();
+
 	// Texture
-	//reset();
+	groupe_activer_texture.setup("Texture");
+	groupe_activer_texture.add(toggleTexture.setup("Add texture", false));
+	toggleTexture.addListener(this, &Application::selectTexture);
+	drawingGUI.add(&groupe_activer_texture);
+
+	group_material_color.setup("color");
+	group_material_color.add(color_picker_ambient);
+	group_material_color.add(color_picker_diffuse);
+	group_material_color.add(color_picker_specular);
+	drawingGUI.add(&group_material_color);
+	group_material_factor.setup("factor");
+	group_material_factor.add(slider_metallic);
+	group_material_factor.add(slider_roughness);
+	group_material_factor.add(slider_occlusion);
+	group_material_factor.add(slider_brightness);
+	group_material_factor.add(slider_fresnel_ior);
+	drawingGUI.add(&group_material_factor);
+	group_light.setup("light");
+	group_light.add(color_picker_light_color);
+	group_light.add(slider_light_intensity);
+	group_light.add(toggle_light_motion);
+	drawingGUI.add(&group_light);
+	group_tone_mapping.setup("tone mapping");
+	group_tone_mapping.add(slider_exposure);
+	group_tone_mapping.add(slider_gamma);
+	group_tone_mapping.add(toggle_tone_mapping);
+	drawingGUI.add(&group_tone_mapping);
+
 	color_picker_ambient.set("ambient", renderer.material_color_ambient, ofColor(0, 0), ofColor(255, 255));
 	color_picker_diffuse.set("diffuse", renderer.material_color_diffuse, ofColor(0, 0), ofColor(255, 255));
 	color_picker_specular.set("specular", renderer.material_color_specular, ofColor(0, 0), ofColor(255, 255));
@@ -219,6 +250,25 @@ void Application::setup(){
 		toggle_tone_mapping.set("reinhard", false);
 }
 
+void Application::resetTexture(){
+	color_picker_ambient.set(ofColor(63, 63, 63));
+	color_picker_diffuse.set(ofColor(255, 255, 255));
+	color_picker_specular.set(ofColor(255, 255, 255));
+	slider_metallic.set(0.5f);
+	slider_roughness.set(0.5f);
+	slider_occlusion.set(1.0f);
+	slider_brightness.set(1.0f);
+	slider_fresnel_ior.set(glm::vec3(0.04f, 0.04f, 0.04f));
+	color_picker_light_color.set(ofColor(255, 255, 255));
+	slider_light_intensity.set(1.0f);
+	slider_exposure.set(1.0f);
+	slider_gamma.set(2.2f);
+	toggle_light_motion.set(true);
+	toggle_tone_mapping.set("aces filmic", true);
+}
+void Application::selectTexture(bool &value) {
+	renderer.isTexture = !renderer.isTexture; 
+}
 
 void Application::update()
 {
@@ -355,7 +405,6 @@ void Application::draw(){
 		ofEnableBlendMode(OF_BLENDMODE_MULTIPLY);
 	}
 	ofDisableBlendMode();
-
 
 	//cam.begin(); //TODO: ***TROUVER UN MOYEN DE RELIER LES DEUX CAMERA POUR PASSER DU CIRCUIT A CELLE ORTHOGRAPHIQUE***
 	if (renderer.interface.orthoIsActive) {
@@ -532,33 +581,6 @@ void Application::toggleDrawingGUI(Forme::TypeForme drawingShape) {
 	}
 }
 
-// a modifier ou effacer 
-void Application::deleteShapeSelected()
-{
-	// Vecteur temporaire pour stocker les indices des boutons Ã¯Â¿Â½ supprimer
-	vector<int> buttonsToDelete;
-	// Vecteur pour stocker l'Ã¯Â¿Â½tat de chaque bouton
-	vector<bool> buttonStates;
-
-	for (const auto& b : *v_buttons_ptr)
-	{
-		for (int i = 0; i < v_buttons.size(); ++i)
-		{
-			// VÃ¯Â¿Â½rifier si le bouton est en Ã¯Â¿Â½tat TRUE
-			if (i == shapeBool) // v_buttons[i] AccÃ¯Â¿Â½der Ã¯Â¿Â½ l'Ã¯Â¿Â½tat boolÃ¯Â¿Â½en du bouton
-			{
-				//cout << "Il est cense avoir " << i << " forme a effacer" << endl;
-				// Ajouter l'index du bouton Ã¯Â¿Â½ supprimer dans le vecteur temporaire
-				buttonsToDelete.push_back(i);
-			}
-		}
-	}
-	if (!buttonsToDelete.empty())
-	{
-		//cout << "Deletion is possible! " << endl;
-		//cout << "Size of the deletion list is " << buttonsToDelete.size() << endl;
-	}
-}
 
 void Application::keyPressed(int key) 
 {
@@ -1515,6 +1537,10 @@ void Application::reset(bool& value) {
 		sharpenButton = false;
 		embossButton = false;
 		emboss_activate = false;
+
+		// Texture 
+		resetTexture();
+		renderer.reset(); 
 	}
 }
 
