@@ -9,6 +9,7 @@ using namespace std;
 
 void Renderer::setup() {
 	ofSetFrameRate(60);
+	ofSetLogLevel(OF_LOG_VERBOSE);
 	interface.setup();
 
 	tint.set(255, 255, 255);
@@ -38,12 +39,15 @@ void Renderer::setup() {
 
 	shader_pbr.load("shader / pbr_330_vs.glsl", "shader / pbr_330_fs.glsl");
 
-	texture_diffuse.load("img/corrugated_iron_02_diff_1k.jpg");
-	texture_roughness.load("img/corrugated_iron_02_rough_1k.jpg"); //Pour la rugosite
+	texture_diffuse.load("texture/metal_plate_diffuse_1k.jpg");
+	texture_metallic.load("texture/metal_plate_metallic_1k.jpg");
+	texture_roughness.load("texture/metal_plate_roughness_1k.jpg");
+	texture_occlusion.load("texture/metal_plate_ao_1k.jpg");
 
 	texture_diffuse.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
+	texture_metallic.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
 	texture_roughness.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
-
+	texture_occlusion.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
 
 	okDessiner = false; 
 
@@ -190,7 +194,10 @@ void Renderer::reset()
 	//////////////////////////////////////
 
 	//Parametres du materiau
+	material_metallic = 0.5f;
 	material_roughness = 0.5f;
+	material_occlusion = 1.0f;
+	material_brightness = 1.0f;
 	material_fresnel_ior = glm::vec3(0.04f, 0.04f, 0.04f);
 
 	ofLog() << "<reset>";
@@ -406,11 +413,16 @@ void Renderer::update()
 
 	shader_pbr.begin();
 
+	shader_pbr.setUniform1f("material_brightness", material_brightness);
+	shader_pbr.setUniform1f("material_metallic", material_metallic);
 	shader_pbr.setUniform1f("material_roughness", material_roughness);
+	shader_pbr.setUniform1f("material_occlusion", material_occlusion);
 	shader_pbr.setUniform3f("material_fresnel_ior", material_fresnel_ior);
 
 	shader_pbr.setUniformTexture("texture_diffuse", texture_diffuse.getTexture(), 1);
+	shader_pbr.setUniformTexture("texture_metallic", texture_metallic.getTexture(), 2);
 	shader_pbr.setUniformTexture("texture_roughness", texture_roughness.getTexture(), 3);
+	shader_pbr.setUniformTexture("texture_occlusion", texture_occlusion.getTexture(), 4);
 
 	shader_pbr.end();
 
@@ -1160,5 +1172,13 @@ void Renderer::image_export(const string name, const string extension) const {
 void Renderer::captureImage() {
 	// Exporter l'image
 	ofSaveScreen(ofToString(frameCounter) + ".png");
+}
+
+void Renderer::addTexture() {
+	texture_diffuse.load("img/corrugated_iron_02_diff_1k.jpg");
+	texture_roughness.load("img/corrugated_iron_02_rough_1k.jpg"); //Pour la rugosite
+
+	texture_diffuse.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
+	texture_roughness.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
 }
 

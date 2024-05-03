@@ -127,14 +127,24 @@ void Application::setup(){
 	embossButton.addListener(this, &Application::button_emboss);
 	filterGUI.add(&filterGroupe);
 
+
+	renderer.interface.sphereMaterials.add(sphereslider_metallic.set("Metallic", renderer.material_metallic, 0.0f, 1.0f));
 	renderer.interface.sphereMaterials.add(sphereslider_roughness.set("Roughness", renderer.material_roughness, 0.0f, 1.0f));
-	renderer.interface.sphereMaterials.add(sphereslider_fresnel_ior.set("fresnel ior", renderer.material_fresnel_ior, glm::vec3(0.0f), glm::vec3(1.0f)));
+	renderer.interface.sphereMaterials.add(sphereslider_occlusion.set("Occlusion", renderer.material_occlusion, 0.0f, 5.0f));
+	renderer.interface.sphereMaterials.add(sphereslider_brightness.set("Brightness", renderer.material_brightness, 0.0f, 5.0f));
+	renderer.interface.sphereMaterials.add(sphereslider_fresnel_ior.set("fFresnel ior", renderer.material_fresnel_ior, glm::vec3(0.0f), glm::vec3(1.0f)));
 
+	renderer.interface.cubeMaterials.add(sphereslider_metallic.set("Metallic", renderer.material_metallic, 0.0f, 1.0f));
 	renderer.interface.cubeMaterials.add(cubeslider_roughness.set("Roughness", renderer.material_roughness, 0.0f, 1.0f));
-	renderer.interface.cubeMaterials.add(cubeslider_fresnel_ior.set("fresnel ior", renderer.material_fresnel_ior, glm::vec3(0.0f), glm::vec3(1.0f)));
+	renderer.interface.cubeMaterials.add(cubeslider_occlusion.set("Occlusion", renderer.material_occlusion, 0.0f, 5.0f));
+	renderer.interface.cubeMaterials.add(cubeslider_brightness.set("Brightness", renderer.material_brightness, 0.0f, 5.0f));
+	renderer.interface.cubeMaterials.add(cubeslider_fresnel_ior.set("Fresnel ior", renderer.material_fresnel_ior, glm::vec3(0.0f), glm::vec3(1.0f)));
 
+	renderer.interface.teapotMaterials.add(sphereslider_metallic.set("Metallic", renderer.material_metallic, 0.0f, 1.0f));
 	renderer.interface.teapotMaterials.add(teapotslider_roughness.set("Roughness", renderer.material_roughness, 0.0f, 1.0f));
-	renderer.interface.teapotMaterials.add(teapotslider_fresnel_ior.set("fresnel ior", renderer.material_fresnel_ior, glm::vec3(0.0f), glm::vec3(1.0f)));
+	renderer.interface.teapotMaterials.add(teapotslider_occlusion.set("Occlusion", renderer.material_occlusion, 0.0f, 5.0f));
+	renderer.interface.teapotMaterials.add(teapotslider_brightness.set("Brightness", renderer.material_brightness, 0.0f, 5.0f));
+	renderer.interface.teapotMaterials.add(teapotslider_fresnel_ior.set("Fresnel ior", renderer.material_fresnel_ior, glm::vec3(0.0f), glm::vec3(1.0f)));
 
 	// CrÃƒÂ©ation de la maille
 	for (int x = 0; x < size; x++) {
@@ -247,7 +257,10 @@ void Application::update()
 		renderer.offset_x -= renderer.delta_x * time_elapsed;
 	////////////////////////////
 
+	renderer.material_metallic = sphereslider_metallic, cubeslider_metallic, teapotslider_metallic;
 	renderer.material_roughness = sphereslider_roughness, cubeslider_roughness, teapotslider_roughness;
+	renderer.material_occlusion = sphereslider_occlusion, cubeslider_occlusion, teapotslider_occlusion;
+	renderer.material_brightness = sphereslider_brightness, cubeslider_brightness, teapotslider_brightness;
 	renderer.material_fresnel_ior = sphereslider_fresnel_ior, cubeslider_fresnel_ior, teapotslider_fresnel_ior;
 }
 

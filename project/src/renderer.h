@@ -45,11 +45,17 @@ class Renderer {
         ofImage texture_diffuse;
         ofImage texture_metallic;
         ofImage texture_roughness;
+        ofImage texture_occlusion;
 
         float material_metallic;
         float material_roughness;
+        float material_occlusion;
+        float material_brightness;
+
 
         glm::vec3 material_fresnel_ior;
+
+        void addTexture();
 
 
     ofColor lightAmbient;
