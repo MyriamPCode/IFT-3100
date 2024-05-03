@@ -207,7 +207,7 @@ class Renderer {
         float offsetTexture_x, offsetTexture_z, deltaTexture_x, deltaTexture_y, deltaTexture_z;
         float rotation_y;
         float initialTexture_x, initialTexture_z, centerTexture_x, centerTexture_y; 
-        bool isTexture = true; 
+        bool isTexture = false; 
         void afficherTexture(); 
 
         void setSphereMaterials();

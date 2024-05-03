@@ -170,7 +170,7 @@ class Application : public ofBaseApp{
 
 		vector<unique_ptr<ofxToggle>> v_buttons;
 		vector<unique_ptr<ofxToggle>>* v_buttons_ptr;
-		void deleteShapeSelected();
+	
 
 		void addAction(function<void()> undoAction, function<void()> redoAction) {
 			undoStack.push(move(undoAction));
@@ -225,7 +225,16 @@ class Application : public ofBaseApp{
 		ofParameter<bool> toggle_tone_mapping;
 		ofParameter<bool> toggle_ui;
 		ofParameter<bool> toggle_light_motion;
-		//void reset(); 
+		ofxGuiGroup group_texture; 
+		ofxGuiGroup group_material_color;
+		ofxGuiGroup group_material_factor;
+		ofxGuiGroup group_light;
+		ofxGuiGroup group_tone_mapping;
+		ofxToggle toggleTexture; 
+		ofxGuiGroup groupe_activer_texture;
+		void selectTexture(bool& value);
+		void resetTexture();
+
 private:
 	stack<function<void()>> undoStack;
 	stack<function<void()>> redoStack;

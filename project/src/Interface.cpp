@@ -71,7 +71,7 @@ void Interface::setup() {
 
 	is_mouse_button_pressed = false;
 	is_mouse_button_dragged = false;
-	import_activate = false;
+	import_activate = false; 
 	export_activate = false;
 	curve_activate = false;
 
