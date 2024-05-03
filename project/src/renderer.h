@@ -42,6 +42,10 @@ class Renderer {
         ofxAssimpModelLoader teapotMultiple;
         //MeshRenderMode typeRender;
 
+        ofColor material_color_ambient;
+        ofColor material_color_diffuse;
+        ofColor material_color_specular;
+
         ofImage texture_diffuse;
         ofImage texture_metallic;
         ofImage texture_roughness;
@@ -53,6 +57,11 @@ class Renderer {
         float material_brightness;
 
         glm::vec3 material_fresnel_ior;
+
+        //ofLight light;
+        ofColor light_color;
+        float light_intensity;
+        bool light_motion;
 
         float tone_mapping_exposure;
         float tone_mapping_gamma;

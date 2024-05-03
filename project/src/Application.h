@@ -205,6 +205,15 @@ class Application : public ofBaseApp{
 
 		ofxToggle teapotTexture;
 
+		ofParameter<ofColor> color_picker_ambient;
+		ofParameter<ofColor> color_picker_diffuse;
+		ofParameter<ofColor> color_picker_specular;
+		ofParameter<ofColor> color_picker_light_color;
+
+		ofParameter<float> slider_light_intensity;
+		ofParameter<bool> toggle_ui;
+		ofParameter<bool> toggle_light_motion;
+
 		ofParameter<float> teapotslider_metallic;
 		ofParameter<float> teapotslider_roughness;
 		ofParameter<float> teapotslider_occlusion;

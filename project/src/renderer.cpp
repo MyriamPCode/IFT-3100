@@ -200,6 +200,10 @@ void Renderer::reset()
 	material_brightness = 1.0f;
 	material_fresnel_ior = glm::vec3(0.04f, 0.04f, 0.04f);
 
+	light_color = ofColor(255, 255, 255);
+	light_intensity = 1.0f;
+	light_motion = true;
+
 	tone_mapping_exposure = 1.0f;
 	tone_mapping_toggle = true;
 
@@ -417,6 +421,10 @@ void Renderer::update()
 
 	shader_pbr.begin();
 
+	shader_pbr.setUniform3f("material_color_ambient", material_color_ambient.r / 255.0f, material_color_ambient.g / 255.0f, material_color_ambient.b / 255.0f);
+	shader_pbr.setUniform3f("material_color_diffuse", material_color_diffuse.r / 255.0f, material_color_diffuse.g / 255.0f, material_color_diffuse.b / 255.0f);
+	shader_pbr.setUniform3f("material_color_specular", material_color_specular.r / 255.0f, material_color_specular.g / 255.0f, material_color_specular.b / 255.0f);
+
 	shader_pbr.setUniform1f("material_brightness", material_brightness);
 	shader_pbr.setUniform1f("material_metallic", material_metallic);
 	shader_pbr.setUniform1f("material_roughness", material_roughness);
@@ -428,6 +436,10 @@ void Renderer::update()
 	shader_pbr.setUniformTexture("texture_metallic", texture_metallic.getTexture(), 2);
 	shader_pbr.setUniformTexture("texture_roughness", texture_roughness.getTexture(), 3);
 	shader_pbr.setUniformTexture("texture_occlusion", texture_occlusion.getTexture(), 4);
+
+	shader_pbr.setUniform1f("light_intensity", light_intensity);
+	shader_pbr.setUniform3f("light_color", light_color.r / 255.0f, light_color.g / 255.0f, light_color.b / 255.0f);
+	shader_pbr.setUniform3f("light_position", light.getGlobalPosition());
 
 	shader_pbr.setUniform1f("tone_mapping_exposure", tone_mapping_exposure);
 	shader_pbr.setUniform1f("tone_mapping_gamma", tone_mapping_gamma);
