@@ -39,10 +39,10 @@ void Renderer::setup() {
 
 	shader_pbr.load("shader/pbr_330_vs.glsl", "shader/pbr_330_fs.glsl");
 
-	texture_diffuse.load("texture/metal_plate_diffuse_1k.jpg");
-	texture_metallic.load("texture/metal_plate_metallic_1k.jpg");
-	texture_roughness.load("texture/metal_plate_roughness_1k.jpg");
-	texture_occlusion.load("texture/metal_plate_ao_1k.jpg");
+	texture_diffuse.load("img/metal_plate_diffuse_1k.jpg");
+	texture_metallic.load("img/metal_plate_metallic_1k.jpg");
+	texture_roughness.load("img/metal_plate_roughness_1k.jpg");
+	texture_occlusion.load("img/metal_plate_ao_1k.jpg");
 
 	texture_diffuse.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
 	texture_metallic.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
@@ -102,24 +102,24 @@ void Renderer::setup() {
 	modele_illumination1.disableMaterials();
 	//modele_illumination2.disableMaterials();
 	shader_color_fill.load(
-		"shaders/color_fill_330_vs.glsl",
-		"shaders/color_fill_330_fs.glsl");
+		"shader/color_fill_330_vs.glsl",
+		"shader/color_fill_330_fs.glsl");
 
 	shader_lambert.load(
-		"shaders/lambert_330_vs.glsl",
-		"shaders/lambert_330_fs.glsl");
+		"shader/lambert_330_vs.glsl",
+		"shader/lambert_330_fs.glsl");
 
 	shader_gouraud.load(
-		"shaders/gouraud_330_vs.glsl",
-		"shaders/gouraud_330_fs.glsl");
+		"shader/gouraud_330_vs.glsl",
+		"shader/gouraud_330_fs.glsl");
 
 	shader_phong.load(
-		"shaders/phong_330_vs.glsl",
-		"shaders/phong_330_fs.glsl");
+		"shader/phong_330_vs.glsl",
+		"shader/phong_330_fs.glsl");
 
 	shader_blinn_phong.load(
-		"shaders/blinn_phong_330_vs.glsl",
-		"shaders/blinn_phong_330_fs.glsl");
+		"shader/blinn_phong_330_vs.glsl",
+		"shader/blinn_phong_330_fs.glsl");
 	// shader actif au lancement de la scène
 	shader_active = ShaderType::blinn_phong;
 	// initialisation de la scène
@@ -192,6 +192,10 @@ void Renderer::reset()
 	position_sphere.set(0.0f, 0.0f, 0.0f);
 	position_modele_ill_1.set(ofGetWidth() * (1.0f / 4.0f), 50.0f, 0.0f);
 	//////////////////////////////////////
+
+	material_color_ambient = ofColor(63, 63, 63);
+	material_color_diffuse = ofColor(255, 255, 255);
+	material_color_specular = ofColor(255, 255, 255);
 
 	//Parametres du materiau
 	material_metallic = 0.5f;
@@ -418,6 +422,15 @@ void Renderer::update()
 	else lightTest.setUniform1f("spotActive", 0.0f);
 
 	lightTest.end();
+
+	if (light_motion)
+	{
+		// transformer la lumière
+		light.setGlobalPosition(
+			ofMap(ofGetMouseX() / (float)ofGetWidth(), 0.0f, 1.0f, -center_x, center_x),
+			ofMap(ofGetMouseY() / (float)ofGetHeight(), 0.0f, 1.0f, -center_y, center_y),
+			-offset_z * 1.0f);
+	}
 
 	shader_pbr.begin();
 

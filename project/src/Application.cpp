@@ -277,13 +277,17 @@ void Application::update()
 	renderer.material_roughness = sphereslider_roughness, cubeslider_roughness, teapotslider_roughness;
 	renderer.material_occlusion = sphereslider_occlusion, cubeslider_occlusion, teapotslider_occlusion;
 	renderer.material_brightness = sphereslider_brightness, cubeslider_brightness, teapotslider_brightness;
+	
 	renderer.material_fresnel_ior = sphereslider_fresnel_ior, cubeslider_fresnel_ior, teapotslider_fresnel_ior;
+	
 	renderer.material_color_ambient = color_picker_ambient;
 	renderer.material_color_diffuse = color_picker_diffuse;
 	renderer.material_color_specular = color_picker_specular;
+	
 	renderer.light_color = color_picker_light_color;
 	renderer.light_intensity = slider_light_intensity;
 	renderer.light_motion = toggle_light_motion;
+	
 	renderer.tone_mapping_exposure = teapotslider_exposure;
 	renderer.tone_mapping_gamma = teapotslider_gamma;
 	renderer.tone_mapping_toggle = teapottoggle_tone_mapping;
