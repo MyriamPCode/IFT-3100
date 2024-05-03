@@ -26,7 +26,7 @@ class Renderer {
         Interface interface;
         ofImage image;
         ofShader shader;
-        ofShader shaderFiltres;
+        ofShader shaderFiltre;
         float mix_factor;
         ofColor tint;
     ofShader shaderLight;
@@ -37,6 +37,7 @@ class Renderer {
     ofImage textureImage;
     ofTexture textu;
     ofTexture textuSphere;
+
     list<ofImage> imageList; //Liste d'images import�es
     list<vector<int>> imgPosList; //Positions x et y des images import�es
 
@@ -106,6 +107,14 @@ class Renderer {
         vector<unique_ptr<Forme>>* getVecteurFormesPtr() {
             return &v_formes;
         }
+
+        list<ofVec2f> delaunayPoints;
+        list<vector<ofVec2f>> delaunayEdges;
+        void calculateDelaunay();
+        bool isInsideCircumcircle(ofVec2f p1, ofVec2f p2, ofVec2f p3, ofVec2f pTest);
+        bool hasSharedVertex(vector<ofVec2f> triangle1, vector<ofVec2f> triangle2);
+        bool isEdgeUnique(list<vector<ofVec2f>> badTriangles, vector<ofVec2f> edge, vector<ofVec2f> currTri);
+        void drawTriangulation();
 
         bool modeDrawState, modeTransformState; // pour indiquer si en mode draw ou transformation
 

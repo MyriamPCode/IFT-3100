@@ -659,4 +659,5 @@ void Interface::setupMeshOptions() {
 	mailleGui.add(meshButton);
 	meshAnimationButton.setName("Mesh animation");
 	mailleGui.add(meshAnimationButton);
+	mailleGui.add(delaunay.setup("Delaunay Triangulation", false));
 }
