@@ -310,7 +310,7 @@ void Rayons::init()
     constexpr double box_z_max = box_size_z;
 
     constexpr double box_center_x = (box_x_max - box_x_min) / 2.0;
-    constexpr double box_center_y = (box_y_max - box_y_min) / 2.0;
+    constexpr double box_center_y = (box_y_max - box_y_min) / 2.0; 
     constexpr double box_center_z = (box_z_max - box_z_min) / 2.0;
 
     // vider la scène de son contenu
@@ -322,14 +322,14 @@ void Rayons::init()
         // approximation d'une boîte de Cornell avec des sphères surdimensionnées qui simulent des surfaces planes
         Sphere(wall_radius, Vector(box_center_x,  anchor,            box_size_z),   Vector(), Vector(0.75, 0.75, 0.75), SurfaceType::diffuse),    // plancher
         Sphere(wall_radius, Vector(box_center_x, -anchor + box_size_y, box_size_z),   Vector(), Vector(0.75, 0.75, 0.75), SurfaceType::diffuse),    // plafond
-        Sphere(wall_radius, Vector(anchor + 1,      box_center_y,      box_size_z),   Vector(), Vector(0.75, 0.25, 0.25), SurfaceType::diffuse),    // mur gauche
-        Sphere(wall_radius, Vector(box_center_x,  box_center_y,      anchor),       Vector(), Vector(0.25, 0.75, 0.25), SurfaceType::diffuse),    // mur arrière
-        Sphere(wall_radius, Vector(-anchor + 99,     box_center_y,      box_size_z),   Vector(), Vector(0.25, 0.25, 0.75), SurfaceType::diffuse),    // mur droit
+        Sphere(wall_radius, Vector(anchor + 1,      box_center_y,      box_size_z),   Vector(), Vector(0.25, 0.75, 0.25), SurfaceType::diffuse),    // mur gauche
+        Sphere(wall_radius, Vector(box_center_x,  box_center_y,      anchor),       Vector(), Vector(0.25, 0.25, 0.75), SurfaceType::diffuse),    // mur arrière
+        Sphere(wall_radius, Vector(-anchor + 99,     box_center_y,      box_size_z),   Vector(), Vector(0.75, 0.25, 0.25), SurfaceType::diffuse),    // mur droit
         Sphere(wall_radius, Vector(box_center_x,  box_center_y,     -anchor + 170),   Vector(), Vector(0.0,  0.0,  0.0),  SurfaceType::diffuse),    // mur avant
 
         // ensemble des sphères situées à l'intérieur de la boîte de Cornell
-        Sphere(22.5,        Vector(30,            30,                40),           Vector(), Vector(1.0, 1.0, 1.0),    SurfaceType::specular),   // sphère mirroir
-        Sphere(17.5,        Vector(75,            40,                75),           Vector(), Vector(1.0, 1.0, 1.0),    SurfaceType::refraction), // sphère de verre
+        Sphere(22.5,        Vector(80,            30,                20),           Vector(), Vector(1.0, 1.0, 1.0),    SurfaceType::specular),   // sphère mirroir
+        Sphere(17.5,        Vector(25,            50,                75),           Vector(), Vector(1.0, 1.0, 1.0),    SurfaceType::refraction), // sphère de verre
 
         Sphere(600,  Vector(box_center_x, 600.0 + box_size_z - 0.27, box_size_z), Vector(15, 15, 15), Vector(0.0, 0.0, 0.0), SurfaceType::diffuse) // sphère lumineuse
         });
