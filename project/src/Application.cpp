@@ -112,6 +112,10 @@ void Application::setup(){
 
 	filterGUI.setup();
 	filterGUI.setPosition(700, 70);
+	textureGroupe.setup("Filtres (Textures)");
+	textureGroupe.add(sphereTextureButton.setup("Sphere", false));
+	sphereTextureButton.addListener(this, &Application::button_sphereTexture);
+	filterGUI.add(&textureGroupe);
 	filterGroupe.setup("Filtres");
 	filterGUI.add(color_picker.set("teinte", renderer.tint, ofColor(0, 0), ofColor(255, 255)));
 	filterGUI.add(slider.set("mix", renderer.mix_factor, 0.0f, 1.0f));
@@ -406,22 +410,6 @@ void Application::draw(){
 			if (camera_active != Camera::down)
 				camBottom.draw();
 		}
-	}
-
-	if (renderer.interface.import_activate) {
-		textureGUI.setup();
-		textureGUI.setPosition(800, 40);
-		textureGroupe.setup("Filtres");
-		textureGroupe.add(sphereTextureButton.setup("Sphere", false));
-		sphereTextureButton.addListener(this, &Application::button_sphereTexture);
-		textureGUI.add(&textureGroupe);
-
-		filterGUI.setup();
-		filterGUI.setPosition(800, 40);
-		textureGroupe.setup("Filtres");
-		textureGroupe.add(sphereTextureButton.setup("Sphere", false));
-		sphereTextureButton.addListener(this, &Application::button_sphereTexture);
-		filterGUI.add(&textureGroupe);
 	}
 
 	if (renderer.interface.import_activate) {
