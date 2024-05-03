@@ -12,7 +12,7 @@ void Application::setup(){
 
 	//toggleDraw, toggleTransform
 	drawingGUI.setup();
-	drawingGUI.setPosition(300, 40);
+	drawingGUI.setPosition(0, 40);//(300, 40)
 	primitivesMode.setup("Mode");
 	primitivesMode.add(toggleDraw.setup("Drawing", false));
 	primitivesMode.add(toggleTransform.setup("Transformation", false));
@@ -104,9 +104,18 @@ void Application::setup(){
 	hermiteGroupe.add(hermiteButton);
 	hermiteButton.addListener(this, &Application::button_hermite);
 	curveGui.add(&hermiteGroupe);
+	surfaceParametriqueGroup.setup("Surface parametrique");
+	coonsButton.setName("Coons");
+	surfaceParametriqueGroup.add(coonsButton);
+	coonsButton.addListener(this, &Application::button_coons);
+	curveGui.add(&surfaceParametriqueGroup);
 
 	filterGUI.setup();
 	filterGUI.setPosition(700, 70);
+	textureGroupe.setup("Filtres (Textures)");
+	textureGroupe.add(sphereTextureButton.setup("Sphere", false));
+	sphereTextureButton.addListener(this, &Application::button_sphereTexture);
+	filterGUI.add(&textureGroupe);
 	filterGroupe.setup("Filtres");
 	filterGUI.add(color_picker.set("teinte", renderer.tint, ofColor(0, 0), ofColor(255, 255)));
 	filterGUI.add(slider.set("mix", renderer.mix_factor, 0.0f, 1.0f));
@@ -178,7 +187,38 @@ void Application::setup(){
 
 	// Modele Illumination
 	is_key_press_up = is_key_press_down = is_key_press_left = is_key_press_right = false;
+
+	// Coons
+	renderer.selected_ctrl_point = &renderer.controlPoint0;
+	controlPtZ = 0.0f; //pour le mousewheel avec Coons sur axe des Z
+
+	// Texture
+	//reset();
+	color_picker_ambient.set("ambient", renderer.material_color_ambient, ofColor(0, 0), ofColor(255, 255));
+	color_picker_diffuse.set("diffuse", renderer.material_color_diffuse, ofColor(0, 0), ofColor(255, 255));
+	color_picker_specular.set("specular", renderer.material_color_specular, ofColor(0, 0), ofColor(255, 255));
+
+	slider_metallic.set("metallic", renderer.material_metallic, 0.0f, 1.0f);
+	slider_roughness.set("roughness", renderer.material_roughness, 0.0f, 1.0f);
+	slider_occlusion.set("occlusion", renderer.material_occlusion, 0.0f, 5.0f);
+	slider_brightness.set("brightness", renderer.material_brightness, 0.0f, 5.0f);
+
+	slider_fresnel_ior.set("fresnel ior", renderer.material_fresnel_ior, glm::vec3(0.0f), glm::vec3(1.0f));
+
+	color_picker_light_color.set("color", renderer.light_color, ofColor(0, 0), ofColor(255, 255));
+	slider_light_intensity.set("intensity", renderer.light_intensity, 0.0f, 10.0f);
+
+	toggle_light_motion.set("motion", renderer.light_motion);
+
+	slider_exposure.set("exposure", 1.0f, 0.0f, 5.0f);
+	slider_gamma.set("gamma", 2.2f, 0.0f, 5.0f);
+
+	if (renderer.tone_mapping_toggle)
+		toggle_tone_mapping.set("aces filmic", true);
+	else
+		toggle_tone_mapping.set("reinhard", false);
 }
+
 
 void Application::update()
 {
@@ -218,21 +258,94 @@ void Application::update()
 		cam.move(0, 0, -1); // DÃ©placer la camÃ©ra en s'eloignant
 	}
 
-	/// Modele Illumination
+	/// Modele coons
 	time_current = ofGetElapsedTimef();
 	time_elapsed = time_current - time_last;
 	time_last = time_current;
-	if (is_key_press_up)
-		renderer.offset_z += renderer.delta_z * time_elapsed;
-	if (is_key_press_down)
-		renderer.offset_z -= renderer.delta_z * time_elapsed;
-	if (is_key_press_left)
-		renderer.offset_x += renderer.delta_x * time_elapsed;
-	if (is_key_press_right)
-		renderer.offset_x -= renderer.delta_x * time_elapsed;
+	if (renderer.isCoons && !renderer.isModeIllumination)
+	{
+		if (is_key_press_up) {
+			renderer.selected_ctrl_point->y -= renderer.delta_y * time_elapsed;
+		}
+		if (is_key_press_down) {
+			renderer.selected_ctrl_point->y += renderer.delta_y * time_elapsed;
+		}
+		if (is_key_press_left) {
+			renderer.selected_ctrl_point->x -= renderer.delta_x * time_elapsed;
+		}
+		if (is_key_press_right) {
+			renderer.selected_ctrl_point->x += renderer.delta_x * time_elapsed;
+		}
+		if (renderer.isCoons) {
+			renderer.selected_ctrl_point->z += controlPtZ * 5;
+			controlPtZ = 0.0f;
+		}
+	}
+	if (!renderer.isCoons && renderer.isModeIllumination)
+	{
+		if (is_key_press_up){renderer.offset_z += renderer.delta_z * time_elapsed;}
+			
+		if (is_key_press_down){renderer.offset_z -= renderer.delta_z * time_elapsed;}
+			
+		if (is_key_press_left){renderer.offset_x += renderer.delta_x * time_elapsed;}
+			
+		if (is_key_press_right){}renderer.offset_x -= renderer.delta_x * time_elapsed;
+			
+	}
 	////////////////////////////
+	// Texture
+	if(renderer.isTexture)
+	{
+
+		//////////////////////////////
+		time_current = ofGetElapsedTimef();
+		time_elapsed = time_current - time_last;
+		time_last = time_current;
+
+		if (is_key_press_up)
+			renderer.offset_z += renderer.delta_z * time_elapsed;
+		if (is_key_press_down)
+			renderer.offset_z -= renderer.delta_z * time_elapsed;
+		if (is_key_press_left)
+			renderer.offset_x += renderer.delta_x * time_elapsed;
+		if (is_key_press_right)
+			renderer.offset_x -= renderer.delta_x * time_elapsed;
+		//if (is_key_press_q)
+		//	renderer.rotation_y += renderer.delta_y * time_elapsed;
+		//if (is_key_press_e)
+		//	renderer.rotation_y -= renderer.delta_y * time_elapsed;
+
+		renderer.material_color_ambient = color_picker_ambient;
+		renderer.material_color_diffuse = color_picker_diffuse;
+		renderer.material_color_specular = color_picker_specular;
+
+		renderer.material_metallic = slider_metallic;
+		renderer.material_roughness = slider_roughness;
+		renderer.material_occlusion = slider_occlusion;
+		renderer.material_brightness = slider_brightness;
+
+		renderer.material_fresnel_ior = slider_fresnel_ior;
+
+		renderer.light_color = color_picker_light_color;
+		renderer.light_intensity = slider_light_intensity;
+		renderer.light_motion = toggle_light_motion;
+
+		renderer.tone_mapping_exposure = slider_exposure;
+		renderer.tone_mapping_gamma = slider_gamma;
+		renderer.tone_mapping_toggle = toggle_tone_mapping;
+
+		if (renderer.tone_mapping_toggle)
+			toggle_tone_mapping.set("aces filmic", true);
+		else
+			toggle_tone_mapping.set("reinhard", false);
+
+		renderer.update();
+	}
 }
 
+void Application::mouseScrolled(int x, int y, float scrollX, float scrollY) {
+	controlPtZ += scrollY;
+}
 
 void Application::draw(){
 	if (isImportable) {
@@ -298,22 +411,6 @@ void Application::draw(){
 	}
 
 	if (renderer.interface.import_activate) {
-		textureGUI.setup();
-		textureGUI.setPosition(800, 40);
-		textureGroupe.setup("Filtres");
-		textureGroupe.add(sphereTextureButton.setup("Sphere", false));
-		sphereTextureButton.addListener(this, &Application::button_sphereTexture);
-		textureGUI.add(&textureGroupe);
-
-		filterGUI.setup();
-		filterGUI.setPosition(800, 40);
-		textureGroupe.setup("Filtres");
-		textureGroupe.add(sphereTextureButton.setup("Sphere", false));
-		sphereTextureButton.addListener(this, &Application::button_sphereTexture);
-		filterGUI.add(&textureGroupe);
-	}
-
-	if (renderer.interface.import_activate) {
 		filterGUI.draw();
 	}
 
@@ -358,7 +455,6 @@ void Application::draw(){
 					ofVec2f p4 = controlPoints[i + 4];
 					ofVec2f p = catmullRom(t, p0, p1, p2, p3, p4);
 					ofDrawCircle(p, 2);
-
 				}
 			}
 		}
@@ -417,7 +513,6 @@ void Application::draw(){
 			}
 		}
 	}
-
 	guiScene.draw();
 }
 
@@ -430,7 +525,6 @@ void Application::toggleDrawingGUI(Forme::TypeForme drawingShape) {
 		drawingGUIPressed = true;
 	}
 }
-
 
 // a modifier ou effacer 
 void Application::deleteShapeSelected()
@@ -452,32 +546,16 @@ void Application::deleteShapeSelected()
 				buttonsToDelete.push_back(i);
 			}
 		}
-
 	}
-
 	if (!buttonsToDelete.empty())
 	{
 		//cout << "Deletion is possible! " << endl;
 		//cout << "Size of the deletion list is " << buttonsToDelete.size() << endl;
 	}
-
 }
 
 void Application::keyPressed(int key) 
 {
-
-	// Pour tester les pointeurs 
-	if (key == 'f') 
-	{
-		for (const auto& ptr : *renderer.v_formes_ptr) 
-		{
-			//cout << "Adresse du pointeur : " << &ptr << endl;
-			//cout << "Adresse de l'objet Forme : " << ptr.get() << endl; // Obtenir l'adresse de l'objet pointé
-			//cout << "Valeur de l'objet Forme : " << ptr << endl;
-			//cout << endl;
-		}		
-	}
-
 	// DÃ¯Â¿Â½marrer/arrÃ¯Â¿Â½ter l'enregistrement lors de l'appui sur la touche 'r'
 	if (key == 'r') 
 	{
@@ -493,25 +571,8 @@ void Application::keyPressed(int key)
 			std::cout << "Enregistrement arreter." << endl;
 		}
 	}
-
-
-	if(key == 'z')
-	{ 
-		if(!v_buttons.empty() && !renderer.v_formes.empty())
-		{ 
-			//undo();
-		}
-	}
-	if(key == 'x')
-	{ 
-		if (!v_buttons.empty() && !renderer.v_formes.empty())
-		{
-			//redo(); 
-		}
-	}
-
 	/// Ajout du false pour retirer le modeIllumination 
-	if (renderer.isModeIllumination == false)
+	if (renderer.isModeIllumination == false && renderer.isCoons == false)
 	{
 		if (key == OF_KEY_LEFT) {
 			moveCameraLeft = true;
@@ -530,6 +591,31 @@ void Application::keyPressed(int key)
 		}
 		if (key == 50) {
 			moveCameraFar = true;
+		}
+	}
+	// Coons
+	if (renderer.isCoons)
+	{
+		switch (key)
+		{
+		case OF_KEY_LEFT: // touche ?
+			is_key_press_left = true;
+			break;
+
+		case OF_KEY_UP: // touche ?
+			is_key_press_up = true;
+			break;
+
+		case OF_KEY_RIGHT: // touche ?
+			is_key_press_right = true;
+			break;
+
+		case OF_KEY_DOWN: // touche ?
+			is_key_press_down = true;
+			break;
+
+		default:
+			break;
 		}
 	}
 	// Modele illumination
@@ -560,9 +646,8 @@ void Application::keyPressed(int key)
 }
 
 void Application::keyReleased(int key){
-
 	/// Ajout boolean mode non-Illumination 
-	if (renderer.isModeIllumination == false)
+	if (!renderer.isModeIllumination && !renderer.isCoons)
 	{
 		if (key == 105) { // 105 = key "i"
 			isImportable = !isImportable;
@@ -585,6 +670,52 @@ void Application::keyReleased(int key){
 		}
 		if (key == 50) { // 50 = touche 2
 			moveCameraFar = false;
+		}
+	}
+	// Coons
+	if (renderer.isCoons)
+	{
+		switch (key)
+		{
+		case 49: // touche 1
+			renderer.selected_ctrl_point = &renderer.controlPoint0;
+			ofLog() << "<select control point 0>";
+			break;
+
+		case 50: // touche 2
+			renderer.selected_ctrl_point = &renderer.controlPoint1;
+			ofLog() << "<select control point 1>";
+			break;
+
+		case 51: // touche 3
+			renderer.selected_ctrl_point = &renderer.controlPoint2;
+			ofLog() << "<select control point 2>";
+			break;
+
+		case 52: // touche 4
+			renderer.selected_ctrl_point = &renderer.controlPoint3;
+			ofLog() << "<select control point 3>";
+			break;
+		case 114: // touche r
+			renderer.reset();
+			break;
+		case OF_KEY_LEFT: // touche ?
+			is_key_press_left = false;
+			break;
+
+		case OF_KEY_UP: // touche ?
+			is_key_press_up = false;
+			break;
+
+		case OF_KEY_RIGHT: // touche ?
+			is_key_press_right = false;
+			break;
+
+		case OF_KEY_DOWN: // touche ?
+			is_key_press_down = false;
+			break;
+		default:
+			break;
 		}
 	}
 	/// Modele illumination 
@@ -708,12 +839,10 @@ void Application::mouseDragged(int x, int y, int button){
 	{
 		renderer.ligne.addVertex(renderer.interface.mouse_drag_x, renderer.interface.mouse_drag_y);
 	}
-
 	if (selectedPointIndex != -1) {
 		controlPoints[selectedPointIndex].set(x, y);
 	}
 }
-
 
 void Application::showButtonsList(){
 	if(v_buttons_ptr)
@@ -1247,7 +1376,6 @@ void Application::button_line(bool& value)
 		//drawTriangle = drawRectangle = drawCircle = drawEllipse = drawBezier = drawSphere = drawCube = false;
 		renderer.interface.color_picker_stroke = renderer.ligneColor;
 		renderer.interface.slider_stroke_weight = renderer.ligneStroke;
-		
 	}
 }
 
@@ -1291,12 +1419,10 @@ void Application::drawEllipse()
 		if (renderer.interface.fillButton != renderer.ellipseFill) 
 		{
 			renderer.interface.fillButton = renderer.ellipseFill;
-
 		}
 		renderer.interface.slider_stroke_weight = renderer.ellipseStroke;
 	}
 }
-
 
 void Application::button_bezier(bool& value)
 {
@@ -1346,7 +1472,6 @@ void Application::button_sphereTexture(bool& value) {
 		draw_sphereTexture = !draw_sphereTexture;
 		draw_circle = draw_rectangle = draw_line = draw_ellipse = draw_bezier = draw_sphere = draw_cube = draw_triangle = false;
 		draw_sphere = draw_cube = false;
-
 	}
 }
 
@@ -1551,6 +1676,8 @@ void Application::button_catmullRom(bool& value) {
 		catmullRom6_activate = false;
 		hermiteButton = false;
 		hermite_activate = false;
+		coonsButton = false;
+		renderer.isCoons = false;
 	}
 }
 
@@ -1562,6 +1689,8 @@ void Application::button_catmullRom6(bool& value) {
 		catmullRom_activate = false;
 		hermiteButton = false;
 		hermite_activate = false;
+		coonsButton = false;
+		renderer.isCoons = false;
 	}
 }
 
@@ -1573,6 +1702,21 @@ void Application::button_hermite(bool& value) {
 		catmullRom6_activate = false;
 		catmullRomButton = false;
 		catmullRom_activate = false;
+		coonsButton = false;
+		renderer.isCoons = false;
+	}
+}
+
+void Application::button_coons(bool& value) {
+	renderer.isCoons = value;
+	if (value) {
+		renderer.isCoons = true;
+		catmullRomButton6 = false;
+		catmullRom6_activate = false;
+		catmullRomButton = false;
+		catmullRom_activate = false;
+		hermiteButton = false;
+		hermite_activate = false;
 	}
 }
 

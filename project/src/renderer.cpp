@@ -71,14 +71,17 @@ void Renderer::setup() {
 	oscillation_frequency = 7500.0f;
 	speed_motion = 150.0f;
 	initial_x = 0.0f;
+	initial_y = 0.0f;
 	initial_z = -100.0f;
 	scale_cube = 100.0f;
 	scale_sphere = 80.0f;
 	scale_modele_ill_1 = 0.618f;
 	scale_modele_ill_2 = 0.618f;
 	offset_x = initial_x;
+	offset_y = initial_y;
 	offset_z = initial_z;
 	delta_x = speed_motion;
+	delta_y = speed_motion;
 	delta_z = speed_motion;
 	modele_illumination1.loadModel("models/teapot.obj");
 	modele_illumination2.loadModel("models/pomu.obj");
@@ -114,6 +117,30 @@ void Renderer::setup() {
 	ofImage tempEarth; tempEarth.load("img/earth_texture.jpg"); tempEarth.mirror(false, true); //S'occupe de bien préparer l'image
 	textuSphere = tempEarth.getTexture();
 	lightSetup();
+
+	//////////////////////////////////////
+	// COONS 
+	isCoons = false;
+	setupCoons(); //pour preparer le COONs
+
+	// Texture 
+	ofSetLogLevel(OF_LOG_VERBOSE);
+	ofSetSphereResolution(32);
+	teapotTexture.loadModel("models/teapot.obj");
+	//teapotTexture.loadModel("models/bun_zipper.ply"); 
+	//teapotTexture.loadModel("models/teapotOrtho.obj");
+	teapotTexture.disableTextures(); 
+	shaderTexture.load(
+		"shaders/pbr_330_vs.glsl",
+		"shaders/pbr_330_fs.glsl");
+	texture_diffuse.load("texture/metal_plate_diffuse_1k.jpg");
+	texture_metallic.load("texture/metal_plate_metallic_1k.jpg");
+	texture_roughness.load("texture/metal_plate_roughness_1k.jpg");
+	texture_occlusion.load("texture/metal_plate_ao_1k.jpg");
+	texture_diffuse.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
+	texture_metallic.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
+	texture_roughness.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
+	texture_occlusion.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
 }
 
 void Renderer::lightSetup() {
@@ -176,12 +203,55 @@ void Renderer::reset()
 	position_sphere.set(0.0f, 0.0f, 0.0f);
 	position_modele_ill_1.set(ofGetWidth() * (1.0f / 4.0f), 50.0f, 0.0f);
 	//////////////////////////////////////
+	// Texture
+	speed_motion_texture = 150.0f;
+	speed_rotation_texture = 50.0f;
+	initialTexture_x = 0.0f;
+	initialTexture_z = -100.0f;
+	rotation_y = 0.0f;
+	scale_cube_texture = 110.0f;
+	scale_sphere_texture = 90.0f;
+	scale_teapot_texture = 0.618f;
+
+	// positions initiales des maillages géométriques
+	position_cube_texture.set(-ofGetWidth() * (1.0f / 4.0f), 0.0f, 0.0f);
+	position_sphere_texture.set(0.0f, 0.0f, 0.0f);
+	position_teapot_texture.set(ofGetWidth() * (1.0f / 4.0f), 50.0f, 0.0f);
+
+	// paramètres du matériau
+	material_color_ambient = ofColor(63, 63, 63);
+	material_color_diffuse = ofColor(255, 255, 255);
+	material_color_specular = ofColor(255, 255, 255);
+
+	material_metallic = 0.5f;
+	material_roughness = 0.5f;
+	material_occlusion = 1.0f;
+	material_brightness = 1.0f;
+
+	material_fresnel_ior = glm::vec3(0.04f, 0.04f, 0.04f);
+
+	// paramètres de la lumière
+	light_color = ofColor(255, 255, 255);
+	light_intensity = 1.0f;
+	light_motion = true;
+
+	// paramètres de mappage tonal
+	tone_mapping_exposure = 1.0f;
+	tone_mapping_toggle = true;
+
+	// initialisation des variables
+	deltaTexture_x = speed_motion_texture;
+	deltaTexture_y = speed_rotation_texture;
+	deltaTexture_z = speed_motion_texture;
+
+	// position initiale de la caméra
+	offsetTexture_x = initialTexture_x;
+	offsetTexture_z = initialTexture_z;
 
 	ofLog() << "<reset>";
 }
 
-void Renderer::setup(vector<unique_ptr<Forme>>& v_formes) 
-{
+void Renderer::setup(vector<unique_ptr<Forme>>& v_formes) {
 	v_formes_ptr = &v_formes;
 }
 
@@ -394,6 +464,48 @@ void Renderer::update()
 	shaderLight.setUniform3f("pointLightPosition", lightPoint.getPosition());
 	shaderLight.setUniform3f("spotLightPosition", lightSpot.getPosition());
 	shaderLight.end();
+
+	// Texture
+	if (isTexture){
+		centerTexture_x = ofGetWidth() / 2.0f;
+		centerTexture_y = ofGetHeight() / 2.0f;
+		if (light_motion)
+		{
+		// transformer la lumière
+			lightTexture.setGlobalPosition(
+				ofMap(ofGetMouseX() / (float)ofGetWidth(), 0.0f, 1.0f, -centerTexture_x, centerTexture_x),
+				ofMap(ofGetMouseY() / (float)ofGetHeight(), 0.0f, 1.0f, -centerTexture_y, centerTexture_y),
+				-offsetTexture_z * 1.0f);
+		}
+		// passer les attributs uniformes au shader de sommets
+		shaderTexture.begin();
+
+		shaderTexture.setUniform3f("material_color_ambient", material_color_ambient.r / 255.0f, material_color_ambient.g / 255.0f, material_color_ambient.b / 255.0f);
+		shaderTexture.setUniform3f("material_color_diffuse", material_color_diffuse.r / 255.0f, material_color_diffuse.g / 255.0f, material_color_diffuse.b / 255.0f);
+		shaderTexture.setUniform3f("material_color_specular", material_color_specular.r / 255.0f, material_color_specular.g / 255.0f, material_color_specular.b / 255.0f);
+
+		shaderTexture.setUniform1f("material_brightness", material_brightness);
+		shaderTexture.setUniform1f("material_metallic", material_metallic);
+		shaderTexture.setUniform1f("material_roughness", material_roughness);
+		shaderTexture.setUniform1f("material_occlusion", material_occlusion);
+
+		shaderTexture.setUniform3f("material_fresnel_ior", material_fresnel_ior);
+
+		shaderTexture.setUniformTexture("texture_diffuse", texture_diffuse.getTexture(), 1);
+		shaderTexture.setUniformTexture("texture_metallic", texture_metallic.getTexture(), 2);
+		shaderTexture.setUniformTexture("texture_roughness", texture_roughness.getTexture(), 3);
+		shaderTexture.setUniformTexture("texture_occlusion", texture_occlusion.getTexture(), 4);
+
+		shaderTexture.setUniform1f("light_intensity", light_intensity);
+		shaderTexture.setUniform3f("light_color", light_color.r / 255.0f, light_color.g / 255.0f, light_color.b / 255.0f);
+		shaderTexture.setUniform3f("light_position", lightTexture.getGlobalPosition());
+
+		shaderTexture.setUniform1f("tone_mapping_exposure", tone_mapping_exposure);
+		shaderTexture.setUniform1f("tone_mapping_gamma", tone_mapping_gamma);
+		shaderTexture.setUniform1i("tone_mapping_toggle", tone_mapping_toggle);
+
+		shaderTexture.end();
+	}
 }
 
 void Renderer::draw() {
@@ -481,7 +593,6 @@ void Renderer::draw() {
 	{
 		if (interface.textureFillButton) {
 			shader.load("filters/colors.vert", "filters/colors.frag");
-
 			shader.begin();
 			shader.setUniform1f("u_time", ofGetElapsedTimef());
 			shader.setUniform2f("u_resolution", ofGetWidth(), ofGetHeight());
@@ -490,6 +601,8 @@ void Renderer::draw() {
 
 		// draw Illumination 
 		if (isModeIllumination) {
+			//modele_illumination1.setPosition(1410, 700, 0);
+			//modele_illumination2.setPosition(-50, 1200, -400);
 			ofEnableLighting();
 			light.enable();
 			ofPushMatrix;
@@ -505,7 +618,7 @@ void Renderer::draw() {
 		dessinerCercle();
 		dessinerRectangle();
 		dessinerEllipse();
-		//dessinerSphere(); //en commentaire sinon ca pogne en conflit avec Illumination
+		dessinerSphere(); //en commentaire sinon ca pogne en conflit avec Illumination
 		dessinerCube();
 
 		if (interface.textureFillButton) {
@@ -588,6 +701,17 @@ void Renderer::draw() {
 	if (isRecording) {
 		ofDrawBitmapString("Enregistrement enmouse cours...", 20, 20);
 	}
+
+	// Coons
+	if (isCoons)
+	{
+		drawSetupCoons();
+	}
+	// Texture
+	if (isTexture)
+	{
+		afficherTexture(); 
+	}
 }
 
 void Renderer::setTeapotMaterials() {
@@ -596,7 +720,255 @@ void Renderer::setTeapotMaterials() {
 	material_teapot.setDiffuseColor(ofColor(interface.teapotDiffuseColorPicker));
 	material_teapot.setEmissiveColor(ofColor(interface.teapotEmissiveColorPicker));
 	material_teapot.setSpecularColor(ofColor(interface.teapotSpecularColorPicker));
-	material_teapot.setShininess(interface.teapotShininess);
+	material_teapot.setShininess(interface.teapotShininess); }
+
+// Texture
+void Renderer::afficherTexture(){
+	// activer l'occlusion en profondeur
+	ofEnableDepthTest();
+
+	// activer l'éclairage dynamique
+	ofEnableLighting();
+
+	// activer la lumière dynamique
+	lightTexture.enable();
+
+	// activer le shader
+	shaderTexture.begin();
+
+	ofPushMatrix(); // Push0
+
+	// transformer l'origine de la scène au milieu de la fenêtre d'affichage
+	ofTranslate(centerTexture_x + offsetTexture_x, centerTexture_y, offsetTexture_z);
+
+	// rotation globale
+	//ofRotateDeg(rotation_y, 0.0f, 1.0f, 0.0f);
+
+	ofPushMatrix(); // Push1
+
+	// positionner la sphère
+	ofTranslate(
+		position_sphere_texture.x,
+		position_sphere_texture.y,
+		position_sphere_texture.z);
+
+	// rotation locale
+	ofRotateDeg(45.0f, 1.0f, 0.0f, 0.0f);
+
+	// dessiner une sphère
+	ofFill();
+	ofDrawSphere(0.0f, 0.0f, 0.0f, scale_sphere_texture);
+
+	ofPopMatrix(); // Pop0
+
+	ofPushMatrix(); // Push2
+
+	// positionnner le cube
+	ofTranslate(
+		position_cube_texture.x,
+		position_cube_texture.y,
+		position_cube_texture.z);
+
+	// dessiner un cube
+	ofDrawBox(0.0f, 0.0f, 0.0f, scale_cube_texture);
+
+	ofPopMatrix(); // Pop1
+
+	ofPushMatrix(); // Push3
+
+	// positionner le teapot
+	teapotTexture.setPosition(
+		position_teapot_texture.x + 25.0f,
+		position_teapot_texture.y + 15.0f,
+		position_teapot_texture.z);
+
+	// dimension du teapot
+	teapotTexture.setScale(
+		scale_teapot_texture,
+		scale_teapot_texture,
+		scale_teapot_texture);
+
+	// dessiner un teapot
+	//teapotTexture.draw(OF_MESH_FILL);
+
+	ofPopMatrix(); // Pop2
+
+	ofPopMatrix(); // Pop3
+
+	// désactiver le shader
+	shaderTexture.end();
+
+	// désactiver la lumière
+	lightTexture.disable();
+
+	// désactiver l'éclairage dynamique
+	ofDisableLighting();
+
+	// désactiver l'occlusion en profondeur
+	ofDisableDepthTest();
+}
+
+//Coons 
+void Renderer::setupCoons() {
+	controlPoint0.set(500, 200, 0);
+	controlPoint0A.set(620, 200, 0); //controlPoint0A.set(620, 100, 25) 
+	controlPoint0B.set(980, 200, 0); //controlPoint0B.set(980, 100, 25)
+	controlPoint1.set(1100, 200, 0); //controlPoint1.set(1100, 200, 50)
+	controlPoint1A.set(1100, 320, 0); //controlPoint1A.set(1220, 320, 75)
+	controlPoint1B.set(1100, 680, 0); //controlPoint1B.set(1220, 680, 75)
+	controlPoint2.set(1100, 800, 0); //controlPoint2.set(1100, 800, 100)
+	controlPoint2A.set(620, 800, 0); //controlPoint2A.set(620, 920, 125)
+	controlPoint2B.set(980, 800, 0); //controlPoint2B.set(980, 920, 125)
+	controlPoint3.set(500, 800, 0); //controlPoint3.set(500, 800, 150)
+	controlPoint3A.set(500, 320, 0); //controlPoint3A.set(380, 320, 75)
+	controlPoint3B.set(500, 680, 0); //controlPoint3B.set(380, 680, 75)
+
+	controlPointCoons.push_back(controlPoint0);
+	controlPointCoons2.push_back(controlPointCoons);
+	controlPointCourbes.push_back(controlPoint0A);
+	controlPointCourbes.push_back(controlPoint0B);
+	controlPointCoons.push_back(controlPoint1);
+	controlPointCoons2.push_back(controlPointCoons);
+	controlPointCourbes.push_back(controlPoint1A);
+	controlPointCourbes.push_back(controlPoint1B);
+	controlPointCoons.push_back(controlPoint2);
+	controlPointCoons2.push_back(controlPointCoons);
+	controlPointCourbes.push_back(controlPoint2A);
+	controlPointCourbes.push_back(controlPoint2B);
+	controlPointCoons.push_back(controlPoint3);
+	controlPointCoons2.push_back(controlPointCoons);
+	controlPointCourbes.push_back(controlPoint3A);
+	controlPointCourbes.push_back(controlPoint3B);
+	line_resolution = 100;
+	// initialisation des sommets de la ligne
+	for (index = 0; index <= line_resolution; ++index)
+		line_renderer.addVertex(ofPoint());
+}
+void Renderer::drawSetupCoons() {
+	ofSetLineWidth(500.0f);
+	for (index = 0; index <= line_resolution; ++index)
+	{
+		ofSetColor(0, 255, 0);
+		bezierCubic(index / (float)line_resolution,
+			controlPoint0.x, controlPoint0.y, controlPoint0.z,
+			controlPoint0A.x, controlPoint0A.y, controlPoint0A.z,
+			controlPoint0B.x, controlPoint0B.y, controlPoint0B.z,
+			controlPoint1.x, controlPoint1.y, controlPoint1.z,
+			positionsCoons.x, positionsCoons.y, positionsCoons.z);
+		line_renderer[index] = positionsCoons;
+	}
+	line_renderer.draw();
+	for (index = 0; index <= line_resolution; ++index)
+	{
+		ofSetColor(255, 0, 255);
+		bezierCubic(index / (float)line_resolution,
+			controlPoint1.x, controlPoint1.y, controlPoint1.z,
+			controlPoint1A.x, controlPoint1A.y, controlPoint1A.z,
+			controlPoint1B.x, controlPoint1B.y, controlPoint1B.z,
+			controlPoint2.x, controlPoint2.y, controlPoint2.z,
+			positionsCoons.x, positionsCoons.y, positionsCoons.z);
+		line_renderer[index] = positionsCoons;
+	}
+	line_renderer.draw();
+	for (index = 0; index <= line_resolution; ++index)
+	{
+		ofSetColor(255, 0, 0);
+		bezierCubic(index / (float)line_resolution,
+			controlPoint2.x, controlPoint2.y, controlPoint2.z,
+			controlPoint2B.x, controlPoint2B.y, controlPoint2B.z,
+			controlPoint2A.x, controlPoint2A.y, controlPoint2A.z,
+			controlPoint3.x, controlPoint3.y, controlPoint3.z,
+			positionsCoons.x, positionsCoons.y, positionsCoons.z);
+		line_renderer[index] = positionsCoons;
+	}
+	line_renderer.draw();
+	for (index = 0; index <= line_resolution; ++index)
+	{
+		ofSetColor(0, 0, 255);
+		bezierCubic(index / (float)line_resolution,
+			controlPoint3.x, controlPoint3.y, controlPoint3.z,
+			controlPoint3B.x, controlPoint3B.y, controlPoint3B.z,
+			controlPoint3A.x, controlPoint3A.y, controlPoint3A.z,
+			controlPoint0.x, controlPoint0.y, controlPoint0.z,
+			positionsCoons.x, positionsCoons.y, positionsCoons.z);
+		line_renderer[index] = positionsCoons;
+	}
+	line_renderer.draw();
+
+	ofSetColor(255, 0, 0);
+	ofFill();
+	float radius = 16;
+	for (const auto& p : controlPointCoons) {
+		// les 4 pts de ctrl principal
+		ofDrawEllipse(p, radius, radius);
+	}
+
+	//drawCoons(controlPointCoons2, 0, 1);
+}
+void Renderer::bezierCubic(
+	float t,
+	float p1x, float p1y, float p1z,
+	float p2x, float p2y, float p2z,
+	float p3x, float p3y, float p3z,
+	float p4x, float p4y, float p4z,
+	float& x, float& y, float& z)
+{
+	float u = 1 - t;
+	float uu = u * u;
+	float uuu = uu * u;
+	float tt = t * t;
+	float ttt = tt * t;
+
+	x = uuu * p1x + 3 * uu * t * p2x + 3 * u * tt * p3x + ttt * p4x;
+	y = uuu * p1y + 3 * uu * t * p2y + 3 * u * tt * p3y + ttt * p4y;
+	z = uuu * p1z + 3 * uu * t * p2z + 3 * u * tt * p3z + ttt * p4z;
+}
+
+void Renderer::drawCoons(const vector<vector<ofVec3f>>& controlPoints,
+	int resolutionU, int resolutionV)
+{
+	ofMesh aBlanket;
+
+	if (controlPoints.size() < 2 || controlPoints[0].size() < 2) {
+		ofLogError("Renderer::drawSurfaceCoons") << "Not enough control points provided";
+		return;
+	}
+
+	// Boucle pour dessiner la surface de Coons
+	for (int i = 0; i < resolutionU; ++i) {
+		for (int j = 0; j < resolutionV; ++j) {
+			// Calculer les valeurs normalisées de u et v
+			float u = i / (float)(resolutionU - 1);
+			float v = j / (float)(resolutionV - 1);
+
+			const ofVec3f p01 = interpolation_bilineaire(controlPoints[i][j], controlPoints[i + 1][j], controlPoints[i][j + 1], controlPoints[i + 1][j + 1], u, v);
+			const ofVec3f blerp = interpolation_bilineaire(controlPoint0, controlPoint1, controlPoint2, controlPoint3, u, v);
+
+			aBlanket.addVertex(p01);
+			aBlanket.addColor(ofColor(255));
+		}
+	}
+
+	// Ajouter les indices pour former les triangles
+	for (int i = 0; i < resolutionU - 1; ++i) {
+		for (int j = 0; j < resolutionV - 1; ++j) {
+			int currentIndex = i * resolutionV + j;
+			int nextIndex = currentIndex + 1;
+			int bottomIndex = currentIndex + resolutionV;
+			int bottomNextIndex = bottomIndex + 1;
+
+			// Ajouter les indices pour former les triangles
+			aBlanket.addIndex(currentIndex);
+			aBlanket.addIndex(nextIndex);
+			aBlanket.addIndex(bottomIndex);
+
+			aBlanket.addIndex(nextIndex);
+			aBlanket.addIndex(bottomNextIndex);
+			aBlanket.addIndex(bottomIndex);
+		}
+	}
+	// Dessiner la mesh
+	aBlanket.draw();
 }
 
 // Nouvelle fonction pour Illumination
@@ -614,16 +986,9 @@ void Renderer::activer_Illumination() {
 
 	ofPushMatrix();
 
-	//// positionnner le cube
-	//ofTranslate(
-	//	position_cube.x,
-	//	position_cube.y,
-	//	position_cube.z);
-	//// rotation locale
-	//ofRotateDeg(45.0f, 1.0f, 0.0f, 0.0f);
-	// 
+	
 	// positionner pomudachi
-	/*modele_illumination2.setPosition(
+	modele_illumination2.setPosition(
 		position_modele_ill_2.x,
 		position_modele_ill_2.y + 15.0f,
 		position_modele_ill_2.z);
@@ -632,12 +997,14 @@ void Renderer::activer_Illumination() {
 	modele_illumination2.setScale(
 		scale_modele_ill_2,
 		scale_modele_ill_2,
-		scale_modele_ill_2);*/
-
-	// dessiner un cube
-	//ofDrawBox(0.0f, 0.0f, 0.0f, scale_cube);
+		scale_modele_ill_2);
 
 	// activer le shader
+	shader_illumination->begin();
+
+	// dessiner pomudachi 
+	///modele_illumination2.draw(OF_MESH_FILL);
+
 	ofPopMatrix();
 
 	shader_illumination->begin();
@@ -704,6 +1071,49 @@ float Renderer::oscillate(float time, float frequency, float amplitude)
 {
 	return sinf(time * 2.0f * PI / frequency) * amplitude;
 }
+ofVec3f Renderer::interpolation_linear(const ofVec3f& value1, const ofVec3f& value2, float t)
+{
+	// Interpolation linéaire entre deux vecteurs
+	return (1.0f - t) * value1 + t * value2;
+}
+ofVec3f Renderer::interpolation_bilineaire(const ofVec3f& c1, const ofVec3f& c2, const ofVec3f& c3, const ofVec3f& c4, float u, float v)
+{
+	// Interpolation linéaire entre les coins sur les axes u et v
+	ofVec3f lerpu = (1.0f - v) * c1 + v * c2;
+	ofVec3f lerpv = (1.0f - u) * c3 + u * c4;
+
+	// Interpolation bilinéaire entre les coins
+	ofVec3f blerp = (1.0f - u) * (1.0f - v) * c1 + u * (1.0f - v) * c2 + (1.0f - u) * v * c3 + u * v * c4;
+
+	// Résultat final en soustrayant l'interpolation bilinéaire des interpolations linéaires
+	return lerpu + lerpv - blerp;
+}
+ofVec3f Renderer::surfaceCoons(const vector<ofVec3f>& controlPoints,
+	float u, float v)
+{
+	// Assurez-vous que vous avez au moins 4 points de contrôle
+	if (controlPoints.size() < 4) {
+		ofLogError("Renderer::surfaceCoons") << "Not enough control points provided";
+		return ofVec3f(0, 0, 0); // Valeur par défaut si les conditions ne sont pas remplies
+	}
+
+	// Extraire les points de contrôle individuels
+	ofVec3f c1 = controlPoints[0];
+	ofVec3f c2 = controlPoints[1];
+	ofVec3f c3 = controlPoints[2];
+	ofVec3f c4 = controlPoints[3];
+
+	// Calculer les interpolations linéaires
+	ofVec3f lerpu = interpolation_linear(c1, c2, u);
+	ofVec3f lerpv = interpolation_linear(c3, c4, v);
+
+	// Calculer l'interpolation bilinéaire
+	ofVec3f blerp = interpolation_bilineaire(c1, c2, c3, c4, u, v);
+
+	// Calculer la surface de Coons en soustrayant l'interpolation bilinéaire des interpolations linéaires
+	return lerpu + lerpv - blerp;
+}
+
 
 void Renderer::dessinerSphere(){
 	if (interface.showSphereMaterials) {

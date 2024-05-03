@@ -202,7 +202,30 @@ class Application : public ofBaseApp{
 		// Modele illumination
 		float time_current, time_last, time_elapsed;
 		bool is_key_press_up, is_key_press_down, is_key_press_left, is_key_press_right;
+		// Mode coons 
+		void mouseScrolled(int x, int y, float scrollX, float scrollY);
+		float controlPtZ;
+		ofxGuiGroup surfaceParametriqueGroup;
+		ofParameter<bool> coonsButton = false;
+		void button_coons(bool& value);
 
+		// Texture
+		ofParameter<ofColor> color_picker_ambient;
+		ofParameter<ofColor> color_picker_diffuse;
+		ofParameter<ofColor> color_picker_specular;
+		ofParameter<float> slider_metallic;
+		ofParameter<float> slider_roughness;
+		ofParameter<float> slider_occlusion;
+		ofParameter<float> slider_brightness;
+		ofParameter<float> slider_light_intensity;
+		ofParameter<ofColor> color_picker_light_color;
+		ofParameter<glm::vec3> slider_fresnel_ior;
+		ofParameter<float> slider_exposure;
+		ofParameter<float> slider_gamma;
+		ofParameter<bool> toggle_tone_mapping;
+		ofParameter<bool> toggle_ui;
+		ofParameter<bool> toggle_light_motion;
+		//void reset(); 
 private:
 	stack<function<void()>> undoStack;
 	stack<function<void()>> redoStack;
