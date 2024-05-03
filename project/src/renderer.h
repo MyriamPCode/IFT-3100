@@ -10,7 +10,9 @@
 #include <iostream>
 #include <vector>
 #include <glm/glm.hpp>
-
+#include <GL/glu.h>
+#include <glm/gtc/matrix_transform.hpp>
+#include <cmath>
 
 using namespace std;
 
@@ -24,7 +26,7 @@ class Renderer {
         Interface interface;
         ofImage image;
         ofShader shader;
-        ofShader shaderFiltres;
+        ofShader shaderFiltre;
         float mix_factor;
         ofColor tint;
     ofShader shaderLight;
@@ -35,6 +37,7 @@ class Renderer {
     ofImage textureImage;
     ofTexture textu;
     ofTexture textuSphere;
+
     list<ofImage> imageList; //Liste d'images import�es
     list<vector<int>> imgPosList; //Positions x et y des images import�es
 
@@ -105,6 +108,14 @@ class Renderer {
             return &v_formes;
         }
 
+        list<ofVec2f> delaunayPoints;
+        list<vector<ofVec2f>> delaunayEdges;
+        void calculateDelaunay();
+        bool isInsideCircumcircle(ofVec2f p1, ofVec2f p2, ofVec2f p3, ofVec2f pTest);
+        bool hasSharedVertex(vector<ofVec2f> triangle1, vector<ofVec2f> triangle2);
+        bool isEdgeUnique(list<vector<ofVec2f>> badTriangles, vector<ofVec2f> edge, vector<ofVec2f> currTri);
+        void drawTriangulation();
+
         bool modeDrawState, modeTransformState; // pour indiquer si en mode draw ou transformation
 
         ofPolyline ligne;
@@ -141,13 +152,63 @@ class Renderer {
         float oscillation, oscillation_frequency, oscillation_amplitude;
         float scale_cube, scale_sphere, scale_modele_ill_1, scale_modele_ill_2;
         float speed_motion;
-        float offset_x, offset_z;
-        float delta_x, delta_z;
-        float initial_x, initial_z;
-        float center_x, center_y;
+        float offset_x, offset_y, offset_z;
+        float delta_x, delta_y, delta_z;
+        float initial_x, initial_y, initial_z;
+        float center_x, center_y, center_z;
         float oscillate(float time, float frequency, float amplitude);
         void activer_Illumination();
         bool isModeIllumination;
+        // COONS 
+        ofVec3f controlPoint0, controlPoint1, controlPoint2, controlPoint3;
+        ofVec3f controlPoint0A, controlPoint1A, controlPoint2A, controlPoint3A;
+        ofVec3f controlPoint0B, controlPoint1B, controlPoint2B, controlPoint3B;
+        ofVec3f positionsCoons;
+        ofPolyline line_renderer;
+        int line_resolution, index;
+        vector<ofVec3f> controlPointCoons;
+        vector<vector<ofVec3f>> controlPointCoons2;
+        vector<ofVec3f> controlPointCourbes;
+
+        void bezierCubic(float t,
+            float p1x, float p1y, float p1z,
+            float p2x, float p2y, float p2z,
+            float p3x, float p3y, float p3z,
+            float p4x, float p4y, float p4z,
+            float& x, float& y, float& z);
+
+        ofVec3f interpolation_linear(const ofVec3f& value1, const ofVec3f& value2, float t);
+        ofVec3f interpolation_bilineaire(const ofVec3f& c1, const ofVec3f& c2, const ofVec3f& c3, const ofVec3f& c4, float u, float v);
+        ofVec3f surfaceCoons(const vector<ofVec3f>& controlPoints, float u, float v);
+        void drawCoons(const vector<vector<ofVec3f>>& controlPoints, int resolutionU, int resolutionV);
+        void drawSetupCoons();
+        void setupCoons();
+        bool isCoons;
+        ofVec3f* selected_ctrl_point;
+        ofPolyline coonsPoints;
+        vector<ofPolyline> v_coonsPoints;
+        
+        //////////////
+        // Texture
+        ofShader shaderTexture; 
+        ofColor material_color_ambient, material_color_diffuse, material_color_specular;
+        float material_metallic, material_roughness, material_occlusion, material_brightness;
+        glm::vec3 material_fresnel_ior; 
+        ofImage texture_diffuse, texture_metallic, texture_roughness, texture_occlusion;
+        ofLight lightTexture; 
+        ofColor light_color; 
+        float light_intensity;
+        bool light_motion, tone_mapping_toggle;
+        float tone_mapping_exposure, tone_mapping_gamma;
+        ofxAssimpModelLoader teapotTexture; 
+        ofVec3f position_cube_texture, position_sphere_texture, position_teapot_texture; 
+        float scale_cube_texture, scale_sphere_texture, scale_teapot_texture;
+        float speed_motion_texture, speed_rotation_texture;
+        float offsetTexture_x, offsetTexture_z, deltaTexture_x, deltaTexture_y, deltaTexture_z;
+        float rotation_y;
+        float initialTexture_x, initialTexture_z, centerTexture_x, centerTexture_y; 
+        bool isTexture = false; 
+        void afficherTexture(); 
 
         void setSphereMaterials();
         void setCubeMaterials();

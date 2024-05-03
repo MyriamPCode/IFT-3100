@@ -171,7 +171,7 @@ class Application : public ofBaseApp{
 
 		vector<unique_ptr<ofxToggle>> v_buttons;
 		vector<unique_ptr<ofxToggle>>* v_buttons_ptr;
-		void deleteShapeSelected();
+	
 
 		void addAction(function<void()> undoAction, function<void()> redoAction) {
 			undoStack.push(move(undoAction));
@@ -203,6 +203,38 @@ class Application : public ofBaseApp{
 		// Modele illumination
 		float time_current, time_last, time_elapsed;
 		bool is_key_press_up, is_key_press_down, is_key_press_left, is_key_press_right;
+		// Mode coons 
+		void mouseScrolled(int x, int y, float scrollX, float scrollY);
+		float controlPtZ;
+		ofxGuiGroup surfaceParametriqueGroup;
+		ofParameter<bool> coonsButton = false;
+		void button_coons(bool& value);
+
+		// Texture
+		ofParameter<ofColor> color_picker_ambient;
+		ofParameter<ofColor> color_picker_diffuse;
+		ofParameter<ofColor> color_picker_specular;
+		ofParameter<float> slider_metallic;
+		ofParameter<float> slider_roughness;
+		ofParameter<float> slider_occlusion;
+		ofParameter<float> slider_brightness;
+		ofParameter<float> slider_light_intensity;
+		ofParameter<ofColor> color_picker_light_color;
+		ofParameter<glm::vec3> slider_fresnel_ior;
+		ofParameter<float> slider_exposure;
+		ofParameter<float> slider_gamma;
+		ofParameter<bool> toggle_tone_mapping;
+		ofParameter<bool> toggle_ui;
+		ofParameter<bool> toggle_light_motion;
+		ofxGuiGroup group_texture; 
+		ofxGuiGroup group_material_color;
+		ofxGuiGroup group_material_factor;
+		ofxGuiGroup group_light;
+		ofxGuiGroup group_tone_mapping;
+		ofxToggle toggleTexture; 
+		ofxGuiGroup groupe_activer_texture;
+		void selectTexture(bool& value);
+		void resetTexture();
 
 private:
 	stack<function<void()>> undoStack;

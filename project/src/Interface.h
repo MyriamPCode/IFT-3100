@@ -157,6 +157,7 @@ class Interface {
 		bool mesh_activate;
 		bool noise_activate;
 		bool curve_activate;
+		ofxToggle delaunay;
 
 		void setup();
 		void draw();

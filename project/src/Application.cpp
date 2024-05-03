@@ -12,7 +12,7 @@ void Application::setup(){
 
 	//toggleDraw, toggleTransform
 	drawingGUI.setup();
-	drawingGUI.setPosition(300, 40);
+	drawingGUI.setPosition(0, 40);//(300, 40)
 	primitivesMode.setup("Mode");
 	primitivesMode.add(toggleDraw.setup("Drawing", false));
 	primitivesMode.add(toggleTransform.setup("Transformation", false));
@@ -55,6 +55,7 @@ void Application::setup(){
 	drawingGUI.add(renderer.uiRotate.set("rotate", ofVec3f(0), ofVec3f(-180), ofVec3f(180))); // La rotation des primitives
 	drawingGUI.add(renderer.uiShift.set("shift", ofVec2f(0), ofVec2f(0), ofVec2f(300)));
 	drawingGUI.add(renderer.uiSize.set("size", ofVec2f(1), ofVec2f(1), ofVec2f(10)));
+	drawingGUI.minimizeAll();
 
 	camera_setup_perspective(WIDTH, HEIGHT, 60.0f, 0.0f, 0.0f);
 	cam.enableOrtho();
@@ -85,6 +86,7 @@ void Application::setup(){
 	animationGroupe.setup("Animations");
 	animationGroupe.add(rotationButton.setup("Rotation", false));
 	rotationButton.addListener(this, &Application::button_rotation);
+	animationGroupe.minimize(); 
 	drawingGUI.add(&animationGroupe);
 
 	curveGui.setup("Curve");
@@ -104,9 +106,18 @@ void Application::setup(){
 	hermiteGroupe.add(hermiteButton);
 	hermiteButton.addListener(this, &Application::button_hermite);
 	curveGui.add(&hermiteGroupe);
+	surfaceParametriqueGroup.setup("Surface parametrique");
+	coonsButton.setName("Coons");
+	surfaceParametriqueGroup.add(coonsButton);
+	coonsButton.addListener(this, &Application::button_coons);
+	curveGui.add(&surfaceParametriqueGroup);
 
 	filterGUI.setup();
 	filterGUI.setPosition(700, 70);
+	textureGroupe.setup("Filtres (Textures)");
+	textureGroupe.add(sphereTextureButton.setup("Sphere", false));
+	sphereTextureButton.addListener(this, &Application::button_sphereTexture);
+	filterGUI.add(&textureGroupe);
 	filterGroupe.setup("Filtres");
 	filterGUI.add(color_picker.set("teinte", renderer.tint, ofColor(0, 0), ofColor(255, 255)));
 	filterGUI.add(slider.set("mix", renderer.mix_factor, 0.0f, 1.0f));
@@ -155,7 +166,7 @@ void Application::setup(){
 
 	shapeBool = false; 
 	v_buttons_ptr = &v_buttons;
-	guiScene.setup();
+	//guiScene.setup();
 	guiScene.setPosition(0, 40);
 
 	addAction([this]() { undo(); }, [this]() { redo(); });
@@ -178,6 +189,85 @@ void Application::setup(){
 
 	// Modele Illumination
 	is_key_press_up = is_key_press_down = is_key_press_left = is_key_press_right = false;
+
+	// Coons
+	renderer.selected_ctrl_point = &renderer.controlPoint0;
+	controlPtZ = 0.0f; //pour le mousewheel avec Coons sur axe des Z
+
+	resetTexture();
+
+	// Texture
+	groupe_activer_texture.setup("Texture");
+	groupe_activer_texture.add(toggleTexture.setup("Add texture", false));
+	toggleTexture.addListener(this, &Application::selectTexture);
+	drawingGUI.add(&groupe_activer_texture);
+
+	group_material_color.setup("color");
+	group_material_color.add(color_picker_ambient);
+	group_material_color.add(color_picker_diffuse);
+	group_material_color.add(color_picker_specular);
+	drawingGUI.add(&group_material_color);
+	group_material_factor.setup("factor");
+	group_material_factor.add(slider_metallic);
+	group_material_factor.add(slider_roughness);
+	group_material_factor.add(slider_occlusion);
+	group_material_factor.add(slider_brightness);
+	group_material_factor.add(slider_fresnel_ior);
+	drawingGUI.add(&group_material_factor);
+	group_light.setup("light");
+	group_light.add(color_picker_light_color);
+	group_light.add(slider_light_intensity);
+	group_light.add(toggle_light_motion);
+	drawingGUI.add(&group_light);
+	group_tone_mapping.setup("tone mapping");
+	group_tone_mapping.add(slider_exposure);
+	group_tone_mapping.add(slider_gamma);
+	group_tone_mapping.add(toggle_tone_mapping);
+	drawingGUI.add(&group_tone_mapping);
+
+	color_picker_ambient.set("ambient", renderer.material_color_ambient, ofColor(0, 0), ofColor(255, 255));
+	color_picker_diffuse.set("diffuse", renderer.material_color_diffuse, ofColor(0, 0), ofColor(255, 255));
+	color_picker_specular.set("specular", renderer.material_color_specular, ofColor(0, 0), ofColor(255, 255));
+
+	slider_metallic.set("metallic", renderer.material_metallic, 0.0f, 1.0f);
+	slider_roughness.set("roughness", renderer.material_roughness, 0.0f, 1.0f);
+	slider_occlusion.set("occlusion", renderer.material_occlusion, 0.0f, 5.0f);
+	slider_brightness.set("brightness", renderer.material_brightness, 0.0f, 5.0f);
+
+	slider_fresnel_ior.set("fresnel ior", renderer.material_fresnel_ior, glm::vec3(0.0f), glm::vec3(1.0f));
+
+	color_picker_light_color.set("color", renderer.light_color, ofColor(0, 0), ofColor(255, 255));
+	slider_light_intensity.set("intensity", renderer.light_intensity, 0.0f, 10.0f);
+
+	toggle_light_motion.set("motion", renderer.light_motion);
+
+	slider_exposure.set("exposure", 1.0f, 0.0f, 5.0f);
+	slider_gamma.set("gamma", 2.2f, 0.0f, 5.0f);
+
+	if (renderer.tone_mapping_toggle)
+		toggle_tone_mapping.set("aces filmic", true);
+	else
+		toggle_tone_mapping.set("reinhard", false);
+}
+
+void Application::resetTexture(){
+	color_picker_ambient.set(ofColor(63, 63, 63));
+	color_picker_diffuse.set(ofColor(255, 255, 255));
+	color_picker_specular.set(ofColor(255, 255, 255));
+	slider_metallic.set(0.5f);
+	slider_roughness.set(0.5f);
+	slider_occlusion.set(1.0f);
+	slider_brightness.set(1.0f);
+	slider_fresnel_ior.set(glm::vec3(0.04f, 0.04f, 0.04f));
+	color_picker_light_color.set(ofColor(255, 255, 255));
+	slider_light_intensity.set(1.0f);
+	slider_exposure.set(1.0f);
+	slider_gamma.set(2.2f);
+	toggle_light_motion.set(true);
+	toggle_tone_mapping.set("aces filmic", true);
+}
+void Application::selectTexture(bool &value) {
+	renderer.isTexture = !renderer.isTexture; 
 }
 
 void Application::update()
@@ -218,33 +308,104 @@ void Application::update()
 		cam.move(0, 0, -1); // DÃ©placer la camÃ©ra en s'eloignant
 	}
 
-	/// Modele Illumination
+	/// Modele coons
 	time_current = ofGetElapsedTimef();
 	time_elapsed = time_current - time_last;
 	time_last = time_current;
-	if (is_key_press_up)
-		renderer.offset_z += renderer.delta_z * time_elapsed;
-	if (is_key_press_down)
-		renderer.offset_z -= renderer.delta_z * time_elapsed;
-	if (is_key_press_left)
-		renderer.offset_x += renderer.delta_x * time_elapsed;
-	if (is_key_press_right)
-		renderer.offset_x -= renderer.delta_x * time_elapsed;
+	if (renderer.isCoons && !renderer.isModeIllumination)
+	{
+		if (is_key_press_up) {
+			renderer.selected_ctrl_point->y -= renderer.delta_y * time_elapsed;
+		}
+		if (is_key_press_down) {
+			renderer.selected_ctrl_point->y += renderer.delta_y * time_elapsed;
+		}
+		if (is_key_press_left) {
+			renderer.selected_ctrl_point->x -= renderer.delta_x * time_elapsed;
+		}
+		if (is_key_press_right) {
+			renderer.selected_ctrl_point->x += renderer.delta_x * time_elapsed;
+		}
+		if (renderer.isCoons) {
+			renderer.selected_ctrl_point->z += controlPtZ * 5;
+			controlPtZ = 0.0f;
+		}
+	}
+	if (!renderer.isCoons && renderer.isModeIllumination)
+	{
+		if (is_key_press_up){renderer.offset_z += renderer.delta_z * time_elapsed;}
+			
+		if (is_key_press_down){renderer.offset_z -= renderer.delta_z * time_elapsed;}
+			
+		if (is_key_press_left){renderer.offset_x += renderer.delta_x * time_elapsed;}
+			
+		if (is_key_press_right){}renderer.offset_x -= renderer.delta_x * time_elapsed;
+			
+	}
 	////////////////////////////
+	// Texture
+	if(renderer.isTexture)
+	{
+
+		//////////////////////////////
+		time_current = ofGetElapsedTimef();
+		time_elapsed = time_current - time_last;
+		time_last = time_current;
+
+		if (is_key_press_up)
+			renderer.offset_z += renderer.delta_z * time_elapsed;
+		if (is_key_press_down)
+			renderer.offset_z -= renderer.delta_z * time_elapsed;
+		if (is_key_press_left)
+			renderer.offset_x += renderer.delta_x * time_elapsed;
+		if (is_key_press_right)
+			renderer.offset_x -= renderer.delta_x * time_elapsed;
+		//if (is_key_press_q)
+		//	renderer.rotation_y += renderer.delta_y * time_elapsed;
+		//if (is_key_press_e)
+		//	renderer.rotation_y -= renderer.delta_y * time_elapsed;
+
+		renderer.material_color_ambient = color_picker_ambient;
+		renderer.material_color_diffuse = color_picker_diffuse;
+		renderer.material_color_specular = color_picker_specular;
+
+		renderer.material_metallic = slider_metallic;
+		renderer.material_roughness = slider_roughness;
+		renderer.material_occlusion = slider_occlusion;
+		renderer.material_brightness = slider_brightness;
+
+		renderer.material_fresnel_ior = slider_fresnel_ior;
+
+		renderer.light_color = color_picker_light_color;
+		renderer.light_intensity = slider_light_intensity;
+		renderer.light_motion = toggle_light_motion;
+
+		renderer.tone_mapping_exposure = slider_exposure;
+		renderer.tone_mapping_gamma = slider_gamma;
+		renderer.tone_mapping_toggle = toggle_tone_mapping;
+
+		if (renderer.tone_mapping_toggle)
+			toggle_tone_mapping.set("aces filmic", true);
+		else
+			toggle_tone_mapping.set("reinhard", false);
+
+		renderer.update();
+	}
 }
 
+void Application::mouseScrolled(int x, int y, float scrollX, float scrollY) {
+	controlPtZ += scrollY;
+}
 
 void Application::draw(){
 	if (isImportable) {
 		renderer.interface.import_activate = true;
 		ofDrawBitmapString("Please drag an image to import it.", 30, 70);
 		ofSetColor(renderer.tint);
-		ofEnableBlendMode(OF_BLENDMODE_MULTIPLY);
+		//ofEnableBlendMode(OF_BLENDMODE_MULTIPLY);
 	}
-	ofDisableBlendMode();
+	//ofDisableBlendMode();
 
-
-	//cam.begin(); //TODO: ***TROUVER UN MOYEN DE RELIER LES DEUX CAMERA POUR PASSER DU CIRCUIT A CELLE ORTHOGRAPHIQUE***
 	if (renderer.interface.orthoIsActive) {
 		if (renderer.interface.orthoRendering) {
 			cam.enableOrtho();
@@ -300,27 +461,11 @@ void Application::draw(){
 	}
 
 	if (renderer.interface.import_activate) {
-		textureGUI.setup();
-		textureGUI.setPosition(800, 40);
-		textureGroupe.setup("Filtres");
-		textureGroupe.add(sphereTextureButton.setup("Sphere", false));
-		sphereTextureButton.addListener(this, &Application::button_sphereTexture);
-		textureGUI.add(&textureGroupe);
-
-		filterGUI.setup();
-		filterGUI.setPosition(800, 40);
-		textureGroupe.setup("Filtres");
-		textureGroupe.add(sphereTextureButton.setup("Sphere", false));
-		sphereTextureButton.addListener(this, &Application::button_sphereTexture);
-		filterGUI.add(&textureGroupe);
-	}
-
-	if (renderer.interface.import_activate) {
 		filterGUI.draw();
 	}
 
 	renderer.draw();
-	
+
 	//ofPopMatrix();
 	if (renderer.interface.orthoIsActive) {
 		cam.end();
@@ -328,10 +473,6 @@ void Application::draw(){
 	else if (renderer.interface.angleIsActive) {
 		camera->end();
 	}
-
-	renderer.interface.draw();
-	drawingGUI.draw();
-	//cam.end();
 
 	renderer.interface.draw();
 
@@ -364,7 +505,6 @@ void Application::draw(){
 					ofVec2f p4 = controlPoints[i + 4];
 					ofVec2f p = catmullRom(t, p0, p1, p2, p3, p4);
 					ofDrawCircle(p, 2);
-
 				}
 			}
 		}
@@ -423,7 +563,6 @@ void Application::draw(){
 			}
 		}
 	}
-
 	guiScene.draw();
 }
 
@@ -438,52 +577,8 @@ void Application::toggleDrawingGUI(Forme::TypeForme drawingShape) {
 }
 
 
-// a modifier ou effacer 
-void Application::deleteShapeSelected()
-{
-	// Vecteur temporaire pour stocker les indices des boutons Ã¯Â¿Â½ supprimer
-	vector<int> buttonsToDelete;
-	// Vecteur pour stocker l'Ã¯Â¿Â½tat de chaque bouton
-	vector<bool> buttonStates;
-
-	for (const auto& b : *v_buttons_ptr)
-	{
-		for (int i = 0; i < v_buttons.size(); ++i)
-		{
-			// VÃ¯Â¿Â½rifier si le bouton est en Ã¯Â¿Â½tat TRUE
-			if (i == shapeBool) // v_buttons[i] AccÃ¯Â¿Â½der Ã¯Â¿Â½ l'Ã¯Â¿Â½tat boolÃ¯Â¿Â½en du bouton
-			{
-				//cout << "Il est cense avoir " << i << " forme a effacer" << endl;
-				// Ajouter l'index du bouton Ã¯Â¿Â½ supprimer dans le vecteur temporaire
-				buttonsToDelete.push_back(i);
-			}
-		}
-
-	}
-
-	if (!buttonsToDelete.empty())
-	{
-		//cout << "Deletion is possible! " << endl;
-		//cout << "Size of the deletion list is " << buttonsToDelete.size() << endl;
-	}
-
-}
-
 void Application::keyPressed(int key) 
 {
-
-	// Pour tester les pointeurs 
-	if (key == 'f') 
-	{
-		for (const auto& ptr : *renderer.v_formes_ptr) 
-		{
-			//cout << "Adresse du pointeur : " << &ptr << endl;
-			//cout << "Adresse de l'objet Forme : " << ptr.get() << endl; // Obtenir l'adresse de l'objet pointé
-			//cout << "Valeur de l'objet Forme : " << ptr << endl;
-			//cout << endl;
-		}		
-	}
-
 	// DÃ¯Â¿Â½marrer/arrÃ¯Â¿Â½ter l'enregistrement lors de l'appui sur la touche 'r'
 	if (key == 'r') 
 	{
@@ -499,25 +594,8 @@ void Application::keyPressed(int key)
 			std::cout << "Enregistrement arreter." << endl;
 		}
 	}
-
-
-	if(key == 'z')
-	{ 
-		if(!v_buttons.empty() && !renderer.v_formes.empty())
-		{ 
-			//undo();
-		}
-	}
-	if(key == 'x')
-	{ 
-		if (!v_buttons.empty() && !renderer.v_formes.empty())
-		{
-			//redo(); 
-		}
-	}
-
 	/// Ajout du false pour retirer le modeIllumination 
-	if (renderer.isModeIllumination == false)
+	if (renderer.isModeIllumination == false && renderer.isCoons == false)
 	{
 		if (key == OF_KEY_LEFT) {
 			moveCameraLeft = true;
@@ -536,6 +614,31 @@ void Application::keyPressed(int key)
 		}
 		if (key == 50) {
 			moveCameraFar = true;
+		}
+	}
+	// Coons
+	if (renderer.isCoons)
+	{
+		switch (key)
+		{
+		case OF_KEY_LEFT: // touche ?
+			is_key_press_left = true;
+			break;
+
+		case OF_KEY_UP: // touche ?
+			is_key_press_up = true;
+			break;
+
+		case OF_KEY_RIGHT: // touche ?
+			is_key_press_right = true;
+			break;
+
+		case OF_KEY_DOWN: // touche ?
+			is_key_press_down = true;
+			break;
+
+		default:
+			break;
 		}
 	}
 	// Modele illumination
@@ -566,9 +669,8 @@ void Application::keyPressed(int key)
 }
 
 void Application::keyReleased(int key){
-
 	/// Ajout boolean mode non-Illumination 
-	if (renderer.isModeIllumination == false)
+	if (!renderer.isModeIllumination && !renderer.isCoons)
 	{
 		if (key == 105) { // 105 = key "i"
 			isImportable = !isImportable;
@@ -591,6 +693,52 @@ void Application::keyReleased(int key){
 		}
 		if (key == 50) { // 50 = touche 2
 			moveCameraFar = false;
+		}
+	}
+	// Coons
+	if (renderer.isCoons)
+	{
+		switch (key)
+		{
+		case 49: // touche 1
+			renderer.selected_ctrl_point = &renderer.controlPoint0;
+			ofLog() << "<select control point 0>";
+			break;
+
+		case 50: // touche 2
+			renderer.selected_ctrl_point = &renderer.controlPoint1;
+			ofLog() << "<select control point 1>";
+			break;
+
+		case 51: // touche 3
+			renderer.selected_ctrl_point = &renderer.controlPoint2;
+			ofLog() << "<select control point 2>";
+			break;
+
+		case 52: // touche 4
+			renderer.selected_ctrl_point = &renderer.controlPoint3;
+			ofLog() << "<select control point 3>";
+			break;
+		case 114: // touche r
+			renderer.reset();
+			break;
+		case OF_KEY_LEFT: // touche ?
+			is_key_press_left = false;
+			break;
+
+		case OF_KEY_UP: // touche ?
+			is_key_press_up = false;
+			break;
+
+		case OF_KEY_RIGHT: // touche ?
+			is_key_press_right = false;
+			break;
+
+		case OF_KEY_DOWN: // touche ?
+			is_key_press_down = false;
+			break;
+		default:
+			break;
 		}
 	}
 	/// Modele illumination 
@@ -676,12 +824,10 @@ void Application::mouseDragged(int x, int y, int button){
 	{
 		renderer.ligne.addVertex(renderer.interface.mouse_drag_x, renderer.interface.mouse_drag_y);
 	}
-
 	if (selectedPointIndex != -1) {
 		controlPoints[selectedPointIndex].set(x, y);
 	}
 }
-
 
 void Application::showButtonsList(){
 	if(v_buttons_ptr)
@@ -908,39 +1054,44 @@ void Application::mousePressed(int x, int y, int button){
 		guiScene.add(bezier);
 	}
   
-		if (draw_sphere) //  && drawSphere
-		{
-			float x = renderer.interface.mouse_press_x / 1.00;
-			float y = renderer.interface.mouse_press_y / 1.00;
-			ofVec3f viktor(x, y, 0);
-			forme.setVSphere(viktor); 
-			//forme.setXS(x);
-			//forme.setYS(y);
-			renderer.v_formes.push_back(make_unique<Forme>(Forme::SPHERE, forme.getVSphere(), forme.getSphereRad()));
-			//renderer.v_formes.push_back(make_unique<Forme>(Forme::SPHERE, forme.getXS(), forme.getYS(), 0, forme.getSphereRad()));
-			renderer.okDessiner = true; 
-			auto button = make_unique<ofxToggle>(); 
-			//guiScene.add(button->setup("SPHERE", false)); 
-			v_buttons.push_back(move(button)); 
+	if (draw_sphere) //  && drawSphere
+	{
+		float x = renderer.interface.mouse_press_x / 1.00;
+		float y = renderer.interface.mouse_press_y / 1.00;
+		ofVec3f viktor(x, y, 0);
+		forme.setVSphere(viktor);
+		//forme.setXS(x);
+		//forme.setYS(y);
+		renderer.v_formes.push_back(make_unique<Forme>(Forme::SPHERE, forme.getVSphere(), forme.getSphereRad()));
+		//renderer.v_formes.push_back(make_unique<Forme>(Forme::SPHERE, forme.getXS(), forme.getYS(), 0, forme.getSphereRad()));
+		renderer.okDessiner = true;
+		auto button = make_unique<ofxToggle>();
+		//guiScene.add(button->setup("SPHERE", false)); 
+		v_buttons.push_back(move(button));
 
-			guiScene.add(sphere);
-		}
+		guiScene.add(sphere);
+	}
 
-		if (draw_cube) //  && drawCube
-		{
-			float x = renderer.interface.mouse_press_x;
-			float y = renderer.interface.mouse_press_y;
-			ofVec3f viktor(x, y, 0);
-			forme.setVSphere(viktor);
-			forme.setSizeCube(150);
-			renderer.v_formes.push_back(make_unique<Forme>(Forme::CUBE, forme.getVSphere(), forme.getSizeCube()));
-			renderer.okDessiner = true;
-			auto button = make_unique<ofxToggle>();
-			//guiScene.add(button->setup("CUBE", false));
-			v_buttons.push_back(move(button));
+	if (draw_cube) //  && drawCube
+	{
+		float x = renderer.interface.mouse_press_x;
+		float y = renderer.interface.mouse_press_y;
+		ofVec3f viktor(x, y, 0);
+		forme.setVSphere(viktor);
+		forme.setSizeCube(150);
+		renderer.v_formes.push_back(make_unique<Forme>(Forme::CUBE, forme.getVSphere(), forme.getSizeCube()));
+		renderer.okDessiner = true;
+		auto button = make_unique<ofxToggle>();
+		//guiScene.add(button->setup("CUBE", false));
+		v_buttons.push_back(move(button));
 
-			guiScene.add(cube);
-		}
+		guiScene.add(cube);
+	}
+
+	if (renderer.interface.delaunay) {
+		renderer.delaunayPoints.push_back({ (float)renderer.interface.mouse_press_x, (float)renderer.interface.mouse_press_y});
+		renderer.calculateDelaunay();
+	}
 }
 
 void Application::mouseReleased(int x, int y, int button){
@@ -1210,7 +1361,6 @@ void Application::button_line(bool& value)
 		//drawTriangle = drawRectangle = drawCircle = drawEllipse = drawBezier = drawSphere = drawCube = false;
 		renderer.interface.color_picker_stroke = renderer.ligneColor;
 		renderer.interface.slider_stroke_weight = renderer.ligneStroke;
-		
 	}
 }
 
@@ -1254,12 +1404,10 @@ void Application::drawEllipse()
 		if (renderer.interface.fillButton != renderer.ellipseFill) 
 		{
 			renderer.interface.fillButton = renderer.ellipseFill;
-
 		}
 		renderer.interface.slider_stroke_weight = renderer.ellipseStroke;
 	}
 }
-
 
 void Application::button_bezier(bool& value)
 {
@@ -1309,7 +1457,6 @@ void Application::button_sphereTexture(bool& value) {
 		draw_sphereTexture = !draw_sphereTexture;
 		draw_circle = draw_rectangle = draw_line = draw_ellipse = draw_bezier = draw_sphere = draw_cube = draw_triangle = false;
 		draw_sphere = draw_cube = false;
-
 	}
 }
 
@@ -1352,6 +1499,10 @@ void Application::reset(bool& value) {
 		sharpenButton = false;
 		embossButton = false;
 		emboss_activate = false;
+
+		// Texture 
+		resetTexture();
+		renderer.reset(); 
 	}
 }
 
@@ -1514,6 +1665,8 @@ void Application::button_catmullRom(bool& value) {
 		catmullRom6_activate = false;
 		hermiteButton = false;
 		hermite_activate = false;
+		coonsButton = false;
+		renderer.isCoons = false;
 	}
 }
 
@@ -1525,6 +1678,8 @@ void Application::button_catmullRom6(bool& value) {
 		catmullRom_activate = false;
 		hermiteButton = false;
 		hermite_activate = false;
+		coonsButton = false;
+		renderer.isCoons = false;
 	}
 }
 
@@ -1536,6 +1691,21 @@ void Application::button_hermite(bool& value) {
 		catmullRom6_activate = false;
 		catmullRomButton = false;
 		catmullRom_activate = false;
+		coonsButton = false;
+		renderer.isCoons = false;
+	}
+}
+
+void Application::button_coons(bool& value) {
+	renderer.isCoons = value;
+	if (value) {
+		renderer.isCoons = true;
+		catmullRomButton6 = false;
+		catmullRom6_activate = false;
+		catmullRomButton = false;
+		catmullRom_activate = false;
+		hermiteButton = false;
+		hermite_activate = false;
 	}
 }
 
