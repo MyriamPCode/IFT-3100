@@ -252,14 +252,14 @@ void Application::update()
 	}
 	if (!renderer.isCoons && renderer.isModeIllumination)
 	{
-		if (is_key_press_up)
-			renderer.offset_y -= renderer.delta_y * time_elapsed;
-		if (is_key_press_down)
-			renderer.offset_y += renderer.delta_y * time_elapsed;
-		if (is_key_press_left)
-			renderer.offset_x -= renderer.delta_x * time_elapsed;
-		if (is_key_press_right)
-			renderer.offset_x += renderer.delta_x * time_elapsed;
+		if (is_key_press_up){renderer.offset_z += renderer.delta_z * time_elapsed;}
+			
+		if (is_key_press_down){renderer.offset_z -= renderer.delta_z * time_elapsed;}
+			
+		if (is_key_press_left){renderer.offset_x += renderer.delta_x * time_elapsed;}
+			
+		if (is_key_press_right){}renderer.offset_x -= renderer.delta_x * time_elapsed;
+			
 	}
 	////////////////////////////
 }

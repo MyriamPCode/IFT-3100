@@ -491,8 +491,8 @@ void Renderer::draw() {
 
 		// draw Illumination 
 		if (isModeIllumination) {
-			modele_illumination1.setPosition(1410, 700, 0);
-			modele_illumination2.setPosition(-50, 1200, -400);
+			//modele_illumination1.setPosition(1410, 700, 0);
+			//modele_illumination2.setPosition(-50, 1200, -400);
 			ofEnableLighting();
 			light.enable();
 			ofPushMatrix;
@@ -787,7 +787,7 @@ void Renderer::activer_Illumination() {
 
 	ofPushMatrix();
 
-
+	
 	// positionner pomudachi
 	modele_illumination2.setPosition(
 		position_modele_ill_2.x,
@@ -804,7 +804,7 @@ void Renderer::activer_Illumination() {
 	shader_illumination->begin();
 
 	// dessiner pomudachi 
-	modele_illumination2.draw(OF_MESH_FILL);
+	///modele_illumination2.draw(OF_MESH_FILL);
 
 	ofPopMatrix();
 
