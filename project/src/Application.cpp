@@ -187,7 +187,34 @@ void Application::setup(){
 	// Coons
 	renderer.selected_ctrl_point = &renderer.controlPoint0;
 	controlPtZ = 0.0f; //pour le mousewheel avec Coons sur axe des Z
+
+	// Texture
+	//reset();
+	color_picker_ambient.set("ambient", renderer.material_color_ambient, ofColor(0, 0), ofColor(255, 255));
+	color_picker_diffuse.set("diffuse", renderer.material_color_diffuse, ofColor(0, 0), ofColor(255, 255));
+	color_picker_specular.set("specular", renderer.material_color_specular, ofColor(0, 0), ofColor(255, 255));
+
+	slider_metallic.set("metallic", renderer.material_metallic, 0.0f, 1.0f);
+	slider_roughness.set("roughness", renderer.material_roughness, 0.0f, 1.0f);
+	slider_occlusion.set("occlusion", renderer.material_occlusion, 0.0f, 5.0f);
+	slider_brightness.set("brightness", renderer.material_brightness, 0.0f, 5.0f);
+
+	slider_fresnel_ior.set("fresnel ior", renderer.material_fresnel_ior, glm::vec3(0.0f), glm::vec3(1.0f));
+
+	color_picker_light_color.set("color", renderer.light_color, ofColor(0, 0), ofColor(255, 255));
+	slider_light_intensity.set("intensity", renderer.light_intensity, 0.0f, 10.0f);
+
+	toggle_light_motion.set("motion", renderer.light_motion);
+
+	slider_exposure.set("exposure", 1.0f, 0.0f, 5.0f);
+	slider_gamma.set("gamma", 2.2f, 0.0f, 5.0f);
+
+	if (renderer.tone_mapping_toggle)
+		toggle_tone_mapping.set("aces filmic", true);
+	else
+		toggle_tone_mapping.set("reinhard", false);
 }
+
 
 void Application::update()
 {
@@ -262,6 +289,54 @@ void Application::update()
 			
 	}
 	////////////////////////////
+	// Texture
+	if(renderer.isTexture)
+	{
+
+		//////////////////////////////
+		time_current = ofGetElapsedTimef();
+		time_elapsed = time_current - time_last;
+		time_last = time_current;
+
+		if (is_key_press_up)
+			renderer.offset_z += renderer.delta_z * time_elapsed;
+		if (is_key_press_down)
+			renderer.offset_z -= renderer.delta_z * time_elapsed;
+		if (is_key_press_left)
+			renderer.offset_x += renderer.delta_x * time_elapsed;
+		if (is_key_press_right)
+			renderer.offset_x -= renderer.delta_x * time_elapsed;
+		//if (is_key_press_q)
+		//	renderer.rotation_y += renderer.delta_y * time_elapsed;
+		//if (is_key_press_e)
+		//	renderer.rotation_y -= renderer.delta_y * time_elapsed;
+
+		renderer.material_color_ambient = color_picker_ambient;
+		renderer.material_color_diffuse = color_picker_diffuse;
+		renderer.material_color_specular = color_picker_specular;
+
+		renderer.material_metallic = slider_metallic;
+		renderer.material_roughness = slider_roughness;
+		renderer.material_occlusion = slider_occlusion;
+		renderer.material_brightness = slider_brightness;
+
+		renderer.material_fresnel_ior = slider_fresnel_ior;
+
+		renderer.light_color = color_picker_light_color;
+		renderer.light_intensity = slider_light_intensity;
+		renderer.light_motion = toggle_light_motion;
+
+		renderer.tone_mapping_exposure = slider_exposure;
+		renderer.tone_mapping_gamma = slider_gamma;
+		renderer.tone_mapping_toggle = toggle_tone_mapping;
+
+		if (renderer.tone_mapping_toggle)
+			toggle_tone_mapping.set("aces filmic", true);
+		else
+			toggle_tone_mapping.set("reinhard", false);
+
+		renderer.update();
+	}
 }
 
 void Application::mouseScrolled(int x, int y, float scrollX, float scrollY) {
@@ -489,9 +564,7 @@ void Application::deleteShapeSelected()
 				buttonsToDelete.push_back(i);
 			}
 		}
-
 	}
-
 	if (!buttonsToDelete.empty())
 	{
 		//cout << "Deletion is possible! " << endl;

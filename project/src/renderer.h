@@ -180,6 +180,26 @@ class Renderer {
         vector<ofPolyline> v_coonsPoints;
         
         //////////////
+        // Texture
+        ofShader shaderTexture; 
+        ofColor material_color_ambient, material_color_diffuse, material_color_specular;
+        float material_metallic, material_roughness, material_occlusion, material_brightness;
+        glm::vec3 material_fresnel_ior; 
+        ofImage texture_diffuse, texture_metallic, texture_roughness, texture_occlusion;
+        ofLight lightTexture; 
+        ofColor light_color; 
+        float light_intensity;
+        bool light_motion, tone_mapping_toggle;
+        float tone_mapping_exposure, tone_mapping_gamma;
+        ofxAssimpModelLoader teapotTexture; 
+        ofVec3f position_cube_texture, position_sphere_texture, position_teapot_texture; 
+        float scale_cube_texture, scale_sphere_texture, scale_teapot_texture;
+        float speed_motion_texture, speed_rotation_texture;
+        float offsetTexture_x, offsetTexture_z, deltaTexture_x, deltaTexture_y, deltaTexture_z;
+        float rotation_y;
+        float initialTexture_x, initialTexture_z, centerTexture_x, centerTexture_y; 
+        bool isTexture = true; 
+        void afficherTexture(); 
 
         void setSphereMaterials();
         void setCubeMaterials();

@@ -121,6 +121,25 @@ void Renderer::setup() {
 	// COONS 
 	isCoons = false;
 	setupCoons(); //pour preparer le COONs
+
+	// Texture 
+	ofSetLogLevel(OF_LOG_VERBOSE);
+	ofSetSphereResolution(32);
+	teapotTexture.loadModel("models/teapot.obj");
+	//teapotTexture.loadModel("models/bun_zipper.ply"); 
+	//teapotTexture.loadModel("models/teapotOrtho.obj");
+	teapotTexture.disableTextures(); 
+	shaderTexture.load(
+		"shaders/pbr_330_vs.glsl",
+		"shaders/pbr_330_fs.glsl");
+	texture_diffuse.load("texture/metal_plate_diffuse_1k.jpg");
+	texture_metallic.load("texture/metal_plate_metallic_1k.jpg");
+	texture_roughness.load("texture/metal_plate_roughness_1k.jpg");
+	texture_occlusion.load("texture/metal_plate_ao_1k.jpg");
+	texture_diffuse.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
+	texture_metallic.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
+	texture_roughness.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
+	texture_occlusion.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
 }
 
 void Renderer::lightSetup() {
@@ -183,12 +202,55 @@ void Renderer::reset()
 	position_sphere.set(0.0f, 0.0f, 0.0f);
 	position_modele_ill_1.set(ofGetWidth() * (1.0f / 4.0f), 50.0f, 0.0f);
 	//////////////////////////////////////
+	// Texture
+	speed_motion_texture = 150.0f;
+	speed_rotation_texture = 50.0f;
+	initialTexture_x = 0.0f;
+	initialTexture_z = -100.0f;
+	rotation_y = 0.0f;
+	scale_cube_texture = 110.0f;
+	scale_sphere_texture = 90.0f;
+	scale_teapot_texture = 0.618f;
+
+	// positions initiales des maillages géométriques
+	position_cube_texture.set(-ofGetWidth() * (1.0f / 4.0f), 0.0f, 0.0f);
+	position_sphere_texture.set(0.0f, 0.0f, 0.0f);
+	position_teapot_texture.set(ofGetWidth() * (1.0f / 4.0f), 50.0f, 0.0f);
+
+	// paramètres du matériau
+	material_color_ambient = ofColor(63, 63, 63);
+	material_color_diffuse = ofColor(255, 255, 255);
+	material_color_specular = ofColor(255, 255, 255);
+
+	material_metallic = 0.5f;
+	material_roughness = 0.5f;
+	material_occlusion = 1.0f;
+	material_brightness = 1.0f;
+
+	material_fresnel_ior = glm::vec3(0.04f, 0.04f, 0.04f);
+
+	// paramètres de la lumière
+	light_color = ofColor(255, 255, 255);
+	light_intensity = 1.0f;
+	light_motion = true;
+
+	// paramètres de mappage tonal
+	tone_mapping_exposure = 1.0f;
+	tone_mapping_toggle = true;
+
+	// initialisation des variables
+	deltaTexture_x = speed_motion_texture;
+	deltaTexture_y = speed_rotation_texture;
+	deltaTexture_z = speed_motion_texture;
+
+	// position initiale de la caméra
+	offsetTexture_x = initialTexture_x;
+	offsetTexture_z = initialTexture_z;
 
 	ofLog() << "<reset>";
 }
 
-void Renderer::setup(vector<unique_ptr<Forme>>& v_formes) 
-{
+void Renderer::setup(vector<unique_ptr<Forme>>& v_formes) {
 	v_formes_ptr = &v_formes;
 }
 
@@ -401,6 +463,48 @@ void Renderer::update()
 	shaderLight.setUniform3f("pointLightPosition", lightPoint.getPosition());
 	shaderLight.setUniform3f("spotLightPosition", lightSpot.getPosition());
 	shaderLight.end();
+
+	// Texture
+	if (isTexture){
+		centerTexture_x = ofGetWidth() / 2.0f;
+		centerTexture_y = ofGetHeight() / 2.0f;
+		if (light_motion)
+		{
+		// transformer la lumière
+			lightTexture.setGlobalPosition(
+				ofMap(ofGetMouseX() / (float)ofGetWidth(), 0.0f, 1.0f, -centerTexture_x, centerTexture_x),
+				ofMap(ofGetMouseY() / (float)ofGetHeight(), 0.0f, 1.0f, -centerTexture_y, centerTexture_y),
+				-offsetTexture_z * 1.0f);
+		}
+		// passer les attributs uniformes au shader de sommets
+		shaderTexture.begin();
+
+		shaderTexture.setUniform3f("material_color_ambient", material_color_ambient.r / 255.0f, material_color_ambient.g / 255.0f, material_color_ambient.b / 255.0f);
+		shaderTexture.setUniform3f("material_color_diffuse", material_color_diffuse.r / 255.0f, material_color_diffuse.g / 255.0f, material_color_diffuse.b / 255.0f);
+		shaderTexture.setUniform3f("material_color_specular", material_color_specular.r / 255.0f, material_color_specular.g / 255.0f, material_color_specular.b / 255.0f);
+
+		shaderTexture.setUniform1f("material_brightness", material_brightness);
+		shaderTexture.setUniform1f("material_metallic", material_metallic);
+		shaderTexture.setUniform1f("material_roughness", material_roughness);
+		shaderTexture.setUniform1f("material_occlusion", material_occlusion);
+
+		shaderTexture.setUniform3f("material_fresnel_ior", material_fresnel_ior);
+
+		shaderTexture.setUniformTexture("texture_diffuse", texture_diffuse.getTexture(), 1);
+		shaderTexture.setUniformTexture("texture_metallic", texture_metallic.getTexture(), 2);
+		shaderTexture.setUniformTexture("texture_roughness", texture_roughness.getTexture(), 3);
+		shaderTexture.setUniformTexture("texture_occlusion", texture_occlusion.getTexture(), 4);
+
+		shaderTexture.setUniform1f("light_intensity", light_intensity);
+		shaderTexture.setUniform3f("light_color", light_color.r / 255.0f, light_color.g / 255.0f, light_color.b / 255.0f);
+		shaderTexture.setUniform3f("light_position", lightTexture.getGlobalPosition());
+
+		shaderTexture.setUniform1f("tone_mapping_exposure", tone_mapping_exposure);
+		shaderTexture.setUniform1f("tone_mapping_gamma", tone_mapping_gamma);
+		shaderTexture.setUniform1i("tone_mapping_toggle", tone_mapping_toggle);
+
+		shaderTexture.end();
+	}
 }
 
 void Renderer::draw() {
@@ -597,6 +701,11 @@ void Renderer::draw() {
 	{
 		drawSetupCoons();
 	}
+	// Texture
+	if (isTexture)
+	{
+		afficherTexture(); 
+	}
 }
 
 void Renderer::setTeapotMaterials() {
@@ -605,9 +714,93 @@ void Renderer::setTeapotMaterials() {
 	material_teapot.setDiffuseColor(ofColor(interface.teapotDiffuseColorPicker));
 	material_teapot.setEmissiveColor(ofColor(interface.teapotEmissiveColorPicker));
 	material_teapot.setSpecularColor(ofColor(interface.teapotSpecularColorPicker));
-	material_teapot.setShininess(interface.teapotShininess);
-}
+	material_teapot.setShininess(interface.teapotShininess); }
 
+// Texture
+void Renderer::afficherTexture(){
+	// activer l'occlusion en profondeur
+	ofEnableDepthTest();
+
+	// activer l'éclairage dynamique
+	ofEnableLighting();
+
+	// activer la lumière dynamique
+	lightTexture.enable();
+
+	// activer le shader
+	shaderTexture.begin();
+
+	ofPushMatrix(); // Push0
+
+	// transformer l'origine de la scène au milieu de la fenêtre d'affichage
+	ofTranslate(centerTexture_x + offsetTexture_x, centerTexture_y, offsetTexture_z);
+
+	// rotation globale
+	//ofRotateDeg(rotation_y, 0.0f, 1.0f, 0.0f);
+
+	ofPushMatrix(); // Push1
+
+	// positionner la sphère
+	ofTranslate(
+		position_sphere_texture.x,
+		position_sphere_texture.y,
+		position_sphere_texture.z);
+
+	// rotation locale
+	ofRotateDeg(45.0f, 1.0f, 0.0f, 0.0f);
+
+	// dessiner une sphère
+	ofFill();
+	ofDrawSphere(0.0f, 0.0f, 0.0f, scale_sphere_texture);
+
+	ofPopMatrix(); // Pop0
+
+	ofPushMatrix(); // Push2
+
+	// positionnner le cube
+	ofTranslate(
+		position_cube_texture.x,
+		position_cube_texture.y,
+		position_cube_texture.z);
+
+	// dessiner un cube
+	ofDrawBox(0.0f, 0.0f, 0.0f, scale_cube_texture);
+
+	ofPopMatrix(); // Pop1
+
+	ofPushMatrix(); // Push3
+
+	// positionner le teapot
+	teapotTexture.setPosition(
+		position_teapot_texture.x + 25.0f,
+		position_teapot_texture.y + 15.0f,
+		position_teapot_texture.z);
+
+	// dimension du teapot
+	teapotTexture.setScale(
+		scale_teapot_texture,
+		scale_teapot_texture,
+		scale_teapot_texture);
+
+	// dessiner un teapot
+	//teapotTexture.draw(OF_MESH_FILL);
+
+	ofPopMatrix(); // Pop2
+
+	ofPopMatrix(); // Pop3
+
+	// désactiver le shader
+	shaderTexture.end();
+
+	// désactiver la lumière
+	lightTexture.disable();
+
+	// désactiver l'éclairage dynamique
+	ofDisableLighting();
+
+	// désactiver l'occlusion en profondeur
+	ofDisableDepthTest();
+}
 
 //Coons 
 void Renderer::setupCoons() {
