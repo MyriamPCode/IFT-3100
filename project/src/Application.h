@@ -202,7 +202,12 @@ class Application : public ofBaseApp{
 		// Modele illumination
 		float time_current, time_last, time_elapsed;
 		bool is_key_press_up, is_key_press_down, is_key_press_left, is_key_press_right;
-
+		// Mode coons 
+		void mouseScrolled(int x, int y, float scrollX, float scrollY);
+		float controlPtZ;
+		ofxGuiGroup surfaceParametriqueGroup;
+		ofParameter<bool> coonsButton = false;
+		void button_coons(bool& value);
 private:
 	stack<function<void()>> undoStack;
 	stack<function<void()>> redoStack;
